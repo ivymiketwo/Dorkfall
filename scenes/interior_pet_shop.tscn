@@ -83,7 +83,7 @@ centered = false
 hframes = 4
 script = ExtResource("6_critter")
 frames = PackedInt32Array(0, 1, 2, 3)
-durations = PackedFloat32Array(0.6, 0.6, 0.6, 0.6)
+durations = PackedFloat32Array(1.2, 1.2, 1.2, 1.2)
 random_start = false
 speed_jitter = 0.0
 
