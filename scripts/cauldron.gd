@@ -5,6 +5,7 @@ extends Node2D
 
 @export var brew_color := Color(0.39, 0.84, 0.42)
 @export var steam_color := Color(0.75, 1.0, 0.75)
+@export var texture_override: Texture2D   # e.g. a purple-brew version for the wizard shop
 
 const P := 0.5                         # one art pixel in world units
 const TEX := preload("res://art/cauldron.png")
@@ -57,7 +58,7 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, 16.0, Color(1.0, 0.55, 0.2, 0.10 * flick))
 	draw_circle(Vector2.ZERO, 11.0, Color(1.0, 0.62, 0.25, 0.12 * flick))
 	draw_set_transform(Vector2.ZERO)
-	draw_texture_rect(TEX, Rect2(Vector2(-15, -23), Vector2(30, 23)), false)
+	draw_texture_rect(texture_override if texture_override else TEX, Rect2(Vector2(-15, -23), Vector2(30, 23)), false)
 	# flames licking up around the bottom of the pot: little tapered tongues
 	for i in 7:
 		var bx := -9.0 + i * 3.0 + sin(_t * 3.0 + i) * 0.5
