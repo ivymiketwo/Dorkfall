@@ -3,11 +3,9 @@ extends Node2D
 ## Little touches of life: chimney smoke, daytime birds, night fireflies.
 ## All drawn with plain rects so they match the pixel art. Lives in World.
 
-const SMOKE_SOURCES := [
-	{"pos": Vector2(147, 85), "col": Color(0.86, 0.86, 0.9)},     # blacksmith chimney
-	{"pos": Vector2(270, 87), "col": Color(0.62, 0.9, 0.62)},     # potion shop chimney
-	{"pos": Vector2(347, 83), "col": Color(0.7, 0.75, 1.0)},     # wizard shop chimney
-]
+## Smoke comes from every node in the "chimney" group (a Chimney marker inside each building
+## scene), so it follows a building when you move it.
+const SMOKE_COLOR := Color(0.86, 0.86, 0.9)
 const FIREFLY_COUNT := 46
 const AREA := Vector2(360, 210)            # half-size of the box around the player
 
@@ -72,10 +70,11 @@ func _process(delta: float) -> void:
 	_smoke_t -= delta
 	if _smoke_t <= 0.0 and outdoors:
 		_smoke_t = 0.55
-		for s: Dictionary in SMOKE_SOURCES:
-			if pp.distance_to(s.pos) < 380.0:
-				_puffs.append({"p": s.pos + Vector2(randf_range(-1, 1), 0), "age": 0.0, "life": randf_range(2.6, 3.6),
-						"col": s.col, "w": randf_range(-2, 2)})
+		for ch in get_tree().get_nodes_in_group("chimney"):
+			var at: Vector2 = (ch as Node2D).global_position
+			if pp.distance_to(at) < 380.0:
+				_puffs.append({"p": at + Vector2(randf_range(-1, 1), 0), "age": 0.0, "life": randf_range(2.6, 3.6),
+						"col": ch.get_meta("smoke", SMOKE_COLOR), "w": randf_range(-2, 2)})
 	for i in range(_puffs.size() - 1, -1, -1):
 		var pf: Dictionary = _puffs[i]
 		pf.age += delta

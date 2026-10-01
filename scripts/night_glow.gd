@@ -8,14 +8,19 @@ extends Node2D
 @export var glow_color := Color(1.0, 0.78, 0.38)
 @export var light_scale := 0.55           ## light size (1.0 = 64 units across)
 @export var light_energy := 1.0
+@export var merge_lights := true          ## one light for the whole group (the engine only lights 16 per surface, so many small lights flicker)
 @export var draw_rects := true            ## paint the window itself bright
 
 var strength := 0.0:
 	set(v):
+		if is_equal_approx(v, strength):
+			return
 		strength = v
 		_update()
 var ambient := Color.WHITE:
 	set(v):
+		if v.is_equal_approx(ambient):
+			return
 		ambient = v
 		_update()
 
@@ -45,21 +50,32 @@ func _ready() -> void:
 	_paint.z_index = 1
 	_paint.draw.connect(_draw_rects)
 	add_child(_paint)
-	for r in rects:
-		var l := PointLight2D.new()
-		l.texture = light_texture()
-		l.texture_scale = light_scale
-		l.color = glow_color
-		l.energy = 0.0
-		l.position = r.get_center()
-		add_child(l)
-		_lights.append(l)
+	if merge_lights and rects.size() > 1:
+		var box := rects[0]
+		for r in rects:
+			box = box.merge(r)
+		_add_light(box.get_center(), light_scale * 0.9 + box.size.length() / 110.0, light_energy * 1.15)
+	else:
+		for r in rects:
+			_add_light(r.get_center(), light_scale, light_energy)
 	_update()
+
+
+func _add_light(at: Vector2, tex_scale: float, energy: float) -> void:
+	var l := PointLight2D.new()
+	l.texture = light_texture()
+	l.texture_scale = tex_scale
+	l.color = glow_color
+	l.energy = 0.0
+	l.position = at
+	l.set_meta("base", energy)
+	add_child(l)
+	_lights.append(l)
 
 
 func _update() -> void:
 	for l in _lights:
-		l.energy = strength * light_energy
+		l.energy = strength * float(l.get_meta("base", light_energy))
 	if _paint:
 		# Cancel the night tint on the painted windows so they read as truly lit.
 		var inv := Color(minf(1.0 / maxf(ambient.r, 0.05), 4.0), minf(1.0 / maxf(ambient.g, 0.05), 4.0),

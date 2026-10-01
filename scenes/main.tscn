@@ -5242,6 +5242,802 @@ position = Vector2(128, 24)
 [node name="HouseBlue" parent="Entities" unique_id=1932270750 instance=ExtResource("203_bs")]
 position = Vector2(276, 24)
 
+[node name="WFenceN0" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(232, 272)
+kind = "wfence_b"
+
+[node name="WFenceN1" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(248, 272)
+kind = "wfence_a"
+
+[node name="WFenceN2" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(264, 272)
+kind = "wfence_a"
+
+[node name="WFenceN3" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(280, 272)
+kind = "wfence_b"
+
+[node name="WFenceN4" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(296, 272)
+kind = "wfence_d"
+
+[node name="WFenceN7" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(344, 272)
+kind = "wfence_b"
+
+[node name="WFenceN8" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(360, 272)
+kind = "wfence_b"
+
+[node name="WFenceN9" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(376, 272)
+kind = "wfence_b"
+
+[node name="WFenceN10" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(392, 272)
+kind = "wfence_d"
+
+[node name="WFenceN11" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(408, 272)
+kind = "wfence_a"
+
+[node name="WFenceN12" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(424, 272)
+kind = "wfence_b"
+
+[node name="WFenceN13" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(440, 272)
+kind = "wfence_a"
+
+[node name="WFenceN14" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(456, 272)
+kind = "wfence_b"
+
+[node name="WFenceN18" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(520, 272)
+kind = "wfence_c"
+
+[node name="WFenceN19" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(536, 272)
+kind = "wfence_b"
+
+[node name="WFenceN20" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(552, 272)
+kind = "wfence_b"
+
+[node name="WFenceN21" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(568, 272)
+kind = "wfence_d"
+
+[node name="WFenceN22" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(584, 272)
+kind = "wfence_d"
+
+[node name="WFenceN25" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(632, 272)
+kind = "wfence_c"
+
+[node name="WFenceN26" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(648, 272)
+kind = "wfence_d"
+
+[node name="WFenceN27" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(664, 272)
+kind = "wfence_d"
+
+[node name="WFenceN28" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(680, 272)
+kind = "wfence_a"
+
+[node name="WFenceN29" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(696, 272)
+kind = "wfence_d"
+
+[node name="WFenceN33" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(760, 272)
+kind = "wfence_d"
+
+[node name="WFenceN34" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(776, 272)
+kind = "wfence_a"
+
+[node name="WFenceN35" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(792, 272)
+kind = "wfence_b"
+
+[node name="WFenceN39" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(856, 272)
+kind = "wfence_c"
+
+[node name="WFenceN40" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(872, 272)
+kind = "wfence_d"
+
+[node name="WFenceN41" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(888, 272)
+kind = "wfence_a"
+
+[node name="WFenceN42" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(904, 272)
+kind = "wfence_b"
+
+[node name="WFenceN43" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(920, 272)
+kind = "wfence_b"
+
+[node name="WFenceN46" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(968, 272)
+kind = "wfence_b"
+
+[node name="WFenceN47" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(984, 272)
+kind = "wfence_a"
+
+[node name="WFenceN48" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1000, 272)
+kind = "wfence_a"
+
+[node name="WFenceN49" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1016, 272)
+kind = "wfence_b"
+
+[node name="WFenceN50" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1032, 272)
+kind = "wfence_d"
+
+[node name="WFenceN51" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1048, 272)
+kind = "wfence_a"
+
+[node name="WFenceN52" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1064, 272)
+kind = "wfence_a"
+
+[node name="WFenceN53" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1080, 272)
+kind = "wfence_a"
+
+[node name="WFenceN54" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1096, 272)
+kind = "wfence_b"
+
+[node name="WFenceN57" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1144, 272)
+kind = "wfence_b"
+
+[node name="WFenceN58" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1160, 272)
+kind = "wfence_b"
+
+[node name="WFenceN59" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1176, 272)
+kind = "wfence_c"
+
+[node name="WFenceN60" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1192, 272)
+kind = "wfence_d"
+
+[node name="WFenceN61" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1208, 272)
+kind = "wfence_a"
+
+[node name="WFenceN62" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1224, 272)
+kind = "wfence_a"
+
+[node name="WFenceN63" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1240, 272)
+kind = "wfence_d"
+
+[node name="WFenceN64" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1256, 272)
+kind = "wfence_a"
+
+[node name="WFenceN65" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1272, 272)
+kind = "wfence_c"
+
+[node name="WFenceN68" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1320, 272)
+kind = "wfence_d"
+
+[node name="WFenceN69" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1336, 272)
+kind = "wfence_a"
+
+[node name="WFenceN70" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1352, 272)
+kind = "wfence_d"
+
+[node name="WFenceN71" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1368, 272)
+kind = "wfence_a"
+
+[node name="WFenceN72" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1384, 272)
+kind = "wfence_a"
+
+[node name="WFenceN73" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1400, 272)
+kind = "wfence_a"
+
+[node name="WFenceN74" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1416, 272)
+kind = "wfence_c"
+
+[node name="WFenceS0" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(232, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS1" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(248, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS2" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(264, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS5" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(312, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS6" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(328, 1072)
+kind = "wfence_d"
+
+[node name="WFenceS7" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(344, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS8" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(360, 1072)
+kind = "wfence_d"
+
+[node name="WFenceS9" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(376, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS10" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(392, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS11" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(408, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS12" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(424, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS15" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(472, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS16" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(488, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS17" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(504, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS18" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(520, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS19" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(536, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS20" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(552, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS23" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(600, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS24" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(616, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS25" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(632, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS26" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(648, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS27" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(664, 1072)
+kind = "wfence_d"
+
+[node name="WFenceS28" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(680, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS29" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(696, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS30" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(712, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS31" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(728, 1072)
+kind = "wfence_d"
+
+[node name="WFenceS34" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(776, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS35" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(792, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS36" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(808, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS37" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(824, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS38" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(840, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS42" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(904, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS43" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(920, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS44" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(936, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS45" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(952, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS46" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(968, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS49" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1016, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS50" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1032, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS51" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1048, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS52" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1064, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS53" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1080, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS54" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1096, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS55" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1112, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS56" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1128, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS57" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1144, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS58" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1160, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS62" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1224, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS63" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1240, 1072)
+kind = "wfence_d"
+
+[node name="WFenceS64" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1256, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS65" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1272, 1072)
+kind = "wfence_d"
+
+[node name="WFenceS66" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1288, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS67" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1304, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS68" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1320, 1072)
+kind = "wfence_c"
+
+[node name="WFenceS69" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1336, 1072)
+kind = "wfence_a"
+
+[node name="WFenceS70" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1352, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS73" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1400, 1072)
+kind = "wfence_b"
+
+[node name="WFenceS74" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1416, 1072)
+kind = "wfence_c"
+
+[node name="WFenceW0" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 288)
+kind = "wfence_side_a"
+
+[node name="WFenceW1" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 304)
+kind = "wfence_side_a"
+
+[node name="WFenceW2" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 320)
+kind = "wfence_side_c"
+
+[node name="WFenceW6" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 384)
+kind = "wfence_side_a"
+
+[node name="WFenceW7" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 400)
+kind = "wfence_side_a"
+
+[node name="WFenceW8" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 416)
+kind = "wfence_side_c"
+
+[node name="WFenceW9" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 432)
+kind = "wfence_side_b"
+
+[node name="WFenceW10" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 448)
+kind = "wfence_side_a"
+
+[node name="WFenceW11" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 464)
+kind = "wfence_side_a"
+
+[node name="WFenceW12" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 480)
+kind = "wfence_side_b"
+
+[node name="WFenceW13" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 496)
+kind = "wfence_side_c"
+
+[node name="WFenceW14" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 512)
+kind = "wfence_side_b"
+
+[node name="WFenceW15" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 528)
+kind = "wfence_side_a"
+
+[node name="WFenceW16" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 544)
+kind = "wfence_side_b"
+
+[node name="WFenceW19" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 592)
+kind = "wfence_side_c"
+
+[node name="WFenceW20" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 608)
+kind = "wfence_side_b"
+
+[node name="WFenceW21" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 624)
+kind = "wfence_side_b"
+
+[node name="WFenceW22" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 640)
+kind = "wfence_side_a"
+
+[node name="WFenceW23" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 656)
+kind = "wfence_side_a"
+
+[node name="WFenceW27" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 720)
+kind = "wfence_side_a"
+
+[node name="WFenceW28" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 736)
+kind = "wfence_side_a"
+
+[node name="WFenceW29" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 752)
+kind = "wfence_side_c"
+
+[node name="WFenceW30" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 768)
+kind = "wfence_side_a"
+
+[node name="WFenceW31" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 784)
+kind = "wfence_side_b"
+
+[node name="WFenceW32" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 800)
+kind = "wfence_side_a"
+
+[node name="WFenceW33" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 816)
+kind = "wfence_side_c"
+
+[node name="WFenceW34" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 832)
+kind = "wfence_side_a"
+
+[node name="WFenceW35" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 848)
+kind = "wfence_side_c"
+
+[node name="WFenceW38" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 896)
+kind = "wfence_side_b"
+
+[node name="WFenceW39" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 912)
+kind = "wfence_side_a"
+
+[node name="WFenceW40" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 928)
+kind = "wfence_side_a"
+
+[node name="WFenceW41" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 944)
+kind = "wfence_side_c"
+
+[node name="WFenceW42" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 960)
+kind = "wfence_side_a"
+
+[node name="WFenceW43" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 976)
+kind = "wfence_side_c"
+
+[node name="WFenceW44" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 992)
+kind = "wfence_side_a"
+
+[node name="WFenceW45" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 1008)
+kind = "wfence_side_c"
+
+[node name="WFenceW46" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 1024)
+kind = "wfence_side_b"
+
+[node name="WFenceW47" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 1040)
+kind = "wfence_side_a"
+
+[node name="WFenceW48" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 1056)
+kind = "wfence_side_c"
+
+[node name="WFenceW49" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 1072)
+kind = "wfence_side_c"
+
+[node name="WFenceE0" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 288)
+kind = "wfence_side_c"
+
+[node name="WFenceE1" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 304)
+kind = "wfence_side_a"
+
+[node name="WFenceE2" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 320)
+kind = "wfence_side_a"
+
+[node name="WFenceE3" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 336)
+kind = "wfence_side_a"
+
+[node name="WFenceE7" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 400)
+kind = "wfence_side_a"
+
+[node name="WFenceE8" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 416)
+kind = "wfence_side_a"
+
+[node name="WFenceE9" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 432)
+kind = "wfence_side_a"
+
+[node name="WFenceE10" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 448)
+kind = "wfence_side_c"
+
+[node name="WFenceE11" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 464)
+kind = "wfence_side_a"
+
+[node name="WFenceE12" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 480)
+kind = "wfence_side_c"
+
+[node name="WFenceE13" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 496)
+kind = "wfence_side_b"
+
+[node name="WFenceE14" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 512)
+kind = "wfence_side_a"
+
+[node name="WFenceE15" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 528)
+kind = "wfence_side_a"
+
+[node name="WFenceE19" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 592)
+kind = "wfence_side_a"
+
+[node name="WFenceE20" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 608)
+kind = "wfence_side_a"
+
+[node name="WFenceE21" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 624)
+kind = "wfence_side_a"
+
+[node name="WFenceE22" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 640)
+kind = "wfence_side_a"
+
+[node name="WFenceE23" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 656)
+kind = "wfence_side_c"
+
+[node name="WFenceE24" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 672)
+kind = "wfence_side_a"
+
+[node name="WFenceE25" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 688)
+kind = "wfence_side_a"
+
+[node name="WFenceE29" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 752)
+kind = "wfence_side_a"
+
+[node name="WFenceE30" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 768)
+kind = "wfence_side_b"
+
+[node name="WFenceE31" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 784)
+kind = "wfence_side_a"
+
+[node name="WFenceE32" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 800)
+kind = "wfence_side_b"
+
+[node name="WFenceE33" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 816)
+kind = "wfence_side_a"
+
+[node name="WFenceE34" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 832)
+kind = "wfence_side_b"
+
+[node name="WFenceE38" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 896)
+kind = "wfence_side_b"
+
+[node name="WFenceE39" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 912)
+kind = "wfence_side_c"
+
+[node name="WFenceE40" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 928)
+kind = "wfence_side_a"
+
+[node name="WFenceE41" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 944)
+kind = "wfence_side_a"
+
+[node name="WFenceE42" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 960)
+kind = "wfence_side_b"
+
+[node name="WFenceE43" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 976)
+kind = "wfence_side_c"
+
+[node name="WFenceE44" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 992)
+kind = "wfence_side_c"
+
+[node name="WFenceE45" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 1008)
+kind = "wfence_side_a"
+
+[node name="WFenceE46" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 1024)
+kind = "wfence_side_a"
+
+[node name="WFenceE47" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 1040)
+kind = "wfence_side_a"
+
+[node name="WFenceE48" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 1056)
+kind = "wfence_side_c"
+
+[node name="WFenceE49" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(1424, 1072)
+kind = "wfence_side_a"
+
+[node name="GateN_postW" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(704, 272)
+kind = "wgate_post"
+
+[node name="GateN_postE" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(752, 272)
+kind = "wgate_post"
+
+[node name="GateN_leafW" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(704, 285)
+kind = "wgate_leaf_v"
+
+[node name="GateN_leafE" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(752, 285)
+kind = "wgate_leaf_v"
+
+[node name="GateW_postN" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 660)
+kind = "wgate_post"
+
+[node name="GateW_postS" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(224, 708)
+kind = "wgate_post"
+
+[node name="GateW_leafN" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(234, 660)
+kind = "wgate_leaf_h"
+
+[node name="GateW_leafS" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(234, 708)
+kind = "wgate_leaf_h"
+
 [node name="HUD" parent="." unique_id=1493711357 instance=ExtResource("5_hud")]
 transform = Transform2D(2, 0, 0, 2, 0, 0)
 

@@ -33,3 +33,7 @@ shape = SubResource("RectangleShape2D_door")
 script = ExtResource("99_glow")
 rects = Array[Rect2]([Rect2(-22.0, -25.2, 12, 9), Rect2(-3.0, -21.2, 6, 6)])
 light_scale = 0.6
+
+[node name="Chimney" type="Marker2D" parent="." groups=["chimney"]]
+position = Vector2(80, -86)
+metadata/smoke = Color(0.86, 0.86, 0.9, 1)
