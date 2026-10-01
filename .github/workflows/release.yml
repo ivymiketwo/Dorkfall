@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install Godot and Windows export template
         run: |
           base=https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}
@@ -33,12 +33,12 @@ jobs:
           godot --headless --import || true
           godot --headless --export-release "Windows Desktop"
           cd build && zip -9 ../Dorkfall-${{ github.event.inputs.version || github.ref_name }}-windows.zip TopdownTest.exe
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows-build
           path: "*.zip"
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.event.inputs.version || github.ref_name }}
           files: "*.zip"
