@@ -46,6 +46,11 @@ def find_hand(frame, facing):
         if c.sum() >= 2:
             yy, xx = np.where(c)
             x = float(np.median(xx))
+            if facing == "left":
+                # facing west the right hand is the FAR arm. It swings opposite to the near arm, so mirror the
+                # near arm's position about the body's centre line (and keep it a touch lower, hidden behind the torso)
+                cx = float(np.median(np.where(opaque)[1]))
+                return 2 * cx - x, float(np.median(yy)), 1
             return x, float(np.median(yy)), c.sum()
         return None
     # only the character's right side of the body counts (down = screen-left, up = screen-right)
@@ -59,7 +64,15 @@ def find_hand(frame, facing):
         side[:, int(cx) + 2:] = True
     cand = cand & side
     if cand.sum() < 2:
-        return None
+        arm = np.zeros_like(opaque)
+        arm[int(top + 0.40 * h):int(top + 0.62 * h) + 1, :] = True
+        sl = opaque & arm
+        if not sl.any():
+            return None
+        yy, xx = np.where(sl)
+        edge = xx.min() if facing == "down" else xx.max()
+        sel = np.abs(xx - edge) <= 1
+        return float(xx[sel].mean()), float(top + 0.50 * h), int(sel.sum())
     yy, xx = np.where(cand)
     # character's right hand: facing down = screen-left, facing up = screen-right
     # take the outermost skin pixels of that side (the hand), averaged

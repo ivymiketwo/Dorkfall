@@ -11,7 +11,7 @@ extends Sprite2D
 
 const HANDS_PATH := "res://data/hands.json"
 const SRC_FRAME := Rect2i(96, 0, 24, 40)    # standing, facing down, in the old 24x40 worn sheets
-const GRIP := 0.55                          # how far down the weapon the hand holds it (0 = tip)
+const GRIP := 0.33                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
 const LEAN := [-15.0, 15.0, -15.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
