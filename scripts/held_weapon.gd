@@ -24,6 +24,8 @@ const JUMP_STAFF_W := [Vector3(-3.1, -9.0, -76.4), Vector3(-3.5, -9.5, -85.1), V
 const JUMP_STAFF_E := [Vector3(-3.67, -4.21, 75.5), Vector3(-2.83, -4.39, 78.1), Vector3(-3.11, -1.59, 84.1), Vector3(-2.20, -12.75, 81.6), Vector3(-3.91, -14.30, 87.7), Vector3(-3.21, -5.37, 85.4), Vector3(-1.51, 1.18, 85.3), Vector3(-3.28, -2.64, 73.2)]
 ## Typical orb position relative to the caster's feet per facing (down, up, left, right), for the frame a beam is fired while turning.
 const BEAM_IDLE_ORB := [Vector2(-4.2, -17.5), Vector2(4.9, -17.0), Vector2(-3.8, -15.5), Vector2(3.8, -15.5)]
+## The naked jump has 9 frames, the robed one 8: which robed frame's staff pose each naked frame uses.
+const NAKED_JUMP_MAP := [0, 1, 2, 3, 4, 4, 5, 6, 7]
 const LEAN := [-5.0, 5.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
@@ -126,8 +128,9 @@ func _process(_delta: float) -> void:
 	var has_jump_pose := false
 	if row >= 8 and (facing == 2 or facing == 3):
 		var table: Array = JUMP_STAFF_W if facing == 2 else JUMP_STAFF_E
-		if col < table.size():
-			jump_pose = table[col]
+		var pc: int = NAKED_JUMP_MAP[col] if key == "naked" and col < NAKED_JUMP_MAP.size() else col
+		if pc < table.size():
+			jump_pose = table[pc]
 			has_jump_pose = true
 	_show_top_only(row % 4 == 2)
 	# facing south the staff is drawn taller (top above the head) and held nearer its middle
