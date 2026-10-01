@@ -4,6 +4,9 @@ extends Node2D
 
 const MAP_ORIGIN := Vector2i(-105, -62)   # top-left tile (the village starts at 0, 0)
 const MAP_SIZE := Vector2i(300, 168)      # in tiles
+# West ocean: for each tile row (from the top), the first land tile counted from the left edge.
+# Everything between the wall and that tile is sea (impassable). Matches art/water_info_ocean.png.
+var OCEAN_SHORE := PackedInt32Array([35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 34, 34, 34, 35, 35, 35, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 35, 35, 35, 35, 35, 35, 35, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37])
 
 # Atlas coordinates in art/tiles.png
 const GRASS := Vector2i(0, 0)
@@ -60,6 +63,9 @@ func _pick_tile(x: int, y: int, rng: RandomNumberGenerator) -> Vector2i:
 	# Border wall
 	if x == MAP_ORIGIN.x or y == MAP_ORIGIN.y or x == MAP_ORIGIN.x + MAP_SIZE.x - 1 or y == MAP_ORIGIN.y + MAP_SIZE.y - 1:
 		return WALL
+	# West ocean
+	if x - MAP_ORIGIN.x < OCEAN_SHORE[y - MAP_ORIGIN.y]:
+		return WATER
 	# Pond (ellipse)
 	var d := Vector2((x - 33) / 5.0, (y - 8) / 3.0)
 	if d.length() <= 1.0:
