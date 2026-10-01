@@ -3857,9 +3857,6 @@ kind = "pine"
 position = Vector2(-860, -166)
 kind = "pine"
 
-[node name="TreeN453" parent="Entities" unique_id=651396105 instance=ExtResource("4_tree")]
-position = Vector2(-1020, -156)
-
 [node name="TreeN454" parent="Entities" unique_id=199858788 instance=ExtResource("4_tree")]
 position = Vector2(-875, -97)
 kind = "pine"
@@ -4503,10 +4500,6 @@ position = Vector2(2839, -593)
 [node name="TreeN689" parent="Entities" unique_id=678766004 instance=ExtResource("4_tree")]
 position = Vector2(1094, 1588)
 kind = "oak2"
-
-[node name="TreeN690" parent="Entities" unique_id=1364550705 instance=ExtResource("4_tree")]
-position = Vector2(-1030, -945)
-kind = "pine"
 
 [node name="TreeN691" parent="Entities" unique_id=2094586516 instance=ExtResource("4_tree")]
 position = Vector2(-460, -692)
