@@ -17,7 +17,7 @@ size = Vector2(24, 6)
 
 [node name="WizardShop" type="Node2D"]
 script = ExtResource("1_script")
-solids = Array[Rect2]([Rect2(0, 0, 224, 34), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(14, 130, 34, 16), Rect2(178, 134, 24, 24)])
+solids = Array[Rect2]([Rect2(0, 0, 224, 34), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(18, 135, 30, 12), Rect2(180, 142, 20, 16)])
 
 [node name="Room" type="Sprite2D" parent="."]
 scale = Vector2(0.5, 0.5)
@@ -60,10 +60,12 @@ script = ExtResource("6_cauldron")
 brew_color = Color(0.74, 0.5, 0.96, 1)
 steam_color = Color(0.9, 0.78, 1, 1)
 texture_override = ExtResource("7_cauldron_tex")
+size_scale = 0.667
 
 [node name="Orb" type="Node2D" parent="."]
-position = Vector2(190, 125)
+position = Vector2(190, 134)
 script = ExtResource("8_orb")
+radius_px = 8
 
 [node name="Entry" type="Marker2D" parent="."]
 position = Vector2(112, 152)
