@@ -11,9 +11,10 @@ extends Sprite2D
 
 const HANDS_PATH := "res://data/hands.json"
 const SRC_FRAME := Rect2i(96, 0, 24, 40)    # standing, facing down, in the old 24x40 worn sheets
-const WEST_VISIBLE := 0.85                  # facing west only the top half of the staff shows (the rest is "behind" the body)
+const WEST_VISIBLE := 1.0                  # facing west only the top half of the staff shows (the rest is "behind" the body)
 const WEST_SHIFT := Vector2(0, 0)         # art px
 const SOUTH_SCALE := 1.6
+const WEST_SCALE := 1.3
 const SOUTH_GRIP := 0.55
 const GRIP := 0.33                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
@@ -81,9 +82,9 @@ func _process(_delta: float) -> void:
 	rotation_degrees = LEAN[facing]
 	_show_top_only(row % 4 == 2)
 	# facing south the staff is drawn taller (top above the head) and held nearer its middle
-	var south := facing == 0
-	scale = body.scale * (SOUTH_SCALE if south else 1.0)
-	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * (SOUTH_GRIP if south else GRIP))
+	var big := facing == 0 or facing == 2
+	scale = body.scale * (SOUTH_SCALE if facing == 0 else (WEST_SCALE if facing == 2 else 1.0))
+	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * (SOUTH_GRIP if big else GRIP))
 	var behind := int(h[2]) == 1
 	_set_behind(behind)
 	_update_hand(facing, col, row, h, behind)
