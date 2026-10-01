@@ -19,7 +19,9 @@ const SOUTH_GRIP := 0.55
 const OTHER_GRIP := 0.485                 # keeps the lower end where it was after the size change
 const GRIP := 0.33                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
-const JUMP_LEAN := 65.0
+## Hand-placed staff pose for every east / west jump frame: (centre x, centre y relative to the body, angle in degrees).
+const JUMP_STAFF_W := [Vector3(-3.1, -9.0, -76.4), Vector3(-3.5, -9.5, -85.1), Vector3(-2.0, -6.0, -83.9), Vector3(-0.5, -19.5, -91.1), Vector3(-0.5, -18.8, -92.3), Vector3(-3.4, -13.9, -88.2), Vector3(-2.5, -6.6, -88.1), Vector3(-3.0, -7.4, -68.3)]
+const JUMP_STAFF_E := [Vector3(-3.4, -7.2, 73.5), Vector3(-3.6, -7.8, 77.9), Vector3(-2.2, -6.5, 87.8), Vector3(-0.5, -19.8, 80.8), Vector3(-0.5, -18.8, 87.9), Vector3(-1.5, -13.9, 89.5), Vector3(-1.0, -6.4, 92.5), Vector3(-4.1, -4.5, 72.5)]
 const LEAN := [-5.0, 5.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
@@ -84,13 +86,25 @@ func _process(_delta: float) -> void:
 	position = body.position + local * body.scale
 	var facing := row % 4
 	rotation_degrees = LEAN[facing]
-	if row >= 8 and (facing == 2 or facing == 3):   # jumping east or west: the staff swings out nearly horizontal
-		rotation_degrees = signf(LEAN[facing]) * JUMP_LEAN
+	if row == 2:
+		rotation_degrees = -LEAN[3]          # west idle: mirror of the east idle angle
+	var jump_pose := Vector3.ZERO
+	var has_jump_pose := false
+	if row >= 8 and (facing == 2 or facing == 3):
+		var table: Array = JUMP_STAFF_W if facing == 2 else JUMP_STAFF_E
+		if col < table.size():
+			jump_pose = table[col]
+			has_jump_pose = true
 	_show_top_only(row % 4 == 2)
 	# facing south the staff is drawn taller (top above the head) and held nearer its middle
 	scale = body.scale * WEST_SCALE     # same staff size in every direction
 	var g := SOUTH_GRIP if facing == 2 else OTHER_GRIP
 	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
+	if has_jump_pose:
+		rotation_degrees = jump_pose.z
+		var up := Vector2(0, -1).rotated(deg_to_rad(jump_pose.z))
+		var length := _full_region.size.y * scale.y
+		position = body.position + Vector2(jump_pose.x, jump_pose.y) + up * (0.5 - g) * length
 	var behind := int(h[2]) == 1
 	_set_behind(behind)
 	_update_hand(facing, col, row, h, behind)
