@@ -3,6 +3,11 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, e.g. v0.1"
+        required: true
+        default: "v0.1"
 permissions:
   contents: write
 env:
@@ -27,14 +32,14 @@ jobs:
           mkdir -p build
           godot --headless --import || true
           godot --headless --export-release "Windows Desktop"
-          cd build && zip -9 ../Dorkfall-${GITHUB_REF_NAME:-manual}-windows.zip TopdownTest.exe
+          cd build && zip -9 ../Dorkfall-${{ github.event.inputs.version || github.ref_name }}-windows.zip TopdownTest.exe
       - uses: actions/upload-artifact@v4
         with:
           name: windows-build
           path: "*.zip"
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
           files: "*.zip"
           generate_release_notes: true
