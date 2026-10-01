@@ -21,7 +21,7 @@ const GRIP := 0.33                          # how far down the weapon the hand h
 const FRAME_PX := 48.0
 ## Hand-placed staff pose for every east / west jump frame: (centre x, centre y relative to the body, angle in degrees).
 const JUMP_STAFF_W := [Vector3(-3.1, -9.0, -76.4), Vector3(-3.5, -9.5, -85.1), Vector3(-2.0, -6.0, -83.9), Vector3(-0.5, -19.5, -91.1), Vector3(-0.5, -18.8, -92.3), Vector3(-3.4, -13.9, -88.2), Vector3(-2.5, -6.6, -88.1), Vector3(-3.0, -7.4, -68.3)]
-const JUMP_STAFF_E := [Vector3(-3.6, -4.7, 75.5), Vector3(-2.8, -5.0, 78.1), Vector3(-3.1, -2.2, 84.1), Vector3(-2.2, -13.5, 81.6), Vector3(-3.9, -14.9, 87.7), Vector3(-3.2, -6.0, 85.4), Vector3(-1.5, 0.5, 85.3), Vector3(-3.4, -3.8, 73.2)]
+const JUMP_STAFF_E := [Vector3(-3.67, -4.21, 75.5), Vector3(-2.83, -4.39, 78.1), Vector3(-3.11, -1.59, 84.1), Vector3(-2.20, -12.75, 81.6), Vector3(-3.91, -14.30, 87.7), Vector3(-3.21, -5.37, 85.4), Vector3(-1.51, 1.18, 85.3), Vector3(-3.28, -2.64, 73.2)]
 const LEAN := [-5.0, 5.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
