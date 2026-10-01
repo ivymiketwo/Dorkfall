@@ -3,11 +3,11 @@ extends Control
 ## Notice board window: one row per kill quest. Click a row to accept it, hand it in
 ## when it's done, or abandon it while it's running. F / Esc / walking away closes it.
 
-const PAD := 6
-const HEADER := 14
-const ROW_H := 23
+const PAD := 5
+const HEADER := 13
+const ROW_H := 22
 const ROW_GAP := 2
-const W := 190
+const W := 172
 
 var _board: Node2D
 var _player: Node2D
