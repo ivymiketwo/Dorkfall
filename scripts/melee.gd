@@ -107,6 +107,9 @@ func _basic_beam(ab: Ability) -> void:
 	var dir := aim.normalized() if aim.length() > 1.0 else Vector2.DOWN
 	if "facing" in caster:
 		caster.facing = (3 if dir.x > 0 else 2) if absf(dir.x) > absf(dir.y) else (0 if dir.y > 0 else 1)
+	start = HeldWeapon.beam_origin(caster)               # the beam leaves from the staff's orb
+	aim = caster.aim_world - start
+	dir = aim.normalized() if aim.length() > 1.0 else dir
 	var space := caster.get_world_2d().direct_space_state
 	var exclude: Array[RID] = []
 	if caster is CollisionObject2D:

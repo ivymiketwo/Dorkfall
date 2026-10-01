@@ -22,6 +22,8 @@ const FRAME_PX := 48.0
 ## Hand-placed staff pose for every east / west jump frame: (centre x, centre y relative to the body, angle in degrees).
 const JUMP_STAFF_W := [Vector3(-3.1, -9.0, -76.4), Vector3(-3.5, -9.5, -85.1), Vector3(-2.0, -6.0, -83.9), Vector3(-0.5, -19.5, -91.1), Vector3(-0.5, -18.8, -92.3), Vector3(-3.4, -13.9, -88.2), Vector3(-2.5, -6.6, -88.1), Vector3(-3.0, -7.4, -68.3)]
 const JUMP_STAFF_E := [Vector3(-3.67, -4.21, 75.5), Vector3(-2.83, -4.39, 78.1), Vector3(-3.11, -1.59, 84.1), Vector3(-2.20, -12.75, 81.6), Vector3(-3.91, -14.30, 87.7), Vector3(-3.21, -5.37, 85.4), Vector3(-1.51, 1.18, 85.3), Vector3(-3.28, -2.64, 73.2)]
+## Typical orb position relative to the caster's feet per facing (down, up, left, right), for the frame a beam is fired while turning.
+const BEAM_IDLE_ORB := [Vector2(-4.2, -17.5), Vector2(4.9, -17.0), Vector2(-3.8, -15.5), Vector2(3.8, -15.5)]
 const LEAN := [-5.0, 5.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
@@ -35,6 +37,32 @@ var _full_region := Rect2()
 var _west := false
 var _hand: Sprite2D          # a copy of the hand pixels, drawn on top of the weapon so the hand grips it
 const HAND_BOX := 6                    # art px around the hand that get re-drawn over the weapon
+
+
+func _init() -> void:
+	add_to_group("held_weapon")
+
+
+## Where the orb at the top of the staff is, in global coordinates.
+func orb_global() -> Vector2:
+	return to_global(Vector2(0.0, offset.y + 4.0))
+
+
+## Where a beam fired by `caster` should start: the staff's orb when the weapon is out and already posed
+## for the direction the caster faces, otherwise a typical idle orb position for that direction.
+static func beam_origin(caster: Node2D) -> Vector2:
+	var plain := caster.global_position + Vector2(0, -10)
+	var facing: int = caster.facing if "facing" in caster else 0
+	for n in caster.get_tree().get_nodes_in_group("held_weapon"):
+		var w := n as HeldWeapon
+		if w == null or w.player != caster:
+			continue
+		if not w.visible or w.body == null:
+			return plain
+		if (w.body.frame / w.body.hframes) % 4 == facing:
+			return w.orb_global()
+		return caster.global_position + BEAM_IDLE_ORB[facing]
+	return plain
 
 
 func _ready() -> void:

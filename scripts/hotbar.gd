@@ -285,7 +285,7 @@ func _spawn_projectile(ab: Ability) -> void:
 
 
 func _fire_beam(ab: Ability) -> void:
-	var start := caster.global_position + Vector2(0, -10)
+	var start := HeldWeapon.beam_origin(caster)          # the beam leaves from the staff's orb
 	var aim: Vector2 = caster.aim_world - start
 	var dir := aim.normalized() if aim.length() > 1.0 else Vector2.DOWN
 	var space := caster.get_world_2d().direct_space_state
