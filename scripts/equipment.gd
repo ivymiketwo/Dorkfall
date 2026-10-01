@@ -83,6 +83,9 @@ func _refresh() -> void:
 		var s: Sprite2D = _layers[slot]
 		var it := get_item(slot)
 		s.texture = it.worn_texture if it else null
+		if slot == "weapon":
+			s.style = (it.hold_style if it.hold_style != null else HoldStyle.for_kind(it.weapon_kind)) if it != null else HoldStyle.new()
+			s._crop = null                # re-crop with this style's grip
 		s.visible = slot == "weapon" and it != null and it.worn_texture != null   # only held weapons for now; armour needs 48x48 art
 	_apply_stats()
 	changed.emit()

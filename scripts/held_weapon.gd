@@ -11,26 +11,13 @@ extends Sprite2D
 
 const HANDS_PATH := "res://data/hands.json"
 const SRC_FRAME := Rect2i(96, 0, 24, 40)    # standing, facing down, in the old 24x40 worn sheets
-const WEST_VISIBLE := 1.0                  # facing west only the top half of the staff shows (the rest is "behind" the body)
-const WEST_SHIFT := Vector2(0, 0)         # art px
-const SOUTH_SCALE := 1.0
-const WEST_SCALE := 1.3
-const SOUTH_GRIP := 0.55
-const OTHER_GRIP := 0.485                 # keeps the lower end where it was after the size change
-const GRIP := 0.33                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
-## Hand-placed staff pose for every east / west jump frame: (centre x, centre y relative to the body, angle in degrees).
-const JUMP_STAFF_W := [Vector3(-3.1, -9.0, -76.4), Vector3(-3.5, -9.5, -85.1), Vector3(-2.0, -6.0, -83.9), Vector3(-0.5, -19.5, -91.1), Vector3(-0.5, -18.8, -92.3), Vector3(-3.4, -13.9, -88.2), Vector3(-2.5, -6.6, -88.1), Vector3(-3.0, -7.4, -68.3)]
-const JUMP_STAFF_E := [Vector3(-3.67, -4.21, 75.5), Vector3(-2.83, -4.39, 78.1), Vector3(-3.11, -1.59, 84.1), Vector3(-2.20, -12.75, 81.6), Vector3(-3.91, -14.30, 87.7), Vector3(-3.21, -5.37, 85.4), Vector3(-1.51, 1.18, 85.3), Vector3(-3.28, -2.64, 73.2)]
-## Typical orb position relative to the caster's feet per facing (down, up, left, right), for the frame a beam is fired while turning.
-const BEAM_IDLE_ORB := [Vector2(-4.2, -17.5), Vector2(4.9, -17.0), Vector2(-3.8, -15.5), Vector2(3.8, -15.5)]
-## The naked jump has 9 frames, the robed one 8: which robed frame's staff pose each naked frame uses.
-const NAKED_JUMP_MAP := [0, 1, 2, 3, 4, 4, 5, 6, 7]
-const LEAN := [-5.0, 5.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
 
 var body: Sprite2D
+## How this item sits in the hand (Item > Hold Style). Null means the default (staff) style.
+var style: HoldStyle = HoldStyle.new()
 var player: Node2D
 var _src: Texture2D
 var _crop: AtlasTexture
@@ -47,7 +34,7 @@ func _init() -> void:
 
 ## Where the orb at the top of the staff is, in global coordinates.
 func orb_global() -> Vector2:
-	return to_global(Vector2(0.0, offset.y + 4.0))
+	return to_global(Vector2(0.0, offset.y + style.tip_inset))
 
 
 ## Where a beam fired by `caster` should start: the staff's orb when the weapon is out and already posed
@@ -63,7 +50,7 @@ static func beam_origin(caster: Node2D) -> Vector2:
 			return plain
 		if (w.body.frame / w.body.hframes) % 4 == facing:
 			return w.orb_global()
-		return caster.global_position + BEAM_IDLE_ORB[facing]
+		return caster.global_position + w.style.tip_idle[facing]
 	return plain
 
 
@@ -106,36 +93,35 @@ func _process(_delta: float) -> void:
 	visible = true
 	var local := Vector2(float(h[0]) - FRAME_PX / 2.0, float(h[1]) - FRAME_PX / 2.0) + body.offset
 	if row % 4 == 0:
-		local += Vector2(2, 0)             # facing south: hold it a little closer to the body
-	if row < 4 and (row % 4 == 0 or row % 4 == 3):
-		local += Vector2(0, -3 - (4 if row % 4 == 0 else 0))
-		if row % 4 == 3:
-			local += Vector2(2, 0)     # facing east: 2 art px to the right            # standing facing south / east: the staff sits a bit higher
+		local += Vector2(style.offset_south.x, 0)       # facing south: held a little closer to the body
+	if row < 4 and row % 4 == 0:
+		local += Vector2(0, style.offset_south.y)       # standing: sits a bit higher
+	if row < 4 and row % 4 == 3:
+		local += style.offset_east                      # standing facing east
 	if row % 4 == 2:
-		local += WEST_SHIFT      # facing west: hold it a bit forward so the top pokes out in front of the shoulder
+		local += style.offset_west_run
 	position = body.position + local * body.scale
 	var facing := row % 4
-	rotation_degrees = LEAN[facing]
+	rotation_degrees = [style.lean_south, style.lean_north, style.lean_west_run, style.lean_east][facing]
 	if row == 2:
-		rotation_degrees = -LEAN[3]          # west idle: mirror of the east idle angle
+		rotation_degrees = -style.lean_east          # west idle: mirror of the east idle angle
 		# ...and mirror the east idle position too, so the orb sits just in front of the head
 		var he = rows.get("3", [])
 		if col < he.size() and he[col] != null:
 			var le := Vector2(float(he[col][0]) - FRAME_PX / 2.0, float(he[col][1]) - FRAME_PX / 2.0) + body.offset
-			le += Vector2(0, -3) + Vector2(2, 0)
+			le += style.offset_east
 			position = body.position + Vector2(-le.x, le.y) * body.scale
 	var jump_pose := Vector3.ZERO
 	var has_jump_pose := false
 	if row >= 8 and (facing == 2 or facing == 3):
-		var table: Array = JUMP_STAFF_W if facing == 2 else JUMP_STAFF_E
-		var pc: int = NAKED_JUMP_MAP[col] if key == "naked" and col < NAKED_JUMP_MAP.size() else col
+		var table: Array = style.jump_pose_west if facing == 2 else style.jump_pose_east
+		var pc: int = style.naked_jump_map[col] if key == "naked" and col < style.naked_jump_map.size() else col
 		if pc < table.size():
 			jump_pose = table[pc]
 			has_jump_pose = true
 	_show_top_only(row % 4 == 2)
-	# facing south the staff is drawn taller (top above the head) and held nearer its middle
-	scale = body.scale * WEST_SCALE     # same staff size in every direction
-	var g := SOUTH_GRIP if (facing == 2 and row != 2) else OTHER_GRIP
+	scale = body.scale * style.size_scale     # same size in every direction
+	var g := style.grip_west_motion if (facing == 2 and row != 2) else style.grip
 	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
 	if has_jump_pose:
 		rotation_degrees = jump_pose.z
@@ -173,7 +159,7 @@ func _show_top_only(on: bool) -> void:
 		return
 	_west = on
 	var r := _full_region
-	_crop.region = Rect2(r.position, Vector2(r.size.x, r.size.y * WEST_VISIBLE)) if on else r
+	_crop.region = Rect2(r.position, Vector2(r.size.x, r.size.y * style.west_visible_fraction)) if on else r
 
 
 func _set_behind(b: bool) -> void:
@@ -205,5 +191,5 @@ func _rebuild(tex: Texture2D) -> void:
 	_full_region = Rect2(SRC_FRAME.position + used.position, used.size)
 	_west = false
 	_crop.region = _full_region
-	offset = Vector2(-used.size.x / 2.0, -used.size.y * GRIP)   # origin = the grip point
+	offset = Vector2(-used.size.x / 2.0, -used.size.y * style.grip)   # origin = the grip point
 	texture = _crop

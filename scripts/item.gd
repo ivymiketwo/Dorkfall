@@ -31,6 +31,8 @@ extends Resource
 @export var two_handed := false
 ## Sprite sheet drawn over the character while worn (same layout as art/player.png).
 @export var worn_texture: Texture2D
+## Held weapons: how it sits in the hand (angle, size, grip, jump poses...). Empty = the standard style for its weapon type (res://hold_styles/<type>.tres).
+@export var hold_style: HoldStyle
 ## Weapons: decides the left-click melee animation.
 @export_enum("none", "fist", "staff", "sword") var weapon_kind := "none"
 ## Locked to the account: it stays with you when you die (never left on a gravestone),
