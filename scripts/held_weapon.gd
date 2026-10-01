@@ -16,6 +16,7 @@ const WEST_SHIFT := Vector2(0, 0)         # art px
 const SOUTH_SCALE := 1.0
 const WEST_SCALE := 1.3
 const SOUTH_GRIP := 0.55
+const OTHER_GRIP := 0.485                 # keeps the lower end where it was after the size change
 const GRIP := 0.33                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
 const LEAN := [-5.0, 15.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
@@ -74,7 +75,9 @@ func _process(_delta: float) -> void:
 	if row % 4 == 0:
 		local += Vector2(2, 0)             # facing south: hold it a little closer to the body
 	if row < 4 and (row % 4 == 0 or row % 4 == 3):
-		local += Vector2(0, -3 - (4 if row % 4 == 0 else 0))            # standing facing south / east: the staff sits a bit higher
+		local += Vector2(0, -3 - (4 if row % 4 == 0 else 0))
+		if row % 4 == 3:
+			local += Vector2(2, 0)     # facing east: 2 art px to the right            # standing facing south / east: the staff sits a bit higher
 	if row % 4 == 2:
 		local += WEST_SHIFT      # facing west: hold it a bit forward so the top pokes out in front of the shoulder
 	position = body.position + local * body.scale
@@ -82,9 +85,9 @@ func _process(_delta: float) -> void:
 	rotation_degrees = LEAN[facing]
 	_show_top_only(row % 4 == 2)
 	# facing south the staff is drawn taller (top above the head) and held nearer its middle
-	var big := facing == 0 or facing == 2
-	scale = body.scale * (SOUTH_SCALE if facing == 0 else (WEST_SCALE if facing == 2 else 1.0))
-	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * (GRIP if facing == 0 else (SOUTH_GRIP if big else GRIP)))
+	scale = body.scale * WEST_SCALE     # same staff size in every direction
+	var g := SOUTH_GRIP if facing == 2 else OTHER_GRIP
+	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
 	var behind := int(h[2]) == 1
 	_set_behind(behind)
 	_update_hand(facing, col, row, h, behind)
