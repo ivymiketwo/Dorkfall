@@ -13,12 +13,12 @@ const HANDS_PATH := "res://data/hands.json"
 const SRC_FRAME := Rect2i(96, 0, 24, 40)    # standing, facing down, in the old 24x40 worn sheets
 const WEST_VISIBLE := 1.0                  # facing west only the top half of the staff shows (the rest is "behind" the body)
 const WEST_SHIFT := Vector2(0, 0)         # art px
-const SOUTH_SCALE := 1.6
+const SOUTH_SCALE := 1.0
 const WEST_SCALE := 1.3
 const SOUTH_GRIP := 0.55
 const GRIP := 0.33                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
-const LEAN := [-15.0, 15.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
+const LEAN := [-5.0, 15.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
 
@@ -84,7 +84,7 @@ func _process(_delta: float) -> void:
 	# facing south the staff is drawn taller (top above the head) and held nearer its middle
 	var big := facing == 0 or facing == 2
 	scale = body.scale * (SOUTH_SCALE if facing == 0 else (WEST_SCALE if facing == 2 else 1.0))
-	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * (SOUTH_GRIP if big else GRIP))
+	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * (GRIP if facing == 0 else (SOUTH_GRIP if big else GRIP)))
 	var behind := int(h[2]) == 1
 	_set_behind(behind)
 	_update_hand(facing, col, row, h, behind)
