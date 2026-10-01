@@ -35,7 +35,7 @@ var _mouse := Vector2.ZERO
 
 
 func _ready() -> void:
-	CloseButton.attach(self)
+	add_to_group(CloseButton.GROUP)    # no X button here: it would cover an item slot (Esc still closes it)
 	size = Vector2(COLS * SLOT + (COLS - 1) * GAP + PAD * 2, ROWS * SLOT + (ROWS - 1) * GAP + PAD * 2)
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
 	position = Vector2(screen.x - size.x - 4, screen.y - size.y - 4 - 17)   # sits above the nav bar
