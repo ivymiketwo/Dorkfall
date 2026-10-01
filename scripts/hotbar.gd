@@ -288,26 +288,15 @@ func _fire_beam(ab: Ability) -> void:
 	var start := HeldWeapon.beam_origin(caster)          # the beam leaves from the staff's orb
 	var aim: Vector2 = caster.aim_world - start
 	var dir := aim.normalized() if aim.length() > 1.0 else Vector2.DOWN
-	var space := caster.get_world_2d().direct_space_state
-	var exclude: Array[RID] = []
-	if caster is CollisionObject2D:
-		exclude.append(caster.get_rid())
 	var length := ab.beam_length
-	var end := start + dir * length
-	# March along the beam: hurt everything with Stats. Walls, trees and other
-	# solid things don't stop it -- the beam passes straight through them.
-	for _n in 48:
-		var q := PhysicsRayQueryParameters2D.create(start, end, 1, exclude)
-		var hit := space.intersect_ray(q)
-		if hit.is_empty():
-			break
-		var body := hit["collider"] as Node
-		var target_stats := body.get_node_or_null("Stats") as Stats if body else null
+	# Hitbox: an inverted cone from the head, independent of the animation and of where the beam is drawn.
+	var cone_dir := BeamCone.direction(caster, dir)
+	for body in BeamCone.bodies(caster, cone_dir, length):
+		var target_stats := body.get_node_or_null("Stats") as Stats
 		if target_stats:
 			target_stats.take_damage(ab.damage * stats.magic_mult(), caster)
 			if ab.poison_dps > 0.0:
 				target_stats.apply_poison(ab.poison_dps, ab.poison_time, caster)
-		exclude.append(hit["rid"])
 	var fx := BeamFx.new()
 	fx.global_position = start
 	fx.direction = dir

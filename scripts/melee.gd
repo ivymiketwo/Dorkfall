@@ -110,22 +110,14 @@ func _basic_beam(ab: Ability) -> void:
 	start = HeldWeapon.beam_origin(caster)               # the beam leaves from the staff's orb
 	aim = caster.aim_world - start
 	dir = aim.normalized() if aim.length() > 1.0 else dir
-	var space := caster.get_world_2d().direct_space_state
-	var exclude: Array[RID] = []
-	if caster is CollisionObject2D:
-		exclude.append(caster.get_rid())
-	var end := start + dir * ab.beam_length
-	for _n in 48:
-		var hit := space.intersect_ray(PhysicsRayQueryParameters2D.create(start, end, 1, exclude))
-		if hit.is_empty():
-			break
-		var body := hit["collider"] as Node
-		var t := body.get_node_or_null("Stats") as Stats if body else null
+	# Hitbox: an inverted cone from the head, independent of the animation and of where the beam is drawn.
+	var cone_dir := BeamCone.direction(caster, dir)
+	for body in BeamCone.bodies(caster, cone_dir, ab.beam_length):
+		var t := body.get_node_or_null("Stats") as Stats
 		if t:
 			t.take_damage(ab.damage * stats.magic_mult(), caster)
 			if ab.poison_dps > 0.0:
 				t.apply_poison(ab.poison_dps, ab.poison_time, caster)
-		exclude.append(hit["rid"])
 	var fx := BeamFx.new()
 	fx.global_position = start
 	fx.direction = dir
