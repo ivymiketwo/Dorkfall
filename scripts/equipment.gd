@@ -12,9 +12,6 @@ const LAYER_ORDER := ["chest", "helmet", "shield", "weapon"]
 
 @export var starting: Array[Item] = []
 
-## Where the held weapon sits relative to the player, per facing (down, up, left, right), in world px.
-const HELD_OFFSET := [Vector2(4, 1), Vector2(-4, 1), Vector2(-3, 1), Vector2(3, 1)]
-
 var items := {}          # slot name -> Item
 var _layers := {}        # slot name -> Sprite2D
 
@@ -24,16 +21,15 @@ var _layers := {}        # slot name -> Sprite2D
 
 func _ready() -> void:
 	for slot in LAYER_ORDER:
-		var s := Sprite2D.new()
+		var s: Sprite2D = HeldWeapon.new() if slot == "weapon" else Sprite2D.new()
+		if slot == "weapon":
+			s.body = base
+			s.player = player
 		s.name = slot.capitalize() + "Layer"
 		s.offset = base.offset
 		s.scale = base.scale
 		s.hframes = base.hframes
 		s.vframes = base.vframes
-		if slot == "weapon":            # held weapons still use the old 5x4 worn sheets (standing frame per facing)
-			s.hframes = 5
-			s.vframes = 4
-			s.offset = Vector2(0, -15)
 		s.visible = false
 		player.add_child.call_deferred(s)
 		_layers[slot] = s
@@ -64,9 +60,7 @@ func _process(_delta: float) -> void:
 	for slot in _layers:
 		var s: Sprite2D = _layers[slot]
 		if slot == "weapon":
-			s.frame = int(player.facing) * 5 + 4
-			s.position = base.position + HELD_OFFSET[int(player.facing)]
-			continue
+			continue                      # HeldWeapon places itself at the hand
 		if s.visible:
 			s.frame = base.frame
 		if s.material != base.material:
