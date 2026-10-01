@@ -5,9 +5,9 @@ extends Control
 
 const PAD := 6
 const HEADER := 14
-const ROW_H := 30
-const ROW_GAP := 3
-const W := 232
+const ROW_H := 23
+const ROW_GAP := 2
+const W := 190
 
 var _board: Node2D
 var _player: Node2D
@@ -19,7 +19,7 @@ var _message_color := Color("b0a890")
 func _ready() -> void:
 	CloseButton.attach(self)
 	add_to_group("quest_ui")
-	size = Vector2(W, HEADER + Quests.board_list().size() * (ROW_H + ROW_GAP) + 20 + PAD)
+	size = Vector2(W, HEADER + Quests.board_list().size() * (ROW_H + ROW_GAP) + 14 + PAD)
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
 	position = ((screen - size) / 2.0).floor()
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -33,7 +33,7 @@ func _px() -> float:
 func open(board: Node2D, player: Node2D) -> void:
 	_board = board
 	_player = player
-	_message = "Click a quest.  Pays 10 coins + 10 XP per Mangyang, 12 per Skeleton"
+	_message = "Click a quest to take it."
 	_message_color = Color("b0a890")
 	visible = true
 	queue_redraw()
@@ -114,11 +114,11 @@ func _draw() -> void:
 		var r := _row_rect(i)
 		UiStyle.slot(self, r, i == _hover)
 		var st := Quests.state_of(q["id"])
-		HiFont.draw(self, r.position + Vector2(5, 4), String(q["title"]).to_upper(), UiStyle.GOLD, px)
-		HiFont.draw(self, r.position + Vector2(5, 13), "Slay %d %s" % [q["count"], q["name"]], UiStyle.TEXT, px)
+		HiFont.draw(self, r.position + Vector2(5, 3), String(q["title"]).to_upper(), UiStyle.GOLD, px)
+		HiFont.draw(self, r.position + Vector2(5, 11), "Slay %d %s" % [q["count"], q["name"]], UiStyle.TEXT, px)
 		var n := Quests.progress_of(q["id"])
 		var frac := float(n) / float(q["count"])
-		UiStyle.bar(self, Rect2(r.position + Vector2(5, 22), Vector2(100, 4)), frac if st != 0 else 0.0, Color("9a6cf0"))
+		UiStyle.bar(self, Rect2(r.position + Vector2(5, 18), Vector2(r.size.x - 10, 3)), frac if st != 0 else 0.0, Color("9a6cf0"))
 		var label := "ACCEPT"
 		var col := Color("40e070")
 		if st == 1:
@@ -127,10 +127,10 @@ func _draw() -> void:
 		elif st == 2:
 			label = "TURN IN"
 			col = Color("ffe066")
-		HiFont.draw(self, Vector2(r.end.x - 6 - HiFont.text_width(label, px), r.position.y + 5), label, col, px)
+		HiFont.draw(self, Vector2(r.end.x - 6 - HiFont.text_width(label, px), r.position.y + 3), label, col, px)
 		var reward := "%d COINS  %d XP" % [Quests.reward_of(q), Quests.reward_of(q)]
-		HiFont.draw(self, Vector2(r.end.x - 6 - HiFont.text_width(reward, px), r.position.y + 20), reward, Color("f0d040"), px)
-	HiFont.draw(self, Vector2(PAD, size.y - 14), _message, _message_color, px)
+		HiFont.draw(self, Vector2(r.end.x - 6 - HiFont.text_width(reward, px), r.position.y + 11), reward, Color("f0d040"), px)
+	HiFont.draw(self, Vector2(PAD, size.y - 12), _message, _message_color, px)
 
 
 func close_ui() -> void:

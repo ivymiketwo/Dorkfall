@@ -3,7 +3,7 @@ extends Control
 ## A talking box at the bottom of the screen. The NPC supplies get_dialogue() and choose().
 ## Click a button to answer. F / Esc / walking away closes it.
 
-const W := 270
+const W := 196
 const PAD := 7
 const LINE_H := 8
 const BTN_H := 13
