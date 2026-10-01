@@ -19,6 +19,7 @@ const SOUTH_GRIP := 0.55
 const OTHER_GRIP := 0.485                 # keeps the lower end where it was after the size change
 const GRIP := 0.33                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
+const JUMP_LEAN := 65.0
 const LEAN := [-5.0, 5.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
@@ -83,6 +84,8 @@ func _process(_delta: float) -> void:
 	position = body.position + local * body.scale
 	var facing := row % 4
 	rotation_degrees = LEAN[facing]
+	if row >= 8:                      # jumping: the staff swings out nearly horizontal
+		rotation_degrees = signf(LEAN[facing]) * JUMP_LEAN
 	_show_top_only(row % 4 == 2)
 	# facing south the staff is drawn taller (top above the head) and held nearer its middle
 	scale = body.scale * WEST_SCALE     # same staff size in every direction
