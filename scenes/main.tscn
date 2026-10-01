@@ -308,19 +308,19 @@ position = Vector2(1258, 766)
 position = Vector2(1547, 685)
 
 [node name="Lamp1" parent="Entities" unique_id=1628499993 instance=ExtResource("32_lamp")]
-position = Vector2(44, 177)
+position = Vector2(20, 182)
 
 [node name="Lamp2" parent="Entities" unique_id=1384827408 instance=ExtResource("32_lamp")]
-position = Vector2(114, 177)
+position = Vector2(91, 182)
 
 [node name="Lamp3" parent="Entities" unique_id=1157468493 instance=ExtResource("32_lamp")]
-position = Vector2(196, 177)
+position = Vector2(188, 183)
 
 [node name="Lamp4" parent="Entities" unique_id=1087706898 instance=ExtResource("32_lamp")]
-position = Vector2(272, 177)
+position = Vector2(231, 183)
 
 [node name="Lamp5" parent="Entities" unique_id=686405631 instance=ExtResource("32_lamp")]
-position = Vector2(346, 177)
+position = Vector2(338, 184)
 
 [node name="TreeE1" parent="Entities" unique_id=636109491 instance=ExtResource("4_tree")]
 position = Vector2(1627, 432)
@@ -1196,7 +1196,7 @@ position = Vector2(242, 206)
 position = Vector2(280, 212)
 
 [node name="Sign1" parent="Entities" unique_id=846207465 instance=ExtResource("50_decor")]
-position = Vector2(228, 240)
+position = Vector2(161, 279)
 kind = "sign"
 
 [node name="Sacks1" parent="Entities" unique_id=1781271546 instance=ExtResource("50_decor")]
@@ -1377,814 +1377,802 @@ position = Vector2(1216, 84)
 kind = "warn_sign_bang"
 
 [node name="FenceSeg1" parent="Entities" unique_id=1636500387 instance=ExtResource("50_decor")]
-position = Vector2(-292, 550)
+position = Vector2(29, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg2" parent="Entities" unique_id=1534321441 instance=ExtResource("50_decor")]
-position = Vector2(-292, 830)
+position = Vector2(29, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg3" parent="Entities" unique_id=2031248721 instance=ExtResource("50_decor")]
-position = Vector2(-276, 550)
+position = Vector2(45, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg4" parent="Entities" unique_id=341654251 instance=ExtResource("50_decor")]
-position = Vector2(-276, 830)
+position = Vector2(45, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg5" parent="Entities" unique_id=1916617587 instance=ExtResource("50_decor")]
-position = Vector2(-260, 550)
+position = Vector2(61, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg6" parent="Entities" unique_id=806547657 instance=ExtResource("50_decor")]
-position = Vector2(-260, 830)
+position = Vector2(61, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg7" parent="Entities" unique_id=277754637 instance=ExtResource("50_decor")]
-position = Vector2(-244, 550)
+position = Vector2(77, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg8" parent="Entities" unique_id=622397467 instance=ExtResource("50_decor")]
-position = Vector2(-244, 830)
+position = Vector2(77, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg9" parent="Entities" unique_id=300115798 instance=ExtResource("50_decor")]
-position = Vector2(-228, 550)
+position = Vector2(93, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg10" parent="Entities" unique_id=884301976 instance=ExtResource("50_decor")]
-position = Vector2(-228, 830)
+position = Vector2(93, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg11" parent="Entities" unique_id=759984279 instance=ExtResource("50_decor")]
-position = Vector2(-212, 550)
+position = Vector2(109, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg12" parent="Entities" unique_id=1252155815 instance=ExtResource("50_decor")]
-position = Vector2(-212, 830)
+position = Vector2(109, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg13" parent="Entities" unique_id=1574697020 instance=ExtResource("50_decor")]
-position = Vector2(-196, 550)
+position = Vector2(125, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg14" parent="Entities" unique_id=309142102 instance=ExtResource("50_decor")]
-position = Vector2(-196, 830)
+position = Vector2(125, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg15" parent="Entities" unique_id=751986399 instance=ExtResource("50_decor")]
-position = Vector2(-180, 550)
+position = Vector2(141, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg16" parent="Entities" unique_id=1686436976 instance=ExtResource("50_decor")]
-position = Vector2(-180, 830)
+position = Vector2(141, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg17" parent="Entities" unique_id=995835128 instance=ExtResource("50_decor")]
-position = Vector2(-164, 550)
+position = Vector2(157, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg18" parent="Entities" unique_id=83386986 instance=ExtResource("50_decor")]
-position = Vector2(-164, 830)
+position = Vector2(157, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg19" parent="Entities" unique_id=1952588967 instance=ExtResource("50_decor")]
-position = Vector2(-148, 550)
+position = Vector2(173, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg20" parent="Entities" unique_id=111231622 instance=ExtResource("50_decor")]
-position = Vector2(-148, 830)
+position = Vector2(173, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg21" parent="Entities" unique_id=1881927211 instance=ExtResource("50_decor")]
-position = Vector2(-132, 550)
-kind = "fence_seg"
-
-[node name="FenceSeg22" parent="Entities" unique_id=750047599 instance=ExtResource("50_decor")]
-position = Vector2(-132, 830)
+position = Vector2(189, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg23" parent="Entities" unique_id=105714209 instance=ExtResource("50_decor")]
-position = Vector2(-116, 550)
-kind = "fence_seg"
-
-[node name="FenceSeg24" parent="Entities" unique_id=2050604978 instance=ExtResource("50_decor")]
-position = Vector2(-116, 830)
+position = Vector2(205, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg25" parent="Entities" unique_id=178698418 instance=ExtResource("50_decor")]
-position = Vector2(-100, 550)
-kind = "fence_seg"
-
-[node name="FenceSeg26" parent="Entities" unique_id=498830609 instance=ExtResource("50_decor")]
-position = Vector2(-100, 830)
+position = Vector2(221, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg27" parent="Entities" unique_id=1305817364 instance=ExtResource("50_decor")]
-position = Vector2(-84, 550)
+position = Vector2(237, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg28" parent="Entities" unique_id=2057072609 instance=ExtResource("50_decor")]
-position = Vector2(-84, 830)
+position = Vector2(237, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg29" parent="Entities" unique_id=83031655 instance=ExtResource("50_decor")]
-position = Vector2(-68, 550)
+position = Vector2(253, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg30" parent="Entities" unique_id=613325773 instance=ExtResource("50_decor")]
-position = Vector2(-68, 830)
+position = Vector2(253, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg31" parent="Entities" unique_id=681389451 instance=ExtResource("50_decor")]
-position = Vector2(-52, 550)
+position = Vector2(269, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg32" parent="Entities" unique_id=2080387570 instance=ExtResource("50_decor")]
-position = Vector2(-52, 830)
+position = Vector2(269, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg33" parent="Entities" unique_id=1945491742 instance=ExtResource("50_decor")]
-position = Vector2(-36, 550)
+position = Vector2(285, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg34" parent="Entities" unique_id=1204819218 instance=ExtResource("50_decor")]
-position = Vector2(-36, 830)
+position = Vector2(285, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg35" parent="Entities" unique_id=668348601 instance=ExtResource("50_decor")]
-position = Vector2(-20, 550)
+position = Vector2(301, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg36" parent="Entities" unique_id=346920754 instance=ExtResource("50_decor")]
-position = Vector2(-20, 830)
+position = Vector2(301, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg37" parent="Entities" unique_id=539286895 instance=ExtResource("50_decor")]
-position = Vector2(-4, 550)
+position = Vector2(317, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg38" parent="Entities" unique_id=1766112664 instance=ExtResource("50_decor")]
-position = Vector2(-4, 830)
+position = Vector2(317, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg39" parent="Entities" unique_id=1911234116 instance=ExtResource("50_decor")]
-position = Vector2(12, 550)
+position = Vector2(333, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg40" parent="Entities" unique_id=223324724 instance=ExtResource("50_decor")]
-position = Vector2(12, 830)
+position = Vector2(333, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg41" parent="Entities" unique_id=2037685320 instance=ExtResource("50_decor")]
-position = Vector2(28, 550)
+position = Vector2(349, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg42" parent="Entities" unique_id=56703589 instance=ExtResource("50_decor")]
-position = Vector2(28, 830)
+position = Vector2(349, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg43" parent="Entities" unique_id=64161299 instance=ExtResource("50_decor")]
-position = Vector2(44, 550)
+position = Vector2(365, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg44" parent="Entities" unique_id=750592297 instance=ExtResource("50_decor")]
-position = Vector2(44, 830)
+position = Vector2(365, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg45" parent="Entities" unique_id=1081971869 instance=ExtResource("50_decor")]
-position = Vector2(60, 550)
+position = Vector2(381, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg46" parent="Entities" unique_id=1533888989 instance=ExtResource("50_decor")]
-position = Vector2(60, 830)
+position = Vector2(381, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg47" parent="Entities" unique_id=1423928339 instance=ExtResource("50_decor")]
-position = Vector2(76, 550)
+position = Vector2(397, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg48" parent="Entities" unique_id=290626265 instance=ExtResource("50_decor")]
-position = Vector2(76, 830)
+position = Vector2(397, -500)
 kind = "fence_seg"
 
 [node name="FenceSeg49" parent="Entities" unique_id=439578659 instance=ExtResource("50_decor")]
-position = Vector2(92, 550)
+position = Vector2(413, -780)
 kind = "fence_seg"
 
 [node name="FenceSeg50" parent="Entities" unique_id=1427588026 instance=ExtResource("50_decor")]
-position = Vector2(92, 830)
+position = Vector2(413, -500)
 kind = "fence_seg"
 
 [node name="FencePost1" parent="Entities" unique_id=812309742 instance=ExtResource("50_decor")]
-position = Vector2(-300, 558)
+position = Vector2(21, -772)
 kind = "fence_post"
 
 [node name="FencePost2" parent="Entities" unique_id=1340382801 instance=ExtResource("50_decor")]
-position = Vector2(108, 558)
+position = Vector2(429, -772)
 kind = "fence_post"
 
 [node name="FencePost3" parent="Entities" unique_id=1133197153 instance=ExtResource("50_decor")]
-position = Vector2(-300, 566)
+position = Vector2(21, -764)
 kind = "fence_post"
 
 [node name="FencePost4" parent="Entities" unique_id=1505771730 instance=ExtResource("50_decor")]
-position = Vector2(108, 566)
+position = Vector2(429, -764)
 kind = "fence_post"
 
 [node name="FencePost5" parent="Entities" unique_id=432833059 instance=ExtResource("50_decor")]
-position = Vector2(-300, 574)
+position = Vector2(21, -756)
 kind = "fence_post"
 
 [node name="FencePost6" parent="Entities" unique_id=130730783 instance=ExtResource("50_decor")]
-position = Vector2(108, 574)
+position = Vector2(429, -756)
 kind = "fence_post"
 
 [node name="FencePost7" parent="Entities" unique_id=886869454 instance=ExtResource("50_decor")]
-position = Vector2(-300, 582)
+position = Vector2(21, -748)
 kind = "fence_post"
 
 [node name="FencePost8" parent="Entities" unique_id=1094444464 instance=ExtResource("50_decor")]
-position = Vector2(108, 582)
+position = Vector2(429, -748)
 kind = "fence_post"
 
 [node name="FencePost9" parent="Entities" unique_id=2110765881 instance=ExtResource("50_decor")]
-position = Vector2(-300, 590)
+position = Vector2(21, -740)
 kind = "fence_post"
 
 [node name="FencePost10" parent="Entities" unique_id=1394622533 instance=ExtResource("50_decor")]
-position = Vector2(108, 590)
+position = Vector2(429, -740)
 kind = "fence_post"
 
 [node name="FencePost11" parent="Entities" unique_id=943100358 instance=ExtResource("50_decor")]
-position = Vector2(-300, 598)
+position = Vector2(21, -732)
 kind = "fence_post"
 
 [node name="FencePost12" parent="Entities" unique_id=4867604 instance=ExtResource("50_decor")]
-position = Vector2(108, 598)
+position = Vector2(429, -732)
 kind = "fence_post"
 
 [node name="FencePost13" parent="Entities" unique_id=1268918800 instance=ExtResource("50_decor")]
-position = Vector2(-300, 606)
+position = Vector2(21, -724)
 kind = "fence_post"
 
 [node name="FencePost14" parent="Entities" unique_id=903024378 instance=ExtResource("50_decor")]
-position = Vector2(108, 606)
+position = Vector2(429, -724)
 kind = "fence_post"
 
 [node name="FencePost15" parent="Entities" unique_id=1265192985 instance=ExtResource("50_decor")]
-position = Vector2(-300, 614)
+position = Vector2(21, -716)
 kind = "fence_post"
 
 [node name="FencePost16" parent="Entities" unique_id=1398846221 instance=ExtResource("50_decor")]
-position = Vector2(108, 614)
+position = Vector2(429, -716)
 kind = "fence_post"
 
 [node name="FencePost17" parent="Entities" unique_id=1145343532 instance=ExtResource("50_decor")]
-position = Vector2(-300, 622)
+position = Vector2(21, -708)
 kind = "fence_post"
 
 [node name="FencePost18" parent="Entities" unique_id=1664747354 instance=ExtResource("50_decor")]
-position = Vector2(108, 622)
+position = Vector2(429, -708)
 kind = "fence_post"
 
 [node name="FencePost19" parent="Entities" unique_id=2101350034 instance=ExtResource("50_decor")]
-position = Vector2(-300, 630)
+position = Vector2(21, -700)
 kind = "fence_post"
 
 [node name="FencePost20" parent="Entities" unique_id=1832303322 instance=ExtResource("50_decor")]
-position = Vector2(108, 630)
+position = Vector2(429, -700)
 kind = "fence_post"
 
 [node name="FencePost21" parent="Entities" unique_id=1871672738 instance=ExtResource("50_decor")]
-position = Vector2(-300, 638)
+position = Vector2(21, -692)
 kind = "fence_post"
 
 [node name="FencePost22" parent="Entities" unique_id=898665497 instance=ExtResource("50_decor")]
-position = Vector2(108, 638)
+position = Vector2(429, -692)
 kind = "fence_post"
 
 [node name="FencePost23" parent="Entities" unique_id=1672481003 instance=ExtResource("50_decor")]
-position = Vector2(-300, 646)
+position = Vector2(21, -684)
 kind = "fence_post"
 
 [node name="FencePost24" parent="Entities" unique_id=836864370 instance=ExtResource("50_decor")]
-position = Vector2(108, 646)
+position = Vector2(429, -684)
 kind = "fence_post"
 
 [node name="FencePost25" parent="Entities" unique_id=217437647 instance=ExtResource("50_decor")]
-position = Vector2(-300, 654)
+position = Vector2(21, -676)
 kind = "fence_post"
 
 [node name="FencePost26" parent="Entities" unique_id=2028601261 instance=ExtResource("50_decor")]
-position = Vector2(108, 654)
+position = Vector2(429, -676)
 kind = "fence_post"
 
 [node name="FencePost27" parent="Entities" unique_id=1825674933 instance=ExtResource("50_decor")]
-position = Vector2(-300, 662)
+position = Vector2(21, -668)
 kind = "fence_post"
 
 [node name="FencePost28" parent="Entities" unique_id=1323486613 instance=ExtResource("50_decor")]
-position = Vector2(108, 662)
+position = Vector2(429, -668)
 kind = "fence_post"
 
 [node name="FencePost29" parent="Entities" unique_id=1184339213 instance=ExtResource("50_decor")]
-position = Vector2(-300, 670)
+position = Vector2(21, -660)
 kind = "fence_post"
 
 [node name="FencePost30" parent="Entities" unique_id=198162161 instance=ExtResource("50_decor")]
-position = Vector2(-300, 678)
+position = Vector2(21, -652)
 kind = "fence_post"
 
 [node name="FencePost31" parent="Entities" unique_id=666352766 instance=ExtResource("50_decor")]
-position = Vector2(-300, 686)
+position = Vector2(21, -644)
 kind = "fence_post"
 
 [node name="FencePost32" parent="Entities" unique_id=1145784923 instance=ExtResource("50_decor")]
-position = Vector2(-300, 694)
+position = Vector2(21, -636)
 kind = "fence_post"
 
 [node name="FencePost33" parent="Entities" unique_id=164797754 instance=ExtResource("50_decor")]
-position = Vector2(-300, 702)
+position = Vector2(21, -628)
 kind = "fence_post"
 
 [node name="FencePost34" parent="Entities" unique_id=1359342597 instance=ExtResource("50_decor")]
-position = Vector2(-300, 710)
+position = Vector2(21, -620)
 kind = "fence_post"
 
 [node name="FencePost35" parent="Entities" unique_id=660116548 instance=ExtResource("50_decor")]
-position = Vector2(-300, 718)
+position = Vector2(21, -612)
 kind = "fence_post"
 
 [node name="FencePost36" parent="Entities" unique_id=1658105320 instance=ExtResource("50_decor")]
-position = Vector2(108, 718)
+position = Vector2(429, -612)
 kind = "fence_post"
 
 [node name="FencePost37" parent="Entities" unique_id=1470523898 instance=ExtResource("50_decor")]
-position = Vector2(-300, 726)
+position = Vector2(21, -604)
 kind = "fence_post"
 
 [node name="FencePost38" parent="Entities" unique_id=786481218 instance=ExtResource("50_decor")]
-position = Vector2(108, 726)
+position = Vector2(429, -604)
 kind = "fence_post"
 
 [node name="FencePost39" parent="Entities" unique_id=1524897822 instance=ExtResource("50_decor")]
-position = Vector2(-300, 734)
+position = Vector2(21, -596)
 kind = "fence_post"
 
 [node name="FencePost40" parent="Entities" unique_id=24120182 instance=ExtResource("50_decor")]
-position = Vector2(108, 734)
+position = Vector2(429, -596)
 kind = "fence_post"
 
 [node name="FencePost41" parent="Entities" unique_id=951476784 instance=ExtResource("50_decor")]
-position = Vector2(-300, 742)
+position = Vector2(21, -588)
 kind = "fence_post"
 
 [node name="FencePost42" parent="Entities" unique_id=304353890 instance=ExtResource("50_decor")]
-position = Vector2(108, 742)
+position = Vector2(429, -588)
 kind = "fence_post"
 
 [node name="FencePost43" parent="Entities" unique_id=1140373987 instance=ExtResource("50_decor")]
-position = Vector2(-300, 750)
+position = Vector2(21, -580)
 kind = "fence_post"
 
 [node name="FencePost44" parent="Entities" unique_id=1384326448 instance=ExtResource("50_decor")]
-position = Vector2(108, 750)
+position = Vector2(429, -580)
 kind = "fence_post"
 
 [node name="FencePost45" parent="Entities" unique_id=452686256 instance=ExtResource("50_decor")]
-position = Vector2(-300, 758)
+position = Vector2(21, -572)
 kind = "fence_post"
 
 [node name="FencePost46" parent="Entities" unique_id=1823379237 instance=ExtResource("50_decor")]
-position = Vector2(108, 758)
+position = Vector2(429, -572)
 kind = "fence_post"
 
 [node name="FencePost47" parent="Entities" unique_id=43131293 instance=ExtResource("50_decor")]
-position = Vector2(-300, 766)
+position = Vector2(21, -564)
 kind = "fence_post"
 
 [node name="FencePost48" parent="Entities" unique_id=903052018 instance=ExtResource("50_decor")]
-position = Vector2(108, 766)
+position = Vector2(429, -564)
 kind = "fence_post"
 
 [node name="FencePost49" parent="Entities" unique_id=425888818 instance=ExtResource("50_decor")]
-position = Vector2(-300, 774)
+position = Vector2(21, -556)
 kind = "fence_post"
 
 [node name="FencePost50" parent="Entities" unique_id=173689899 instance=ExtResource("50_decor")]
-position = Vector2(108, 774)
+position = Vector2(429, -556)
 kind = "fence_post"
 
 [node name="FencePost51" parent="Entities" unique_id=1403551901 instance=ExtResource("50_decor")]
-position = Vector2(-300, 782)
+position = Vector2(21, -548)
 kind = "fence_post"
 
 [node name="FencePost52" parent="Entities" unique_id=501457122 instance=ExtResource("50_decor")]
-position = Vector2(108, 782)
+position = Vector2(429, -548)
 kind = "fence_post"
 
 [node name="FencePost53" parent="Entities" unique_id=1091641543 instance=ExtResource("50_decor")]
-position = Vector2(-300, 790)
+position = Vector2(21, -540)
 kind = "fence_post"
 
 [node name="FencePost54" parent="Entities" unique_id=1625593650 instance=ExtResource("50_decor")]
-position = Vector2(108, 790)
+position = Vector2(429, -540)
 kind = "fence_post"
 
 [node name="FencePost55" parent="Entities" unique_id=466542482 instance=ExtResource("50_decor")]
-position = Vector2(-300, 798)
+position = Vector2(21, -532)
 kind = "fence_post"
 
 [node name="FencePost56" parent="Entities" unique_id=989898631 instance=ExtResource("50_decor")]
-position = Vector2(108, 798)
+position = Vector2(429, -532)
 kind = "fence_post"
 
 [node name="FencePost57" parent="Entities" unique_id=445373841 instance=ExtResource("50_decor")]
-position = Vector2(-300, 806)
+position = Vector2(21, -524)
 kind = "fence_post"
 
 [node name="FencePost58" parent="Entities" unique_id=1610835760 instance=ExtResource("50_decor")]
-position = Vector2(108, 806)
+position = Vector2(429, -524)
 kind = "fence_post"
 
 [node name="FencePost59" parent="Entities" unique_id=1486379492 instance=ExtResource("50_decor")]
-position = Vector2(-300, 814)
+position = Vector2(21, -516)
 kind = "fence_post"
 
 [node name="FencePost60" parent="Entities" unique_id=463748693 instance=ExtResource("50_decor")]
-position = Vector2(108, 814)
+position = Vector2(429, -516)
 kind = "fence_post"
 
 [node name="FencePost61" parent="Entities" unique_id=1544253079 instance=ExtResource("50_decor")]
-position = Vector2(-300, 822)
+position = Vector2(21, -508)
 kind = "fence_post"
 
 [node name="FencePost62" parent="Entities" unique_id=1219597811 instance=ExtResource("50_decor")]
-position = Vector2(108, 822)
+position = Vector2(429, -508)
 kind = "fence_post"
 
 [node name="FencePillar1" parent="Entities" unique_id=1089114179 instance=ExtResource("50_decor")]
-position = Vector2(-300, 550)
+position = Vector2(21, -780)
 kind = "fence_pillar"
 
 [node name="FencePillar2" parent="Entities" unique_id=1686609503 instance=ExtResource("50_decor")]
-position = Vector2(108, 550)
+position = Vector2(429, -780)
 kind = "fence_pillar"
 
 [node name="FencePillar3" parent="Entities" unique_id=1389166629 instance=ExtResource("50_decor")]
-position = Vector2(-300, 830)
+position = Vector2(21, -500)
 kind = "fence_pillar"
 
 [node name="FencePillar4" parent="Entities" unique_id=1353097551 instance=ExtResource("50_decor")]
-position = Vector2(108, 830)
+position = Vector2(429, -500)
 kind = "fence_pillar"
 
 [node name="FencePillar5" parent="Entities" unique_id=1008284350 instance=ExtResource("50_decor")]
-position = Vector2(108, 672)
+position = Vector2(429, -658)
 kind = "fence_pillar"
 
 [node name="FencePillar6" parent="Entities" unique_id=1808782623 instance=ExtResource("50_decor")]
-position = Vector2(108, 708)
+position = Vector2(429, -622)
 kind = "fence_pillar"
 
 [node name="Grave1" parent="Entities" unique_id=1326205252 instance=ExtResource("50_decor")]
-position = Vector2(-273, 581)
+position = Vector2(48, -749)
 kind = "grave_broken"
 
 [node name="Grave2" parent="Entities" unique_id=1928595860 instance=ExtResource("50_decor")]
-position = Vector2(-245, 583)
+position = Vector2(76, -747)
 kind = "grave_mound"
 
 [node name="Grave3" parent="Entities" unique_id=406218056 instance=ExtResource("50_decor")]
-position = Vector2(-219, 581)
+position = Vector2(102, -749)
 kind = "grave_mound"
 
 [node name="Grave4" parent="Entities" unique_id=927871814 instance=ExtResource("50_decor")]
-position = Vector2(-189, 581)
+position = Vector2(132, -749)
 kind = "grave_broken"
 
 [node name="Grave5" parent="Entities" unique_id=2054452714 instance=ExtResource("50_decor")]
-position = Vector2(-154, 581)
+position = Vector2(167, -749)
 kind = "grave_broken"
 
 [node name="Grave9" parent="Entities" unique_id=1554715439 instance=ExtResource("50_decor")]
-position = Vector2(-14, 581)
+position = Vector2(307, -749)
 kind = "grave_mound"
 
 [node name="Grave10" parent="Entities" unique_id=1134255929 instance=ExtResource("50_decor")]
-position = Vector2(14, 576)
+position = Vector2(335, -754)
 kind = "grave_broken"
 
 [node name="Grave11" parent="Entities" unique_id=2012786819 instance=ExtResource("50_decor")]
-position = Vector2(46, 579)
+position = Vector2(367, -751)
 kind = "grave_round"
 
 [node name="Grave12" parent="Entities" unique_id=241584427 instance=ExtResource("50_decor")]
-position = Vector2(73, 581)
+position = Vector2(394, -749)
 kind = "grave_cross"
 
 [node name="Grave13" parent="Entities" unique_id=1373179939 instance=ExtResource("50_decor")]
-position = Vector2(-270, 607)
+position = Vector2(51, -723)
 kind = "grave_round"
 
 [node name="Grave14" parent="Entities" unique_id=1908735643 instance=ExtResource("50_decor")]
-position = Vector2(-211, 611)
+position = Vector2(110, -719)
 kind = "grave_cross"
 
 [node name="Grave15" parent="Entities" unique_id=1777145904 instance=ExtResource("50_decor")]
-position = Vector2(-176, 611)
+position = Vector2(145, -719)
 kind = "grave_broken"
 
 [node name="Grave16" parent="Entities" unique_id=39268152 instance=ExtResource("50_decor")]
-position = Vector2(-150, 606)
+position = Vector2(171, -724)
 kind = "grave_round"
 
 [node name="Grave17" parent="Entities" unique_id=2093311516 instance=ExtResource("50_decor")]
-position = Vector2(-92, 610)
+position = Vector2(229, -720)
 kind = "grave_round"
 
 [node name="Grave18" parent="Entities" unique_id=836204850 instance=ExtResource("50_decor")]
-position = Vector2(-59, 612)
+position = Vector2(262, -718)
 kind = "grave_cross"
 
 [node name="Grave19" parent="Entities" unique_id=1998090400 instance=ExtResource("50_decor")]
-position = Vector2(-7, 614)
+position = Vector2(314, -716)
 kind = "grave_cross"
 
 [node name="Grave20" parent="Entities" unique_id=2025396155 instance=ExtResource("50_decor")]
-position = Vector2(28, 614)
+position = Vector2(349, -716)
 kind = "grave_round"
 
 [node name="Grave21" parent="Entities" unique_id=1125095140 instance=ExtResource("50_decor")]
-position = Vector2(56, 609)
+position = Vector2(377, -721)
 kind = "grave_round"
 
 [node name="Grave22" parent="Entities" unique_id=338547106 instance=ExtResource("50_decor")]
-position = Vector2(78, 607)
+position = Vector2(399, -723)
 kind = "grave_broken"
 
 [node name="Grave23" parent="Entities" unique_id=1851871541 instance=ExtResource("50_decor")]
-position = Vector2(-270, 637)
+position = Vector2(51, -693)
 kind = "grave_round"
 
 [node name="Grave24" parent="Entities" unique_id=1098435719 instance=ExtResource("50_decor")]
-position = Vector2(-242, 639)
+position = Vector2(79, -691)
 kind = "grave_round"
 
 [node name="Grave25" parent="Entities" unique_id=786378649 instance=ExtResource("50_decor")]
-position = Vector2(-213, 641)
+position = Vector2(108, -689)
 kind = "grave_round"
 
 [node name="Grave26" parent="Entities" unique_id=1855132988 instance=ExtResource("50_decor")]
-position = Vector2(-96, 642)
+position = Vector2(225, -688)
 kind = "grave_mound"
 
 [node name="Grave27" parent="Entities" unique_id=1964249329 instance=ExtResource("50_decor")]
-position = Vector2(-69, 636)
+position = Vector2(252, -694)
 kind = "grave_mound"
 
 [node name="Grave28" parent="Entities" unique_id=451756665 instance=ExtResource("50_decor")]
-position = Vector2(-47, 637)
+position = Vector2(274, -693)
 kind = "grave_cross"
 
 [node name="Grave29" parent="Entities" unique_id=1957777867 instance=ExtResource("50_decor")]
-position = Vector2(-18, 636)
+position = Vector2(303, -694)
 kind = "grave_mound"
 
 [node name="Grave30" parent="Entities" unique_id=2117559314 instance=ExtResource("50_decor")]
-position = Vector2(13, 637)
+position = Vector2(334, -693)
 kind = "grave_cross"
 
 [node name="Grave31" parent="Entities" unique_id=919689896 instance=ExtResource("50_decor")]
-position = Vector2(49, 644)
+position = Vector2(370, -686)
 kind = "grave_round"
 
 [node name="Grave32" parent="Entities" unique_id=1685754718 instance=ExtResource("50_decor")]
-position = Vector2(-268, 670)
+position = Vector2(53, -660)
 kind = "grave_cross"
 
 [node name="Grave33" parent="Entities" unique_id=1391978695 instance=ExtResource("50_decor")]
-position = Vector2(-239, 670)
+position = Vector2(82, -660)
 kind = "grave_obelisk"
 
 [node name="Grave34" parent="Entities" unique_id=1672280262 instance=ExtResource("50_decor")]
-position = Vector2(-204, 670)
+position = Vector2(117, -660)
 kind = "grave_broken"
 
 [node name="Grave35" parent="Entities" unique_id=581798505 instance=ExtResource("50_decor")]
-position = Vector2(-147, 670)
+position = Vector2(174, -660)
 kind = "grave_obelisk"
 
 [node name="Grave36" parent="Entities" unique_id=528615554 instance=ExtResource("50_decor")]
-position = Vector2(-217, 703)
+position = Vector2(104, -627)
 kind = "grave_round"
 
 [node name="Grave37" parent="Entities" unique_id=1549714702 instance=ExtResource("50_decor")]
-position = Vector2(-187, 702)
+position = Vector2(134, -628)
 kind = "grave_cross"
 
 [node name="Grave38" parent="Entities" unique_id=739542618 instance=ExtResource("50_decor")]
-position = Vector2(-155, 700)
+position = Vector2(166, -630)
 kind = "grave_mound"
 
 [node name="Grave39" parent="Entities" unique_id=216625042 instance=ExtResource("50_decor")]
-position = Vector2(-101, 698)
+position = Vector2(220, -632)
 kind = "grave_mound"
 
 [node name="Grave40" parent="Entities" unique_id=617366496 instance=ExtResource("50_decor")]
-position = Vector2(-241, 730)
+position = Vector2(80, -600)
 kind = "grave_mound"
 
 [node name="Grave41" parent="Entities" unique_id=966478905 instance=ExtResource("50_decor")]
-position = Vector2(-212, 733)
+position = Vector2(109, -597)
 kind = "grave_mound"
 
 [node name="Grave42" parent="Entities" unique_id=488716619 instance=ExtResource("50_decor")]
-position = Vector2(-117, 727)
+position = Vector2(204, -603)
 kind = "grave_mound"
 
 [node name="Grave43" parent="Entities" unique_id=680931568 instance=ExtResource("50_decor")]
-position = Vector2(-94, 730)
+position = Vector2(227, -600)
 kind = "grave_obelisk"
 
 [node name="Grave44" parent="Entities" unique_id=1304460089 instance=ExtResource("50_decor")]
-position = Vector2(-7, 728)
+position = Vector2(314, -602)
 kind = "grave_broken"
 
 [node name="Grave45" parent="Entities" unique_id=337834239 instance=ExtResource("50_decor")]
-position = Vector2(54, 733)
+position = Vector2(375, -597)
 kind = "grave_round"
 
 [node name="Grave46" parent="Entities" unique_id=44810301 instance=ExtResource("50_decor")]
-position = Vector2(84, 728)
+position = Vector2(405, -602)
 kind = "grave_obelisk"
 
 [node name="Grave47" parent="Entities" unique_id=1923383417 instance=ExtResource("50_decor")]
-position = Vector2(-274, 758)
+position = Vector2(47, -572)
 kind = "grave_round"
 
 [node name="Grave48" parent="Entities" unique_id=157833749 instance=ExtResource("50_decor")]
-position = Vector2(-213, 757)
+position = Vector2(108, -573)
 kind = "grave_obelisk"
 
 [node name="Grave49" parent="Entities" unique_id=102334243 instance=ExtResource("50_decor")]
-position = Vector2(-159, 759)
+position = Vector2(162, -571)
 kind = "grave_mound"
 
 [node name="Grave50" parent="Entities" unique_id=1014419287 instance=ExtResource("50_decor")]
-position = Vector2(-126, 761)
+position = Vector2(195, -569)
 kind = "grave_round"
 
 [node name="Grave51" parent="Entities" unique_id=209100184 instance=ExtResource("50_decor")]
-position = Vector2(-70, 762)
+position = Vector2(251, -568)
 kind = "grave_broken"
 
 [node name="Grave52" parent="Entities" unique_id=1235220367 instance=ExtResource("50_decor")]
-position = Vector2(-43, 758)
+position = Vector2(278, -572)
 kind = "grave_round"
 
 [node name="Grave53" parent="Entities" unique_id=1834458118 instance=ExtResource("50_decor")]
-position = Vector2(14, 762)
+position = Vector2(335, -568)
 kind = "grave_round"
 
 [node name="Grave54" parent="Entities" unique_id=1977229397 instance=ExtResource("50_decor")]
-position = Vector2(-262, 789)
+position = Vector2(59, -541)
 kind = "grave_round"
 
 [node name="Grave55" parent="Entities" unique_id=967406895 instance=ExtResource("50_decor")]
-position = Vector2(-240, 787)
+position = Vector2(81, -543)
 kind = "grave_round"
 
 [node name="Grave56" parent="Entities" unique_id=1376014717 instance=ExtResource("50_decor")]
-position = Vector2(-209, 787)
+position = Vector2(112, -543)
 kind = "grave_broken"
 
 [node name="Grave57" parent="Entities" unique_id=648862551 instance=ExtResource("50_decor")]
-position = Vector2(-178, 789)
+position = Vector2(143, -541)
 kind = "grave_cross"
 
 [node name="Grave58" parent="Entities" unique_id=1037725091 instance=ExtResource("50_decor")]
-position = Vector2(-147, 786)
+position = Vector2(174, -544)
 kind = "grave_obelisk"
 
 [node name="Grave59" parent="Entities" unique_id=1874214310 instance=ExtResource("50_decor")]
-position = Vector2(-91, 790)
+position = Vector2(230, -540)
 kind = "grave_round"
 
 [node name="Grave60" parent="Entities" unique_id=1456799396 instance=ExtResource("50_decor")]
-position = Vector2(-59, 787)
+position = Vector2(262, -543)
 kind = "grave_cross"
 
 [node name="Grave61" parent="Entities" unique_id=914206008 instance=ExtResource("50_decor")]
-position = Vector2(-8, 787)
+position = Vector2(313, -543)
 kind = "grave_mound"
 
 [node name="Grave62" parent="Entities" unique_id=2091281452 instance=ExtResource("50_decor")]
-position = Vector2(25, 791)
+position = Vector2(346, -539)
 kind = "grave_round"
 
 [node name="Grave63" parent="Entities" unique_id=63119815 instance=ExtResource("50_decor")]
-position = Vector2(55, 793)
+position = Vector2(376, -537)
 kind = "grave_mound"
 
 [node name="Grave64" parent="Entities" unique_id=473525697 instance=ExtResource("50_decor")]
-position = Vector2(84, 789)
+position = Vector2(405, -541)
 kind = "grave_round"
 
 [node name="Grave65" parent="Entities" unique_id=456571714 instance=ExtResource("50_decor")]
-position = Vector2(-214, 824)
+position = Vector2(107, -506)
 kind = "grave_round"
 
 [node name="Grave66" parent="Entities" unique_id=1556231078 instance=ExtResource("50_decor")]
-position = Vector2(-185, 820)
+position = Vector2(136, -510)
 kind = "grave_round"
 
 [node name="Grave67" parent="Entities" unique_id=1488747780 instance=ExtResource("50_decor")]
-position = Vector2(-71, 822)
+position = Vector2(250, -508)
 kind = "grave_round"
 
 [node name="Grave68" parent="Entities" unique_id=51064930 instance=ExtResource("50_decor")]
-position = Vector2(-44, 819)
+position = Vector2(277, -511)
 kind = "grave_cross"
 
 [node name="Grave69" parent="Entities" unique_id=671011955 instance=ExtResource("50_decor")]
-position = Vector2(-16, 819)
+position = Vector2(305, -511)
 kind = "grave_obelisk"
 
 [node name="Grave70" parent="Entities" unique_id=1721569738 instance=ExtResource("50_decor")]
-position = Vector2(44, 817)
+position = Vector2(365, -513)
 kind = "grave_round"
 
 [node name="Grave71" parent="Entities" unique_id=1429247737 instance=ExtResource("50_decor")]
-position = Vector2(77, 820)
+position = Vector2(398, -510)
 kind = "grave_cross"
 
 [node name="TreeDeadG1" parent="Entities" unique_id=895143769 instance=ExtResource("4_tree")]
-position = Vector2(-286, 562)
+position = Vector2(35, -768)
 kind = "dead"
 
 [node name="TreeDeadG2" parent="Entities" unique_id=2064512018 instance=ExtResource("4_tree")]
-position = Vector2(94, 562)
+position = Vector2(415, -768)
 kind = "dead2"
 
 [node name="TreeDeadG3" parent="Entities" unique_id=794862292 instance=ExtResource("4_tree")]
-position = Vector2(-288, 818)
+position = Vector2(33, -512)
 kind = "dead3"
 
 [node name="TreeDeadG4" parent="Entities" unique_id=721050631 instance=ExtResource("4_tree")]
-position = Vector2(92, 818)
+position = Vector2(413, -512)
 kind = "dead"
 
 [node name="TreeDeadG6" parent="Entities" unique_id=926986182 instance=ExtResource("4_tree")]
-position = Vector2(-190, 820)
+position = Vector2(131, -510)
 kind = "dead3"
 
 [node name="TreeDeadG7" parent="Entities" unique_id=1321830375 instance=ExtResource("4_tree")]
-position = Vector2(-30, 822)
+position = Vector2(291, -508)
 kind = "dead"
 
 [node name="TreeDeadG8" parent="Entities" unique_id=531355158 instance=ExtResource("4_tree")]
-position = Vector2(-292, 690)
+position = Vector2(29, -640)
 kind = "dead2"
 
 [node name="Skeleton1" parent="Entities" unique_id=751602107 instance=ExtResource("70_skel")]
-position = Vector2(-238, 614)
+position = Vector2(83, -716)
 
 [node name="Skeleton2" parent="Entities" unique_id=1162444897 instance=ExtResource("70_skel")]
-position = Vector2(-242, 762)
+position = Vector2(79, -568)
 level = 4
 
 [node name="Skeleton3" parent="Entities" unique_id=1339347366 instance=ExtResource("70_skel")]
-position = Vector2(-154, 630)
+position = Vector2(167, -700)
 
 [node name="Skeleton4" parent="Entities" unique_id=2085629707 instance=ExtResource("70_skel")]
-position = Vector2(-189, 745)
+position = Vector2(132, -585)
 level = 4
 
 [node name="Skeleton5" parent="Entities" unique_id=1518770545 instance=ExtResource("70_skel")]
-position = Vector2(-122, 654)
+position = Vector2(199, -676)
 
 [node name="Skeleton6" parent="Entities" unique_id=76983632 instance=ExtResource("70_skel")]
-position = Vector2(-70, 735)
+position = Vector2(251, -595)
 level = 4
 
 [node name="Skeleton7" parent="Entities" unique_id=2131566964 instance=ExtResource("70_skel")]
-position = Vector2(-34, 598)
+position = Vector2(287, -732)
 
 [node name="Skeleton8" parent="Entities" unique_id=571814738 instance=ExtResource("70_skel")]
-position = Vector2(-12, 699)
+position = Vector2(309, -631)
 level = 4
 
 [node name="Skeleton9" parent="Entities" unique_id=745969171 instance=ExtResource("70_skel")]
-position = Vector2(44, 679)
+position = Vector2(365, -651)
 
 [node name="Skeleton10" parent="Entities" unique_id=1125714937 instance=ExtResource("70_skel")]
-position = Vector2(23, 737)
+position = Vector2(344, -593)
 level = 4
 
 [node name="Crypt1" parent="Entities" unique_id=382195656 instance=ExtResource("71_crypt")]
-position = Vector2(-96, 566)
+position = Vector2(225, -764)
 
 [node name="Skeleton100" parent="Entities" unique_id=1700692339 instance=ExtResource("70_skel")]
 position = Vector2(3876, 2745)
@@ -3580,20 +3568,9 @@ kind = "pine"
 position = Vector2(692, 1509)
 kind = "oak2"
 
-[node name="TreeN298" parent="Entities" unique_id=824535139 instance=ExtResource("4_tree")]
-position = Vector2(380, -601)
-kind = "pine"
-
-[node name="TreeN299" parent="Entities" unique_id=815196266 instance=ExtResource("4_tree")]
-position = Vector2(290, -646)
-kind = "pine"
-
 [node name="TreeN300" parent="Entities" unique_id=1240868981 instance=ExtResource("4_tree")]
 position = Vector2(485, -605)
 kind = "pine"
-
-[node name="TreeN301" parent="Entities" unique_id=1307014454 instance=ExtResource("4_tree")]
-position = Vector2(403, -660)
 
 [node name="TreeN302" parent="Entities" unique_id=1052844410 instance=ExtResource("4_tree")]
 position = Vector2(438, -593)
@@ -4790,10 +4767,6 @@ kind = "pine"
 position = Vector2(-799, -604)
 kind = "oak2"
 
-[node name="TreeN622" parent="Entities" unique_id=843658390 instance=ExtResource("4_tree")]
-position = Vector2(250, -610)
-kind = "pine"
-
 [node name="TreeN623" parent="Entities" unique_id=1144893467 instance=ExtResource("4_tree")]
 position = Vector2(-369, 1440)
 kind = "cherry"
@@ -4809,10 +4782,6 @@ kind = "pine"
 [node name="TreeN626" parent="Entities" unique_id=317479769 instance=ExtResource("4_tree")]
 position = Vector2(2270, -412)
 kind = "oak2"
-
-[node name="TreeN627" parent="Entities" unique_id=1490292080 instance=ExtResource("4_tree")]
-position = Vector2(86, -616)
-kind = "pine"
 
 [node name="TreeN628" parent="Entities" unique_id=251115544 instance=ExtResource("4_tree")]
 position = Vector2(1214, -692)
@@ -5242,801 +5211,809 @@ position = Vector2(128, 24)
 [node name="HouseBlue" parent="Entities" unique_id=1932270750 instance=ExtResource("203_bs")]
 position = Vector2(276, 24)
 
-[node name="WFenceN0" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN0" parent="Entities" unique_id=560723709 instance=ExtResource("50_decor")]
 position = Vector2(232, 272)
 kind = "wfence_b"
 
-[node name="WFenceN1" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN1" parent="Entities" unique_id=1627678301 instance=ExtResource("50_decor")]
 position = Vector2(248, 272)
 kind = "wfence_a"
 
-[node name="WFenceN2" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN2" parent="Entities" unique_id=1377141577 instance=ExtResource("50_decor")]
 position = Vector2(264, 272)
 kind = "wfence_a"
 
-[node name="WFenceN3" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN3" parent="Entities" unique_id=315727179 instance=ExtResource("50_decor")]
 position = Vector2(280, 272)
 kind = "wfence_b"
 
-[node name="WFenceN4" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN4" parent="Entities" unique_id=1607760203 instance=ExtResource("50_decor")]
 position = Vector2(296, 272)
 kind = "wfence_d"
 
-[node name="WFenceN7" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN7" parent="Entities" unique_id=919403379 instance=ExtResource("50_decor")]
 position = Vector2(344, 272)
 kind = "wfence_b"
 
-[node name="WFenceN8" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN8" parent="Entities" unique_id=870662504 instance=ExtResource("50_decor")]
 position = Vector2(360, 272)
 kind = "wfence_b"
 
-[node name="WFenceN9" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN9" parent="Entities" unique_id=179771094 instance=ExtResource("50_decor")]
 position = Vector2(376, 272)
 kind = "wfence_b"
 
-[node name="WFenceN10" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN10" parent="Entities" unique_id=754365077 instance=ExtResource("50_decor")]
 position = Vector2(392, 272)
 kind = "wfence_d"
 
-[node name="WFenceN11" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN11" parent="Entities" unique_id=904868349 instance=ExtResource("50_decor")]
 position = Vector2(408, 272)
 kind = "wfence_a"
 
-[node name="WFenceN12" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN12" parent="Entities" unique_id=617087285 instance=ExtResource("50_decor")]
 position = Vector2(424, 272)
 kind = "wfence_b"
 
-[node name="WFenceN13" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN13" parent="Entities" unique_id=1069477876 instance=ExtResource("50_decor")]
 position = Vector2(440, 272)
 kind = "wfence_a"
 
-[node name="WFenceN14" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN14" parent="Entities" unique_id=1656200490 instance=ExtResource("50_decor")]
 position = Vector2(456, 272)
 kind = "wfence_b"
 
-[node name="WFenceN18" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN18" parent="Entities" unique_id=361415415 instance=ExtResource("50_decor")]
 position = Vector2(520, 272)
 kind = "wfence_c"
 
-[node name="WFenceN19" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN19" parent="Entities" unique_id=860236937 instance=ExtResource("50_decor")]
 position = Vector2(536, 272)
 kind = "wfence_b"
 
-[node name="WFenceN20" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN20" parent="Entities" unique_id=1121472505 instance=ExtResource("50_decor")]
 position = Vector2(552, 272)
 kind = "wfence_b"
 
-[node name="WFenceN21" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN21" parent="Entities" unique_id=209169057 instance=ExtResource("50_decor")]
 position = Vector2(568, 272)
 kind = "wfence_d"
 
-[node name="WFenceN22" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN22" parent="Entities" unique_id=1643145083 instance=ExtResource("50_decor")]
 position = Vector2(584, 272)
 kind = "wfence_d"
 
-[node name="WFenceN25" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN25" parent="Entities" unique_id=1534661422 instance=ExtResource("50_decor")]
 position = Vector2(632, 272)
 kind = "wfence_c"
 
-[node name="WFenceN26" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN26" parent="Entities" unique_id=994774789 instance=ExtResource("50_decor")]
 position = Vector2(648, 272)
 kind = "wfence_d"
 
-[node name="WFenceN27" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN27" parent="Entities" unique_id=1899673376 instance=ExtResource("50_decor")]
 position = Vector2(664, 272)
 kind = "wfence_d"
 
-[node name="WFenceN28" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN28" parent="Entities" unique_id=170741905 instance=ExtResource("50_decor")]
 position = Vector2(680, 272)
 kind = "wfence_a"
 
-[node name="WFenceN29" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN29" parent="Entities" unique_id=1455701071 instance=ExtResource("50_decor")]
 position = Vector2(696, 272)
 kind = "wfence_d"
 
-[node name="WFenceN33" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN33" parent="Entities" unique_id=1434263133 instance=ExtResource("50_decor")]
 position = Vector2(760, 272)
 kind = "wfence_d"
 
-[node name="WFenceN34" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN34" parent="Entities" unique_id=1880510349 instance=ExtResource("50_decor")]
 position = Vector2(776, 272)
 kind = "wfence_a"
 
-[node name="WFenceN35" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN35" parent="Entities" unique_id=1896559284 instance=ExtResource("50_decor")]
 position = Vector2(792, 272)
 kind = "wfence_b"
 
-[node name="WFenceN39" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN39" parent="Entities" unique_id=1043536173 instance=ExtResource("50_decor")]
 position = Vector2(856, 272)
 kind = "wfence_c"
 
-[node name="WFenceN40" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN40" parent="Entities" unique_id=1672258414 instance=ExtResource("50_decor")]
 position = Vector2(872, 272)
 kind = "wfence_d"
 
-[node name="WFenceN41" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN41" parent="Entities" unique_id=105854868 instance=ExtResource("50_decor")]
 position = Vector2(888, 272)
 kind = "wfence_a"
 
-[node name="WFenceN42" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN42" parent="Entities" unique_id=1963081178 instance=ExtResource("50_decor")]
 position = Vector2(904, 272)
 kind = "wfence_b"
 
-[node name="WFenceN43" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN43" parent="Entities" unique_id=980062381 instance=ExtResource("50_decor")]
 position = Vector2(920, 272)
 kind = "wfence_b"
 
-[node name="WFenceN46" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN46" parent="Entities" unique_id=2064913253 instance=ExtResource("50_decor")]
 position = Vector2(968, 272)
 kind = "wfence_b"
 
-[node name="WFenceN47" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN47" parent="Entities" unique_id=856324149 instance=ExtResource("50_decor")]
 position = Vector2(984, 272)
 kind = "wfence_a"
 
-[node name="WFenceN48" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN48" parent="Entities" unique_id=469000689 instance=ExtResource("50_decor")]
 position = Vector2(1000, 272)
 kind = "wfence_a"
 
-[node name="WFenceN49" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN49" parent="Entities" unique_id=1166896947 instance=ExtResource("50_decor")]
 position = Vector2(1016, 272)
 kind = "wfence_b"
 
-[node name="WFenceN50" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN50" parent="Entities" unique_id=1477339982 instance=ExtResource("50_decor")]
 position = Vector2(1032, 272)
 kind = "wfence_d"
 
-[node name="WFenceN51" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN51" parent="Entities" unique_id=795335711 instance=ExtResource("50_decor")]
 position = Vector2(1048, 272)
 kind = "wfence_a"
 
-[node name="WFenceN52" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN52" parent="Entities" unique_id=1860224655 instance=ExtResource("50_decor")]
 position = Vector2(1064, 272)
 kind = "wfence_a"
 
-[node name="WFenceN53" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN53" parent="Entities" unique_id=826620974 instance=ExtResource("50_decor")]
 position = Vector2(1080, 272)
 kind = "wfence_a"
 
-[node name="WFenceN54" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN54" parent="Entities" unique_id=1034010322 instance=ExtResource("50_decor")]
 position = Vector2(1096, 272)
 kind = "wfence_b"
 
-[node name="WFenceN57" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN57" parent="Entities" unique_id=176619027 instance=ExtResource("50_decor")]
 position = Vector2(1144, 272)
 kind = "wfence_b"
 
-[node name="WFenceN58" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN58" parent="Entities" unique_id=1977264995 instance=ExtResource("50_decor")]
 position = Vector2(1160, 272)
 kind = "wfence_b"
 
-[node name="WFenceN59" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN59" parent="Entities" unique_id=209023499 instance=ExtResource("50_decor")]
 position = Vector2(1176, 272)
 kind = "wfence_c"
 
-[node name="WFenceN60" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN60" parent="Entities" unique_id=2127184200 instance=ExtResource("50_decor")]
 position = Vector2(1192, 272)
 kind = "wfence_d"
 
-[node name="WFenceN61" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN61" parent="Entities" unique_id=853278374 instance=ExtResource("50_decor")]
 position = Vector2(1208, 272)
 kind = "wfence_a"
 
-[node name="WFenceN62" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN62" parent="Entities" unique_id=1519300775 instance=ExtResource("50_decor")]
 position = Vector2(1224, 272)
 kind = "wfence_a"
 
-[node name="WFenceN63" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN63" parent="Entities" unique_id=661267505 instance=ExtResource("50_decor")]
 position = Vector2(1240, 272)
 kind = "wfence_d"
 
-[node name="WFenceN64" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN64" parent="Entities" unique_id=347181878 instance=ExtResource("50_decor")]
 position = Vector2(1256, 272)
 kind = "wfence_a"
 
-[node name="WFenceN65" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN65" parent="Entities" unique_id=1200187747 instance=ExtResource("50_decor")]
 position = Vector2(1272, 272)
 kind = "wfence_c"
 
-[node name="WFenceN68" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN68" parent="Entities" unique_id=174185805 instance=ExtResource("50_decor")]
 position = Vector2(1320, 272)
 kind = "wfence_d"
 
-[node name="WFenceN69" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN69" parent="Entities" unique_id=1402529979 instance=ExtResource("50_decor")]
 position = Vector2(1336, 272)
 kind = "wfence_a"
 
-[node name="WFenceN70" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN70" parent="Entities" unique_id=1551848204 instance=ExtResource("50_decor")]
 position = Vector2(1352, 272)
 kind = "wfence_d"
 
-[node name="WFenceN71" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN71" parent="Entities" unique_id=939168821 instance=ExtResource("50_decor")]
 position = Vector2(1368, 272)
 kind = "wfence_a"
 
-[node name="WFenceN72" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN72" parent="Entities" unique_id=2094245454 instance=ExtResource("50_decor")]
 position = Vector2(1384, 272)
 kind = "wfence_a"
 
-[node name="WFenceN73" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN73" parent="Entities" unique_id=598705492 instance=ExtResource("50_decor")]
 position = Vector2(1400, 272)
 kind = "wfence_a"
 
-[node name="WFenceN74" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceN74" parent="Entities" unique_id=1015017033 instance=ExtResource("50_decor")]
 position = Vector2(1416, 272)
 kind = "wfence_c"
 
-[node name="WFenceS0" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS0" parent="Entities" unique_id=1237581473 instance=ExtResource("50_decor")]
 position = Vector2(232, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS1" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS1" parent="Entities" unique_id=896161570 instance=ExtResource("50_decor")]
 position = Vector2(248, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS2" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS2" parent="Entities" unique_id=2117752592 instance=ExtResource("50_decor")]
 position = Vector2(264, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS5" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS5" parent="Entities" unique_id=1762594117 instance=ExtResource("50_decor")]
 position = Vector2(312, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS6" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS6" parent="Entities" unique_id=1245061385 instance=ExtResource("50_decor")]
 position = Vector2(328, 1072)
 kind = "wfence_d"
 
-[node name="WFenceS7" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS7" parent="Entities" unique_id=109325071 instance=ExtResource("50_decor")]
 position = Vector2(344, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS8" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS8" parent="Entities" unique_id=526052562 instance=ExtResource("50_decor")]
 position = Vector2(360, 1072)
 kind = "wfence_d"
 
-[node name="WFenceS9" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS9" parent="Entities" unique_id=37850872 instance=ExtResource("50_decor")]
 position = Vector2(376, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS10" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS10" parent="Entities" unique_id=1621379150 instance=ExtResource("50_decor")]
 position = Vector2(392, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS11" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS11" parent="Entities" unique_id=86242208 instance=ExtResource("50_decor")]
 position = Vector2(408, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS12" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS12" parent="Entities" unique_id=1408434193 instance=ExtResource("50_decor")]
 position = Vector2(424, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS15" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS15" parent="Entities" unique_id=5484209 instance=ExtResource("50_decor")]
 position = Vector2(472, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS16" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS16" parent="Entities" unique_id=541171340 instance=ExtResource("50_decor")]
 position = Vector2(488, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS17" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS17" parent="Entities" unique_id=1994479524 instance=ExtResource("50_decor")]
 position = Vector2(504, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS18" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS18" parent="Entities" unique_id=1064905404 instance=ExtResource("50_decor")]
 position = Vector2(520, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS19" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS19" parent="Entities" unique_id=1366306643 instance=ExtResource("50_decor")]
 position = Vector2(536, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS20" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS20" parent="Entities" unique_id=1475158733 instance=ExtResource("50_decor")]
 position = Vector2(552, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS23" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS23" parent="Entities" unique_id=572063218 instance=ExtResource("50_decor")]
 position = Vector2(600, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS24" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS24" parent="Entities" unique_id=146832036 instance=ExtResource("50_decor")]
 position = Vector2(616, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS25" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS25" parent="Entities" unique_id=659126412 instance=ExtResource("50_decor")]
 position = Vector2(632, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS26" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS26" parent="Entities" unique_id=1846953785 instance=ExtResource("50_decor")]
 position = Vector2(648, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS27" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS27" parent="Entities" unique_id=1451205681 instance=ExtResource("50_decor")]
 position = Vector2(664, 1072)
 kind = "wfence_d"
 
-[node name="WFenceS28" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS28" parent="Entities" unique_id=650717526 instance=ExtResource("50_decor")]
 position = Vector2(680, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS29" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS29" parent="Entities" unique_id=1719940412 instance=ExtResource("50_decor")]
 position = Vector2(696, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS30" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS30" parent="Entities" unique_id=1814913324 instance=ExtResource("50_decor")]
 position = Vector2(712, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS31" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS31" parent="Entities" unique_id=1026343196 instance=ExtResource("50_decor")]
 position = Vector2(728, 1072)
 kind = "wfence_d"
 
-[node name="WFenceS34" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS34" parent="Entities" unique_id=820811198 instance=ExtResource("50_decor")]
 position = Vector2(776, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS35" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS35" parent="Entities" unique_id=1360934270 instance=ExtResource("50_decor")]
 position = Vector2(792, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS36" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS36" parent="Entities" unique_id=1773040963 instance=ExtResource("50_decor")]
 position = Vector2(808, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS37" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS37" parent="Entities" unique_id=1790502947 instance=ExtResource("50_decor")]
 position = Vector2(824, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS38" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS38" parent="Entities" unique_id=1243063435 instance=ExtResource("50_decor")]
 position = Vector2(840, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS42" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS42" parent="Entities" unique_id=1404213159 instance=ExtResource("50_decor")]
 position = Vector2(904, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS43" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS43" parent="Entities" unique_id=1608066515 instance=ExtResource("50_decor")]
 position = Vector2(920, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS44" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS44" parent="Entities" unique_id=149865519 instance=ExtResource("50_decor")]
 position = Vector2(936, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS45" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS45" parent="Entities" unique_id=187171141 instance=ExtResource("50_decor")]
 position = Vector2(952, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS46" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS46" parent="Entities" unique_id=1437080622 instance=ExtResource("50_decor")]
 position = Vector2(968, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS49" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS49" parent="Entities" unique_id=731747043 instance=ExtResource("50_decor")]
 position = Vector2(1016, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS50" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS50" parent="Entities" unique_id=276005761 instance=ExtResource("50_decor")]
 position = Vector2(1032, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS51" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS51" parent="Entities" unique_id=1905490829 instance=ExtResource("50_decor")]
 position = Vector2(1048, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS52" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS52" parent="Entities" unique_id=54272023 instance=ExtResource("50_decor")]
 position = Vector2(1064, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS53" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS53" parent="Entities" unique_id=1070682891 instance=ExtResource("50_decor")]
 position = Vector2(1080, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS54" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS54" parent="Entities" unique_id=1563405677 instance=ExtResource("50_decor")]
 position = Vector2(1096, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS55" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS55" parent="Entities" unique_id=612129615 instance=ExtResource("50_decor")]
 position = Vector2(1112, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS56" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS56" parent="Entities" unique_id=121882415 instance=ExtResource("50_decor")]
 position = Vector2(1128, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS57" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS57" parent="Entities" unique_id=1286411723 instance=ExtResource("50_decor")]
 position = Vector2(1144, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS58" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS58" parent="Entities" unique_id=1075383835 instance=ExtResource("50_decor")]
 position = Vector2(1160, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS62" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS62" parent="Entities" unique_id=1342504700 instance=ExtResource("50_decor")]
 position = Vector2(1224, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS63" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS63" parent="Entities" unique_id=1608207699 instance=ExtResource("50_decor")]
 position = Vector2(1240, 1072)
 kind = "wfence_d"
 
-[node name="WFenceS64" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS64" parent="Entities" unique_id=593604084 instance=ExtResource("50_decor")]
 position = Vector2(1256, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS65" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS65" parent="Entities" unique_id=1081275841 instance=ExtResource("50_decor")]
 position = Vector2(1272, 1072)
 kind = "wfence_d"
 
-[node name="WFenceS66" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS66" parent="Entities" unique_id=433078860 instance=ExtResource("50_decor")]
 position = Vector2(1288, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS67" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS67" parent="Entities" unique_id=599412768 instance=ExtResource("50_decor")]
 position = Vector2(1304, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS68" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS68" parent="Entities" unique_id=1596375260 instance=ExtResource("50_decor")]
 position = Vector2(1320, 1072)
 kind = "wfence_c"
 
-[node name="WFenceS69" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS69" parent="Entities" unique_id=1340953337 instance=ExtResource("50_decor")]
 position = Vector2(1336, 1072)
 kind = "wfence_a"
 
-[node name="WFenceS70" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS70" parent="Entities" unique_id=1785496746 instance=ExtResource("50_decor")]
 position = Vector2(1352, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS73" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS73" parent="Entities" unique_id=693738797 instance=ExtResource("50_decor")]
 position = Vector2(1400, 1072)
 kind = "wfence_b"
 
-[node name="WFenceS74" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceS74" parent="Entities" unique_id=1594186363 instance=ExtResource("50_decor")]
 position = Vector2(1416, 1072)
 kind = "wfence_c"
 
-[node name="WFenceW0" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW0" parent="Entities" unique_id=2084558087 instance=ExtResource("50_decor")]
 position = Vector2(224, 288)
 kind = "wfence_side_a"
 
-[node name="WFenceW1" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW1" parent="Entities" unique_id=208877061 instance=ExtResource("50_decor")]
 position = Vector2(224, 304)
 kind = "wfence_side_a"
 
-[node name="WFenceW2" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW2" parent="Entities" unique_id=651884240 instance=ExtResource("50_decor")]
 position = Vector2(224, 320)
 kind = "wfence_side_c"
 
-[node name="WFenceW6" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW6" parent="Entities" unique_id=1781271899 instance=ExtResource("50_decor")]
 position = Vector2(224, 384)
 kind = "wfence_side_a"
 
-[node name="WFenceW7" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW7" parent="Entities" unique_id=816506348 instance=ExtResource("50_decor")]
 position = Vector2(224, 400)
 kind = "wfence_side_a"
 
-[node name="WFenceW8" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW8" parent="Entities" unique_id=256719204 instance=ExtResource("50_decor")]
 position = Vector2(224, 416)
 kind = "wfence_side_c"
 
-[node name="WFenceW9" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW9" parent="Entities" unique_id=1554435771 instance=ExtResource("50_decor")]
 position = Vector2(224, 432)
 kind = "wfence_side_b"
 
-[node name="WFenceW10" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW10" parent="Entities" unique_id=385028786 instance=ExtResource("50_decor")]
 position = Vector2(224, 448)
 kind = "wfence_side_a"
 
-[node name="WFenceW11" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW11" parent="Entities" unique_id=927601229 instance=ExtResource("50_decor")]
 position = Vector2(224, 464)
 kind = "wfence_side_a"
 
-[node name="WFenceW12" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW12" parent="Entities" unique_id=221418807 instance=ExtResource("50_decor")]
 position = Vector2(224, 480)
 kind = "wfence_side_b"
 
-[node name="WFenceW13" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW13" parent="Entities" unique_id=604446238 instance=ExtResource("50_decor")]
 position = Vector2(224, 496)
 kind = "wfence_side_c"
 
-[node name="WFenceW14" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW14" parent="Entities" unique_id=949842806 instance=ExtResource("50_decor")]
 position = Vector2(224, 512)
 kind = "wfence_side_b"
 
-[node name="WFenceW15" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW15" parent="Entities" unique_id=628216341 instance=ExtResource("50_decor")]
 position = Vector2(224, 528)
 kind = "wfence_side_a"
 
-[node name="WFenceW16" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW16" parent="Entities" unique_id=1708837957 instance=ExtResource("50_decor")]
 position = Vector2(224, 544)
 kind = "wfence_side_b"
 
-[node name="WFenceW19" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW19" parent="Entities" unique_id=1196326411 instance=ExtResource("50_decor")]
 position = Vector2(224, 592)
 kind = "wfence_side_c"
 
-[node name="WFenceW20" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW20" parent="Entities" unique_id=236545870 instance=ExtResource("50_decor")]
 position = Vector2(224, 608)
 kind = "wfence_side_b"
 
-[node name="WFenceW21" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW21" parent="Entities" unique_id=400531812 instance=ExtResource("50_decor")]
 position = Vector2(224, 624)
 kind = "wfence_side_b"
 
-[node name="WFenceW22" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW22" parent="Entities" unique_id=1254072018 instance=ExtResource("50_decor")]
 position = Vector2(224, 640)
 kind = "wfence_side_a"
 
-[node name="WFenceW23" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW23" parent="Entities" unique_id=198346560 instance=ExtResource("50_decor")]
 position = Vector2(224, 656)
 kind = "wfence_side_a"
 
-[node name="WFenceW27" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW27" parent="Entities" unique_id=23337773 instance=ExtResource("50_decor")]
 position = Vector2(224, 720)
 kind = "wfence_side_a"
 
-[node name="WFenceW28" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW28" parent="Entities" unique_id=202263169 instance=ExtResource("50_decor")]
 position = Vector2(224, 736)
 kind = "wfence_side_a"
 
-[node name="WFenceW29" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW29" parent="Entities" unique_id=1153939007 instance=ExtResource("50_decor")]
 position = Vector2(224, 752)
 kind = "wfence_side_c"
 
-[node name="WFenceW30" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW30" parent="Entities" unique_id=1141245892 instance=ExtResource("50_decor")]
 position = Vector2(224, 768)
 kind = "wfence_side_a"
 
-[node name="WFenceW31" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW31" parent="Entities" unique_id=1346856568 instance=ExtResource("50_decor")]
 position = Vector2(224, 784)
 kind = "wfence_side_b"
 
-[node name="WFenceW32" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW32" parent="Entities" unique_id=458531521 instance=ExtResource("50_decor")]
 position = Vector2(224, 800)
 kind = "wfence_side_a"
 
-[node name="WFenceW33" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW33" parent="Entities" unique_id=1182424762 instance=ExtResource("50_decor")]
 position = Vector2(224, 816)
 kind = "wfence_side_c"
 
-[node name="WFenceW34" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW34" parent="Entities" unique_id=796685773 instance=ExtResource("50_decor")]
 position = Vector2(224, 832)
 kind = "wfence_side_a"
 
-[node name="WFenceW35" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW35" parent="Entities" unique_id=434811605 instance=ExtResource("50_decor")]
 position = Vector2(224, 848)
 kind = "wfence_side_c"
 
-[node name="WFenceW38" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW38" parent="Entities" unique_id=545067611 instance=ExtResource("50_decor")]
 position = Vector2(224, 896)
 kind = "wfence_side_b"
 
-[node name="WFenceW39" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW39" parent="Entities" unique_id=1680347444 instance=ExtResource("50_decor")]
 position = Vector2(224, 912)
 kind = "wfence_side_a"
 
-[node name="WFenceW40" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW40" parent="Entities" unique_id=892888742 instance=ExtResource("50_decor")]
 position = Vector2(224, 928)
 kind = "wfence_side_a"
 
-[node name="WFenceW41" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW41" parent="Entities" unique_id=556480809 instance=ExtResource("50_decor")]
 position = Vector2(224, 944)
 kind = "wfence_side_c"
 
-[node name="WFenceW42" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW42" parent="Entities" unique_id=186682860 instance=ExtResource("50_decor")]
 position = Vector2(224, 960)
 kind = "wfence_side_a"
 
-[node name="WFenceW43" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW43" parent="Entities" unique_id=767727215 instance=ExtResource("50_decor")]
 position = Vector2(224, 976)
 kind = "wfence_side_c"
 
-[node name="WFenceW44" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW44" parent="Entities" unique_id=369681480 instance=ExtResource("50_decor")]
 position = Vector2(224, 992)
 kind = "wfence_side_a"
 
-[node name="WFenceW45" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW45" parent="Entities" unique_id=2093300320 instance=ExtResource("50_decor")]
 position = Vector2(224, 1008)
 kind = "wfence_side_c"
 
-[node name="WFenceW46" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW46" parent="Entities" unique_id=1400853759 instance=ExtResource("50_decor")]
 position = Vector2(224, 1024)
 kind = "wfence_side_b"
 
-[node name="WFenceW47" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW47" parent="Entities" unique_id=143908279 instance=ExtResource("50_decor")]
 position = Vector2(224, 1040)
 kind = "wfence_side_a"
 
-[node name="WFenceW48" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW48" parent="Entities" unique_id=1464479762 instance=ExtResource("50_decor")]
 position = Vector2(224, 1056)
 kind = "wfence_side_c"
 
-[node name="WFenceW49" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceW49" parent="Entities" unique_id=895664476 instance=ExtResource("50_decor")]
 position = Vector2(224, 1072)
 kind = "wfence_side_c"
 
-[node name="WFenceE0" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE0" parent="Entities" unique_id=1712407376 instance=ExtResource("50_decor")]
 position = Vector2(1424, 288)
 kind = "wfence_side_c"
 
-[node name="WFenceE1" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE1" parent="Entities" unique_id=311931438 instance=ExtResource("50_decor")]
 position = Vector2(1424, 304)
 kind = "wfence_side_a"
 
-[node name="WFenceE2" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE2" parent="Entities" unique_id=560115541 instance=ExtResource("50_decor")]
 position = Vector2(1424, 320)
 kind = "wfence_side_a"
 
-[node name="WFenceE3" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE3" parent="Entities" unique_id=1850877623 instance=ExtResource("50_decor")]
 position = Vector2(1424, 336)
 kind = "wfence_side_a"
 
-[node name="WFenceE7" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE7" parent="Entities" unique_id=236161191 instance=ExtResource("50_decor")]
 position = Vector2(1424, 400)
 kind = "wfence_side_a"
 
-[node name="WFenceE8" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE8" parent="Entities" unique_id=1426148467 instance=ExtResource("50_decor")]
 position = Vector2(1424, 416)
 kind = "wfence_side_a"
 
-[node name="WFenceE9" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE9" parent="Entities" unique_id=86646415 instance=ExtResource("50_decor")]
 position = Vector2(1424, 432)
 kind = "wfence_side_a"
 
-[node name="WFenceE10" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE10" parent="Entities" unique_id=1298675824 instance=ExtResource("50_decor")]
 position = Vector2(1424, 448)
 kind = "wfence_side_c"
 
-[node name="WFenceE11" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE11" parent="Entities" unique_id=1022014100 instance=ExtResource("50_decor")]
 position = Vector2(1424, 464)
 kind = "wfence_side_a"
 
-[node name="WFenceE12" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE12" parent="Entities" unique_id=2010396109 instance=ExtResource("50_decor")]
 position = Vector2(1424, 480)
 kind = "wfence_side_c"
 
-[node name="WFenceE13" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE13" parent="Entities" unique_id=2040061239 instance=ExtResource("50_decor")]
 position = Vector2(1424, 496)
 kind = "wfence_side_b"
 
-[node name="WFenceE14" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE14" parent="Entities" unique_id=1846304647 instance=ExtResource("50_decor")]
 position = Vector2(1424, 512)
 kind = "wfence_side_a"
 
-[node name="WFenceE15" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE15" parent="Entities" unique_id=1892616120 instance=ExtResource("50_decor")]
 position = Vector2(1424, 528)
 kind = "wfence_side_a"
 
-[node name="WFenceE19" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE19" parent="Entities" unique_id=828755875 instance=ExtResource("50_decor")]
 position = Vector2(1424, 592)
 kind = "wfence_side_a"
 
-[node name="WFenceE20" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE20" parent="Entities" unique_id=2069233365 instance=ExtResource("50_decor")]
 position = Vector2(1424, 608)
 kind = "wfence_side_a"
 
-[node name="WFenceE21" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE21" parent="Entities" unique_id=1946444641 instance=ExtResource("50_decor")]
 position = Vector2(1424, 624)
 kind = "wfence_side_a"
 
-[node name="WFenceE22" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE22" parent="Entities" unique_id=1100044834 instance=ExtResource("50_decor")]
 position = Vector2(1424, 640)
 kind = "wfence_side_a"
 
-[node name="WFenceE23" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE23" parent="Entities" unique_id=1569239034 instance=ExtResource("50_decor")]
 position = Vector2(1424, 656)
 kind = "wfence_side_c"
 
-[node name="WFenceE24" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE24" parent="Entities" unique_id=1075543464 instance=ExtResource("50_decor")]
 position = Vector2(1424, 672)
 kind = "wfence_side_a"
 
-[node name="WFenceE25" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE25" parent="Entities" unique_id=1430992423 instance=ExtResource("50_decor")]
 position = Vector2(1424, 688)
 kind = "wfence_side_a"
 
-[node name="WFenceE29" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE29" parent="Entities" unique_id=1196164358 instance=ExtResource("50_decor")]
 position = Vector2(1424, 752)
 kind = "wfence_side_a"
 
-[node name="WFenceE30" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE30" parent="Entities" unique_id=1837487832 instance=ExtResource("50_decor")]
 position = Vector2(1424, 768)
 kind = "wfence_side_b"
 
-[node name="WFenceE31" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE31" parent="Entities" unique_id=1430952982 instance=ExtResource("50_decor")]
 position = Vector2(1424, 784)
 kind = "wfence_side_a"
 
-[node name="WFenceE32" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE32" parent="Entities" unique_id=786478881 instance=ExtResource("50_decor")]
 position = Vector2(1424, 800)
 kind = "wfence_side_b"
 
-[node name="WFenceE33" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE33" parent="Entities" unique_id=335082219 instance=ExtResource("50_decor")]
 position = Vector2(1424, 816)
 kind = "wfence_side_a"
 
-[node name="WFenceE34" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE34" parent="Entities" unique_id=1337001919 instance=ExtResource("50_decor")]
 position = Vector2(1424, 832)
 kind = "wfence_side_b"
 
-[node name="WFenceE38" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE38" parent="Entities" unique_id=674197538 instance=ExtResource("50_decor")]
 position = Vector2(1424, 896)
 kind = "wfence_side_b"
 
-[node name="WFenceE39" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE39" parent="Entities" unique_id=789083880 instance=ExtResource("50_decor")]
 position = Vector2(1424, 912)
 kind = "wfence_side_c"
 
-[node name="WFenceE40" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE40" parent="Entities" unique_id=1229552903 instance=ExtResource("50_decor")]
 position = Vector2(1424, 928)
 kind = "wfence_side_a"
 
-[node name="WFenceE41" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE41" parent="Entities" unique_id=715932603 instance=ExtResource("50_decor")]
 position = Vector2(1424, 944)
 kind = "wfence_side_a"
 
-[node name="WFenceE42" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE42" parent="Entities" unique_id=12883611 instance=ExtResource("50_decor")]
 position = Vector2(1424, 960)
 kind = "wfence_side_b"
 
-[node name="WFenceE43" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE43" parent="Entities" unique_id=369837767 instance=ExtResource("50_decor")]
 position = Vector2(1424, 976)
 kind = "wfence_side_c"
 
-[node name="WFenceE44" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE44" parent="Entities" unique_id=721878707 instance=ExtResource("50_decor")]
 position = Vector2(1424, 992)
 kind = "wfence_side_c"
 
-[node name="WFenceE45" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE45" parent="Entities" unique_id=1512652796 instance=ExtResource("50_decor")]
 position = Vector2(1424, 1008)
 kind = "wfence_side_a"
 
-[node name="WFenceE46" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE46" parent="Entities" unique_id=559920313 instance=ExtResource("50_decor")]
 position = Vector2(1424, 1024)
 kind = "wfence_side_a"
 
-[node name="WFenceE47" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE47" parent="Entities" unique_id=749270677 instance=ExtResource("50_decor")]
 position = Vector2(1424, 1040)
 kind = "wfence_side_a"
 
-[node name="WFenceE48" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE48" parent="Entities" unique_id=20190441 instance=ExtResource("50_decor")]
 position = Vector2(1424, 1056)
 kind = "wfence_side_c"
 
-[node name="WFenceE49" parent="Entities" instance=ExtResource("50_decor")]
+[node name="WFenceE49" parent="Entities" unique_id=133918287 instance=ExtResource("50_decor")]
 position = Vector2(1424, 1072)
 kind = "wfence_side_a"
 
-[node name="GateN_postW" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateN_postW" parent="Entities" unique_id=1546168925 instance=ExtResource("50_decor")]
 position = Vector2(704, 272)
 kind = "wgate_post"
 
-[node name="GateN_postE" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateN_postE" parent="Entities" unique_id=609878831 instance=ExtResource("50_decor")]
 position = Vector2(752, 272)
 kind = "wgate_post"
 
-[node name="GateN_leafW" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateN_leafW" parent="Entities" unique_id=282489032 instance=ExtResource("50_decor")]
 position = Vector2(704, 285)
 kind = "wgate_leaf_v"
 
-[node name="GateN_leafE" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateN_leafE" parent="Entities" unique_id=1983614367 instance=ExtResource("50_decor")]
 position = Vector2(752, 285)
 kind = "wgate_leaf_v"
 
-[node name="GateW_postN" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateW_postN" parent="Entities" unique_id=1060692510 instance=ExtResource("50_decor")]
 position = Vector2(224, 660)
 kind = "wgate_post"
 
-[node name="GateW_postS" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateW_postS" parent="Entities" unique_id=456813226 instance=ExtResource("50_decor")]
 position = Vector2(224, 708)
 kind = "wgate_post"
 
-[node name="GateW_leafN" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateW_leafN" parent="Entities" unique_id=1961569433 instance=ExtResource("50_decor")]
 position = Vector2(234, 660)
 kind = "wgate_leaf_h"
 
-[node name="GateW_leafS" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateW_leafS" parent="Entities" unique_id=1411001672 instance=ExtResource("50_decor")]
 position = Vector2(234, 708)
 kind = "wgate_leaf_h"
+
+[node name="GateS_pillarW" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(192, -500)
+kind = "fence_pillar"
+
+[node name="GateS_pillarE" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(228, -500)
+kind = "fence_pillar"
 
 [node name="HUD" parent="." unique_id=1493711357 instance=ExtResource("5_hud")]
 transform = Transform2D(2, 0, 0, 2, 0, 0)
