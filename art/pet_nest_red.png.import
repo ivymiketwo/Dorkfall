@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dibmnpia0h7kd"
-path="res://.godot/imported/pet_cage_eggs.png-b9342a6987a0e2eeca152bd98de32e2f.ctex"
+uid="uid://cvak0teks5cwy"
+path="res://.godot/imported/pet_nest_red.png-78286666bf793eee144407d1e2d8305a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/pet_cage_eggs.png"
-dest_files=["res://.godot/imported/pet_cage_eggs.png-b9342a6987a0e2eeca152bd98de32e2f.ctex"]
+source_file="res://art/pet_nest_red.png"
+dest_files=["res://.godot/imported/pet_nest_red.png-78286666bf793eee144407d1e2d8305a.ctex"]
 
 [params]
 

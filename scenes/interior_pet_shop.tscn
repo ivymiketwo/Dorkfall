@@ -6,10 +6,10 @@
 [ext_resource type="Resource" path="res://shops/pet_shop.tres" id="4_shop"]
 [ext_resource type="Texture2D" path="res://art/pet_keeper.png" id="5_keeper"]
 [ext_resource type="Script" path="res://scripts/critter.gd" id="6_critter"]
-[ext_resource type="Texture2D" path="res://art/pet_cage_red.png" id="7_red"]
-[ext_resource type="Texture2D" path="res://art/pet_cage_blue.png" id="8_blue"]
-[ext_resource type="Texture2D" path="res://art/pet_cage_yellow.png" id="9_yellow"]
-[ext_resource type="Texture2D" path="res://art/pet_cage_eggs.png" id="10_eggs"]
+[ext_resource type="Texture2D" path="res://art/pet_nest_red.png" id="7_red"]
+[ext_resource type="Texture2D" path="res://art/pet_nest_blue.png" id="8_blue"]
+[ext_resource type="Texture2D" path="res://art/pet_nest_yellow.png" id="9_yellow"]
+[ext_resource type="Texture2D" path="res://art/pet_nest_eggs.png" id="10_eggs"]
 [ext_resource type="Texture2D" path="res://art/pet_nest_egg.png" id="11_egg"]
 [ext_resource type="Texture2D" path="res://art/pet_pen.png" id="12_pen"]
 
@@ -25,7 +25,7 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_tex")
 centered = false
 
-[node name="CageRed" type="Sprite2D" parent="."]
+[node name="NestRed" type="Sprite2D" parent="."]
 position = Vector2(10, 3)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("7_red")
@@ -35,7 +35,7 @@ script = ExtResource("6_critter")
 frames = PackedInt32Array(0, 1, 0, 1, 3, 1, 0)
 durations = PackedFloat32Array(0.9, 0.4, 0.9, 0.4, 0.16, 0.4, 1.2)
 
-[node name="CageBlue" type="Sprite2D" parent="."]
+[node name="NestBlue" type="Sprite2D" parent="."]
 position = Vector2(54, 3)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("8_blue")
@@ -45,7 +45,7 @@ script = ExtResource("6_critter")
 frames = PackedInt32Array(0, 1, 2, 0, 1, 0, 3, 0)
 durations = PackedFloat32Array(1.1, 0.4, 0.16, 1.0, 0.4, 0.8, 0.16, 0.9)
 
-[node name="CageEggs" type="Sprite2D" parent="."]
+[node name="NestEggs" type="Sprite2D" parent="."]
 position = Vector2(131.5, 3)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("10_eggs")
@@ -55,7 +55,7 @@ script = ExtResource("6_critter")
 frames = PackedInt32Array(0, 0, 1, 0, 2, 0)
 durations = PackedFloat32Array(2.4, 0.15, 0.15, 0.15, 0.15, 3.0)
 
-[node name="CageYellow" type="Sprite2D" parent="."]
+[node name="NestYellow" type="Sprite2D" parent="."]
 position = Vector2(175.5, 3)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("9_yellow")
