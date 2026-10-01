@@ -53,7 +53,7 @@ func _ready() -> void:
 	_full.visible = false
 	_full.draw.connect(_draw_full)
 	add_child(_full)
-	CloseButton.attach_custom(_full, self, Vector2((640.0 - _w * 2.0) / 2.0 + _w * 2.0 - 12.0, 22.0 - 10.0), 2.0)
+	CloseButton.attach_custom(_full, self, Vector2((640.0 - _w * 2.0) / 2.0 + _w * 2.0 - 14.0, 22.0), 2.0)
 
 
 func _hash(x: int, z: int) -> float:

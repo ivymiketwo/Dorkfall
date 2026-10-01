@@ -4,7 +4,7 @@ extends Control
 ## `CloseButton.attach(menu)` adds one to a menu; the menu needs `close_ui()`.
 ## `CloseButton.close_top(tree)` closes the front-most open menu (used by Esc).
 
-const SZ := 8.0
+const SZ := 7.0
 ## Menus join this group and offer `close_ui()`; optional `ui_is_open()` (default: `visible`).
 const GROUP := "closable_ui"
 
@@ -60,7 +60,7 @@ func _ready() -> void:
 
 
 func _place() -> void:
-	position = Vector2((_menu as Control).size.x - SZ + 3.0, -3.0)    # straddles the corner so it never covers content
+	position = Vector2((_menu as Control).size.x - SZ, 0.0)    # flush with the top-right corner
 
 
 func _gui_input(event: InputEvent) -> void:
