@@ -18,7 +18,7 @@ size = Vector2(24, 6)
 
 [node name="PetShop" type="Node2D"]
 script = ExtResource("1_script")
-solids = Array[Rect2]([Rect2(0, 0, 224, 34), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(16, 122, 32, 20), Rect2(12, 146, 34, 16), Rect2(166, 112, 46, 36), Rect2(172, 152, 40, 14)])
+solids = Array[Rect2]([Rect2(0, 0, 224, 34), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(16, 122, 32, 20), Rect2(12, 146, 34, 16), Rect2(172, 124, 34, 20), Rect2(172, 152, 40, 14)])
 
 [node name="Room" type="Sprite2D" parent="."]
 scale = Vector2(0.5, 0.5)
@@ -76,7 +76,7 @@ frames = PackedInt32Array(0, 1, 0, 2, 0, 1, 2, 0, 3, 4, 3, 5, 3, 4, 5, 3, 6, 3)
 durations = PackedFloat32Array(3.0, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 2.5, 0.2, 0.14, 0.2, 0.14, 0.2, 0.14, 0.14, 0.4, 0.5, 4.0)
 
 [node name="Pen" type="Sprite2D" parent="."]
-position = Vector2(166, 112)
+position = Vector2(173, 117.5)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("12_pen")
 centered = false
