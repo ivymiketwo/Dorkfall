@@ -12,6 +12,8 @@ extends Resource
 @export var max_stack := 2147483647
 ## Frame in art/items.png used for the icon.
 @export var icon_frame := 0
+## Optional 48x48 front-facing picture of this item worn, shown on the paperdoll (replaces the body).
+@export var paperdoll_texture: Texture2D
 ## Shop price in coins.
 @export var value := 1
 ## If set, "Drop" puts this scene in the world (a follower pet) instead of an item on the ground.

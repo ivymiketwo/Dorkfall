@@ -6,7 +6,7 @@ extends Control
 
 const SLOT := 20
 const ICONS := preload("res://art/items.png")     # 32px icons, drawn 16x16 units
-const BASE := preload("res://art/player.png")
+const BASE := preload("res://art/player_new.png")   # idle, facing down = first frame
 const PANEL_BG := Color("3b3226")
 const PANEL_BORDER := Color("1a140e")
 const PANEL_LIGHT := Color("5c4d3a")
@@ -92,12 +92,16 @@ func _draw() -> void:
 	HiFont.draw(self, Vector2(6, 5), "Equipment", UiStyle.GOLD, px)
 
 	# the paperdoll itself: base body + worn layers, facing the camera
-	var fig := Rect2(Vector2(32, 38), Vector2(24, 40))
-	draw_texture_rect_region(BASE, fig, Rect2(96, 0, 24, 40))
+	var fig := Rect2(Vector2(20, 32), Vector2(48, 48))
+	var worn: Texture2D = null
 	for slot: String in Equipment.LAYER_ORDER:
 		var it := equipment.get_item(slot)
-		if it and it.worn_texture:
-			draw_texture_rect_region(it.worn_texture, fig, Rect2(96, 0, 24, 40))
+		if it and it.paperdoll_texture:
+			worn = it.paperdoll_texture
+	if worn:
+		draw_texture_rect(worn, fig, false)
+	else:
+		draw_texture_rect_region(BASE, fig, Rect2(0, 0, 48, 48))
 
 	for slot: String in SLOT_POS:
 		var p: Vector2 = SLOT_POS[slot]
