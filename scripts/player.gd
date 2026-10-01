@@ -21,7 +21,7 @@ const ANIM_IDLE := 0
 const ANIM_RUN := 1
 const ANIM_JUMP := 2
 const IDLE_FPS := 4.0
-const ROBE_JUMP_TEX := preload("res://art/player_new_robe_jump.png")
+const ROBE_TEX := preload("res://art/player_new_robe.png")   # robed run + jump (idle is still the naked body)
 const NAKED_TEX := preload("res://art/player_new.png")
 const ROBE_JUMP_FRAMES := [8, 8, 9, 9]   # per facing, in the robed jump
 
@@ -208,11 +208,15 @@ func _wearing_robe() -> bool:
 	return it != null and it.id == &"wizard_robe"
 
 
-func _set_jump_frame(k: float) -> void:
-	var robe := _wearing_robe()
-	var tex: Texture2D = ROBE_JUMP_TEX if robe else NAKED_TEX
+func _use_body_texture() -> void:
+	var tex: Texture2D = ROBE_TEX if _wearing_robe() else NAKED_TEX
 	if sprite.texture != tex:
 		sprite.texture = tex
+
+
+func _set_jump_frame(k: float) -> void:
+	var robe := _wearing_robe()
+	_use_body_texture()
 	var n: int = ROBE_JUMP_FRAMES[facing] if robe else 9
 	sprite.frame = (ANIM_JUMP * 4 + facing) * sprite.hframes + mini(int(k * n), n - 1)
 
@@ -315,8 +319,7 @@ func _update_animation(dir: Vector2, delta: float) -> void:
 			facing = Facing.RIGHT if dir.x > 0 else Facing.LEFT
 		else:
 			facing = Facing.DOWN if dir.y > 0 else Facing.UP
-	if sprite.texture != NAKED_TEX:
-		sprite.texture = NAKED_TEX
+	_use_body_texture()
 	var anim := ANIM_IDLE if dir == Vector2.ZERO else ANIM_RUN
 	var t := _idle_time if dir == Vector2.ZERO else _anim_time
 	var col := int(t * (IDLE_FPS if dir == Vector2.ZERO else walk_fps * 1.15)) % 4
