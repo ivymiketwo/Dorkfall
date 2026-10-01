@@ -53,6 +53,7 @@ func _ready() -> void:
 	_full.visible = false
 	_full.draw.connect(_draw_full)
 	add_child(_full)
+	CloseButton.attach_custom(_full, self, Vector2((640.0 - _w * 2.0) / 2.0 + _w * 2.0 - 12.0, 22.0 - 10.0), 2.0)
 
 
 func _hash(x: int, z: int) -> float:
@@ -229,3 +230,11 @@ func _quest_markers(c: Control, p: Node2D, to_screen: Callable, clip: Rect2) -> 
 			var edge := centre + dir * minf(tx, ty)
 			var side := Vector2(-dir.y, dir.x)
 			c.draw_colored_polygon(PackedVector2Array([edge + dir * 3.5, edge - dir * 2.5 + side * 3.0, edge - dir * 2.5 - side * 3.0]), col)
+
+
+func ui_is_open() -> bool:
+	return _full != null and _full.visible
+
+
+func close_ui() -> void:
+	_full.visible = false

@@ -23,6 +23,7 @@ var _mouse := Vector2.ZERO
 
 
 func _ready() -> void:
+	CloseButton.attach(self)
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_resize()
@@ -101,3 +102,7 @@ func _draw() -> void:
 	if _dragging and _press != -1:
 		draw_texture_rect_region(ICONS, Rect2(_mouse - Vector2(8, 8), Vector2(16, 16)),
 				Rect2(spells[_press].icon_index * 16, 0, 16, 16), Color(1, 1, 1, 0.85))
+
+
+func close_ui() -> void:
+	visible = false

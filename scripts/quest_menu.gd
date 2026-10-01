@@ -14,6 +14,7 @@ var _rows: Array = []
 
 
 func _ready() -> void:
+	CloseButton.attach(self)
 	add_to_group("quest_menu")
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
@@ -112,3 +113,7 @@ func _draw() -> void:
 		var col := Color("ffe066") if q["id"] == tracked else UiStyle.TEXT_DIM
 		HiFont.draw(self, Vector2(r.end.x - 5 - HiFont.text_width(label, px), r.position.y + 4), label, col, px)
 	HiFont.draw(self, Vector2(PAD, size.y - 13), "Click a quest to track it on the map", UiStyle.TEXT_DIM, px)
+
+
+func close_ui() -> void:
+	close()

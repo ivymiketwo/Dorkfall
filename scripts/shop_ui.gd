@@ -23,6 +23,7 @@ var _message_color := Color.WHITE
 
 
 func _ready() -> void:
+	CloseButton.attach(self)
 	add_to_group("shop_ui")
 	size = Vector2(COLS * SLOT + (COLS - 1) * GAP + PAD * 2, HEADER + ROWS * SLOT + (ROWS - 1) * GAP + FOOTER + PAD)
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
@@ -137,3 +138,7 @@ func _draw() -> void:
 		HiFont.draw(self, Vector2(PAD, fy + 9), "  ".join(hovered.stat_lines()), Color("8fd0ff"), px)
 	elif _inv:
 		HiFont.draw(self, Vector2(PAD, fy + 9), "Your coins  %d" % _inv.count_of(COINS), Color("f0d040"), px)
+
+
+func close_ui() -> void:
+	close()

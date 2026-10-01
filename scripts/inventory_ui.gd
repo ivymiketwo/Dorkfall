@@ -35,6 +35,7 @@ var _mouse := Vector2.ZERO
 
 
 func _ready() -> void:
+	CloseButton.attach(self)
 	size = Vector2(COLS * SLOT + (COLS - 1) * GAP + PAD * 2, ROWS * SLOT + (ROWS - 1) * GAP + PAD * 2)
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
 	position = Vector2(screen.x - size.x - 4, screen.y - size.y - 4 - 17)   # sits above the nav bar
@@ -190,3 +191,6 @@ func _draw_count(p: Vector2, item: Item, count: int) -> void:
 			color = Color.WHITE                # white: thousands
 		HiFont.draw(self, p + Vector2(0.5, 0.5), text, color, _px(), true)
 
+
+func close_ui() -> void:
+	visible = false

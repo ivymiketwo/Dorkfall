@@ -18,6 +18,7 @@ var _hover := ""
 
 
 func _ready() -> void:
+	CloseButton.attach(self)
 	size = Vector2(122, TOP + 3 * ROW_H + 6)
 	position = Vector2(94, 40)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -111,3 +112,7 @@ func _draw() -> void:
 		var m := r.get_center()
 		draw_rect(Rect2(m.x - 3, m.y - 0.5, 6, 1), c)
 		draw_rect(Rect2(m.x - 0.5, m.y - 3, 1, 6), c)
+
+
+func close_ui() -> void:
+	visible = false

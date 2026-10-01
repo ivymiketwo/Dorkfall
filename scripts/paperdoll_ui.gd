@@ -35,6 +35,7 @@ var _mouse := Vector2.ZERO
 
 
 func _ready() -> void:
+	CloseButton.attach(self)
 	size = Vector2(88, 136)
 	position = Vector2(4, 40)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -153,3 +154,7 @@ func _draw() -> void:
 
 func _fmt(v: float) -> String:
 	return str(snappedf(v, 0.1)).trim_suffix(".0")
+
+
+func close_ui() -> void:
+	visible = false

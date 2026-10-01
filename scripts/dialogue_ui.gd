@@ -15,6 +15,7 @@ var _hover := -1
 
 
 func _ready() -> void:
+	CloseButton.attach(self)
 	add_to_group("dialogue_ui")
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
@@ -128,3 +129,7 @@ func _draw() -> void:
 		UiStyle.slot(self, rects[i], i == _hover)
 		var label := String(_dlg["buttons"][i]["label"])
 		HiFont.draw(self, rects[i].position + Vector2(6, 4), label, Color("ffe066") if i == 0 else UiStyle.TEXT, px)
+
+
+func close_ui() -> void:
+	close()

@@ -17,6 +17,7 @@ var _message_color := Color("b0a890")
 
 
 func _ready() -> void:
+	CloseButton.attach(self)
 	add_to_group("quest_ui")
 	size = Vector2(W, HEADER + Quests.board_list().size() * (ROW_H + ROW_GAP) + 20 + PAD)
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
@@ -130,3 +131,7 @@ func _draw() -> void:
 		var reward := "%d COINS  %d XP" % [Quests.reward_of(q), Quests.reward_of(q)]
 		HiFont.draw(self, Vector2(r.end.x - 6 - HiFont.text_width(reward, px), r.position.y + 20), reward, Color("f0d040"), px)
 	HiFont.draw(self, Vector2(PAD, size.y - 14), _message, _message_color, px)
+
+
+func close_ui() -> void:
+	close()

@@ -56,21 +56,12 @@ func close() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if visible or not event.is_action_pressed("ui_cancel"):
 		return
-	# let an open shop / context menu use Esc first
-	var shop := get_tree().get_first_node_in_group("shop_ui") as Control
-	if shop != null and shop.visible:
-		return
-	var quest := get_tree().get_first_node_in_group("quest_ui") as Control
-	if quest != null and quest.visible:
-		return
-	var talk := get_tree().get_first_node_in_group("dialogue_ui") as Control
-	if talk != null and talk.visible:
-		return
-	var qm := get_tree().get_first_node_in_group("quest_menu") as Control
-	if qm != null and qm.visible:
-		return
 	var menu := get_tree().get_first_node_in_group("context_menu") as ContextMenu
 	if menu != null and menu.is_open():
+		return
+	# Esc closes open windows one at a time (front-most first) before the escape menu opens
+	if CloseButton.close_top(get_tree()):
+		get_viewport().set_input_as_handled()
 		return
 	open()
 	get_viewport().set_input_as_handled()
