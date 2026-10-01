@@ -197,22 +197,19 @@ position = Vector2(392, 144)
 [node name="Coins3" parent="Entities" unique_id=1160737373 instance=ExtResource("12_pickup")]
 position = Vector2(208, 168)
 item = ExtResource("13_coins")
-count = 250
+count = 254
 
 [node name="Mangyang1" parent="Entities" unique_id=10903798 instance=ExtResource("20_mang")]
 position = Vector2(1324, 429)
 
 [node name="Mangyang2" parent="Entities" unique_id=639802557 instance=ExtResource("20_mang")]
-position = Vector2(805, 750)
+position = Vector2(791, 652)
 
 [node name="Mangyang3" parent="Entities" unique_id=367859988 instance=ExtResource("20_mang")]
-position = Vector2(-69, 339)
-
-[node name="Mangyang4" parent="Entities" unique_id=2139568446 instance=ExtResource("20_mang")]
-position = Vector2(6, 480)
+position = Vector2(702, 572)
 
 [node name="Mangyang5" parent="Entities" unique_id=1446540921 instance=ExtResource("20_mang")]
-position = Vector2(-361, 618)
+position = Vector2(593, 709)
 
 [node name="Mangyang6" parent="Entities" unique_id=1710042357 instance=ExtResource("20_mang")]
 position = Vector2(579, 852)
@@ -221,31 +218,28 @@ position = Vector2(579, 852)
 position = Vector2(714, 741)
 
 [node name="Mangyang8" parent="Entities" unique_id=655165469 instance=ExtResource("20_mang")]
-position = Vector2(617, 502)
+position = Vector2(599, 539)
 
 [node name="Mangyang9" parent="Entities" unique_id=219965637 instance=ExtResource("20_mang")]
 position = Vector2(1325, 578)
 
 [node name="Mangyang10" parent="Entities" unique_id=851485233 instance=ExtResource("20_mang")]
-position = Vector2(1509, 570)
+position = Vector2(960, 497)
 
 [node name="Mangyang11" parent="Entities" unique_id=1727909176 instance=ExtResource("20_mang")]
-position = Vector2(1764, 855)
+position = Vector2(877, 609)
 
 [node name="Mangyang12" parent="Entities" unique_id=1147851614 instance=ExtResource("20_mang")]
-position = Vector2(-429, 460)
+position = Vector2(296, 503)
 
 [node name="Mangyang13" parent="Entities" unique_id=1680306614 instance=ExtResource("20_mang")]
-position = Vector2(1655, 621)
+position = Vector2(1223, 1007)
 
 [node name="Mangyang14" parent="Entities" unique_id=1718102760 instance=ExtResource("20_mang")]
-position = Vector2(1815, 576)
+position = Vector2(984, 424)
 
 [node name="Mangyang15" parent="Entities" unique_id=1609255214 instance=ExtResource("20_mang")]
-position = Vector2(-160, 483)
-
-[node name="Mangyang16" parent="Entities" unique_id=807417149 instance=ExtResource("20_mang")]
-position = Vector2(-199, 367)
+position = Vector2(457, 424)
 
 [node name="Mangyang17" parent="Entities" unique_id=34261685 instance=ExtResource("20_mang")]
 position = Vector2(447, 754)
@@ -257,46 +251,46 @@ position = Vector2(1082, 353)
 position = Vector2(293, 628)
 
 [node name="Mangyang21" parent="Entities" unique_id=677930118 instance=ExtResource("20_mang")]
-position = Vector2(-200, 943)
+position = Vector2(467, 978)
 
 [node name="Mangyang22" parent="Entities" unique_id=253268751 instance=ExtResource("20_mang")]
 position = Vector2(1287, 854)
 
 [node name="Mangyang23" parent="Entities" unique_id=1248337062 instance=ExtResource("20_mang")]
-position = Vector2(421, 611)
+position = Vector2(406, 583)
 
 [node name="Mangyang24" parent="Entities" unique_id=1617691347 instance=ExtResource("20_mang")]
 position = Vector2(886, 867)
 
 [node name="Mangyang25" parent="Entities" unique_id=1559946133 instance=ExtResource("20_mang")]
-position = Vector2(1650, 837)
+position = Vector2(1067, 1005)
 
 [node name="Mangyang26" parent="Entities" unique_id=1891040749 instance=ExtResource("20_mang")]
 position = Vector2(1263, 913)
 
 [node name="Mangyang27" parent="Entities" unique_id=1369900554 instance=ExtResource("20_mang")]
-position = Vector2(20, 919)
+position = Vector2(775, 1008)
 
 [node name="Mangyang28" parent="Entities" unique_id=1554473618 instance=ExtResource("20_mang")]
 position = Vector2(1397, 855)
 
 [node name="Mangyang29" parent="Entities" unique_id=689498208 instance=ExtResource("20_mang")]
-position = Vector2(1671, 456)
+position = Vector2(1305, 495)
 
 [node name="Mangyang30" parent="Entities" unique_id=923210811 instance=ExtResource("20_mang")]
-position = Vector2(1584, 902)
+position = Vector2(975, 993)
 
 [node name="Mangyang31" parent="Entities" unique_id=1876085732 instance=ExtResource("20_mang")]
 position = Vector2(880, 412)
 
 [node name="Mangyang32" parent="Entities" unique_id=229438463 instance=ExtResource("20_mang")]
-position = Vector2(399, 882)
+position = Vector2(461, 906)
 
 [node name="Mangyang33" parent="Entities" unique_id=990104271 instance=ExtResource("20_mang")]
 position = Vector2(1175, 927)
 
 [node name="Mangyang34" parent="Entities" unique_id=1738712601 instance=ExtResource("20_mang")]
-position = Vector2(-381, 724)
+position = Vector2(362, 848)
 
 [node name="Mangyang35" parent="Entities" unique_id=557313559 instance=ExtResource("20_mang")]
 position = Vector2(300, 950)
@@ -305,7 +299,7 @@ position = Vector2(300, 950)
 position = Vector2(1258, 766)
 
 [node name="Mangyang37" parent="Entities" unique_id=1040218049 instance=ExtResource("20_mang")]
-position = Vector2(1547, 685)
+position = Vector2(988, 581)
 
 [node name="Lamp1" parent="Entities" unique_id=1628499993 instance=ExtResource("32_lamp")]
 position = Vector2(20, 182)
@@ -696,7 +690,7 @@ position = Vector2(1767, 85)
 kind = "bush_yellow"
 
 [node name="MangyangE1" parent="Entities" unique_id=1916673931 instance=ExtResource("20_mang")]
-position = Vector2(1845, 875)
+position = Vector2(1066, 650)
 
 [node name="MangyangE2" parent="Entities" unique_id=145761645 instance=ExtResource("20_mang")]
 position = Vector2(1238, 571)
@@ -705,10 +699,10 @@ position = Vector2(1238, 571)
 position = Vector2(1253, 690)
 
 [node name="MangyangE4" parent="Entities" unique_id=160347260 instance=ExtResource("20_mang")]
-position = Vector2(671, 473)
+position = Vector2(665, 420)
 
 [node name="MangyangE5" parent="Entities" unique_id=1079347434 instance=ExtResource("20_mang")]
-position = Vector2(1569, 356)
+position = Vector2(950, 349)
 
 [node name="MangyangE7" parent="Entities" unique_id=1874859456 instance=ExtResource("20_mang")]
 position = Vector2(1137, 454)
@@ -717,16 +711,16 @@ position = Vector2(1137, 454)
 position = Vector2(1205, 441)
 
 [node name="MangyangE9" parent="Entities" unique_id=2086785865 instance=ExtResource("20_mang")]
-position = Vector2(471, 821)
+position = Vector2(882, 534)
 
 [node name="MangyangE10" parent="Entities" unique_id=566158995 instance=ExtResource("20_mang")]
-position = Vector2(1645, 384)
+position = Vector2(1108, 859)
 
 [node name="MangyangE11" parent="Entities" unique_id=1346713928 instance=ExtResource("20_mang")]
-position = Vector2(1706, 778)
+position = Vector2(1330, 749)
 
 [node name="MangyangE12" parent="Entities" unique_id=1828910948 instance=ExtResource("20_mang")]
-position = Vector2(1003, 894)
+position = Vector2(1055, 933)
 
 [node name="MangyangE13" parent="Entities" unique_id=268407694 instance=ExtResource("20_mang")]
 position = Vector2(433, 683)
@@ -741,10 +735,10 @@ position = Vector2(1223, 837)
 position = Vector2(800, 820)
 
 [node name="MangyangE17" parent="Entities" unique_id=458013012 instance=ExtResource("20_mang")]
-position = Vector2(1506, 888)
+position = Vector2(890, 967)
 
 [node name="MangyangE18" parent="Entities" unique_id=322299734 instance=ExtResource("20_mang")]
-position = Vector2(-389, 818)
+position = Vector2(705, 890)
 
 [node name="MangyangE19" parent="Entities" unique_id=1436159629 instance=ExtResource("20_mang")]
 position = Vector2(804, 587)
@@ -1138,7 +1132,7 @@ position = Vector2(-25, 370)
 position = Vector2(665, -107)
 
 [node name="MangyangW1" parent="Entities" unique_id=1836680306 instance=ExtResource("20_mang")]
-position = Vector2(1699, 914)
+position = Vector2(1054, 530)
 
 [node name="MangyangW2" parent="Entities" unique_id=1077045675 instance=ExtResource("20_mang")]
 position = Vector2(782, 429)
@@ -1147,13 +1141,10 @@ position = Vector2(782, 429)
 position = Vector2(1379, 408)
 
 [node name="MangyangW4" parent="Entities" unique_id=1864433239 instance=ExtResource("20_mang")]
-position = Vector2(1788, 402)
+position = Vector2(1175, 723)
 
 [node name="MangyangW5" parent="Entities" unique_id=1524887016 instance=ExtResource("20_mang")]
 position = Vector2(728, 800)
-
-[node name="MangyangW6" parent="Entities" unique_id=252886524 instance=ExtResource("20_mang")]
-position = Vector2(3, 374)
 
 [node name="MangyangW7" parent="Entities" unique_id=1359627960 instance=ExtResource("20_mang")]
 position = Vector2(628, 804)
@@ -1168,22 +1159,22 @@ position = Vector2(1225, 374)
 position = Vector2(353, 621)
 
 [node name="MangyangW11" parent="Entities" unique_id=488307000 instance=ExtResource("20_mang")]
-position = Vector2(-406, 550)
+position = Vector2(628, 602)
 
 [node name="MangyangW12" parent="Entities" unique_id=1182643529 instance=ExtResource("20_mang")]
-position = Vector2(1814, 344)
+position = Vector2(1175, 391)
 
 [node name="MangyangW13" parent="Entities" unique_id=209938003 instance=ExtResource("20_mang")]
 position = Vector2(573, 928)
 
 [node name="MangyangW14" parent="Entities" unique_id=724951658 instance=ExtResource("20_mang")]
-position = Vector2(-314, 451)
+position = Vector2(463, 570)
 
 [node name="MangyangW15" parent="Entities" unique_id=2006399966 instance=ExtResource("20_mang")]
-position = Vector2(1785, 682)
+position = Vector2(841, 488)
 
 [node name="MangyangW16" parent="Entities" unique_id=125786275 instance=ExtResource("20_mang")]
-position = Vector2(1589, 584)
+position = Vector2(1234, 498)
 
 [node name="Stall1" parent="Entities" unique_id=1190942032 instance=ExtResource("50_decor")]
 position = Vector2(153, 215)
@@ -5108,7 +5099,7 @@ position = Vector2(782, 531)
 position = Vector2(1223, 834)
 
 [node name="MangyangF18" parent="Entities" unique_id=1906272220 instance=ExtResource("20_mang")]
-position = Vector2(619, 497)
+position = Vector2(587, 462)
 
 [node name="MangyangF19" parent="Entities" unique_id=1238604343 instance=ExtResource("20_mang")]
 position = Vector2(588, 385)
@@ -5135,7 +5126,7 @@ position = Vector2(340, 779)
 position = Vector2(1152, 525)
 
 [node name="MangyangF28" parent="Entities" unique_id=511954766 instance=ExtResource("20_mang")]
-position = Vector2(356, 570)
+position = Vector2(560, 655)
 
 [node name="MangyangF29" parent="Entities" unique_id=51883923 instance=ExtResource("20_mang")]
 position = Vector2(1366, 869)
@@ -5156,26 +5147,26 @@ position = Vector2(406, 789)
 position = Vector2(390, 632)
 
 [node name="MangyangF36" parent="Entities" unique_id=1740878454 instance=ExtResource("20_mang")]
-position = Vector2(501, 525)
+position = Vector2(526, 569)
 
 [node name="MangyangF37" parent="Entities" unique_id=203006831 instance=ExtResource("20_mang")]
-position = Vector2(1374, 901)
+position = Vector2(1002, 479)
 
 [node name="MangyangF38" parent="Entities" unique_id=239392775 instance=ExtResource("20_mang")]
-position = Vector2(606, 958)
+position = Vector2(614, 995)
 
 [node name="MangyangF39" parent="Entities" unique_id=1279399595 instance=ExtResource("20_mang")]
 position = Vector2(498, 613)
 
 [node name="MangyangF40" parent="Entities" unique_id=1362057733 instance=ExtResource("20_mang")]
-position = Vector2(1240, 787)
+position = Vector2(717, 493)
 
 [node name="WheatHay1" parent="Entities" unique_id=932415301 instance=ExtResource("50_decor")]
 position = Vector2(371, 1032)
 kind = "haybale"
 
 [node name="WheatHay2" parent="Entities" unique_id=1234928811 instance=ExtResource("50_decor")]
-position = Vector2(501, 517)
+position = Vector2(541, 502)
 kind = "haybale"
 
 [node name="WheatHay3" parent="Entities" unique_id=672912967 instance=ExtResource("50_decor")]
@@ -6007,11 +5998,11 @@ kind = "wgate_leaf_h"
 position = Vector2(234, 708)
 kind = "wgate_leaf_h"
 
-[node name="GateS_pillarW" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateS_pillarW" parent="Entities" unique_id=191176106 instance=ExtResource("50_decor")]
 position = Vector2(192, -500)
 kind = "fence_pillar"
 
-[node name="GateS_pillarE" parent="Entities" instance=ExtResource("50_decor")]
+[node name="GateS_pillarE" parent="Entities" unique_id=2099632927 instance=ExtResource("50_decor")]
 position = Vector2(228, -500)
 kind = "fence_pillar"
 
