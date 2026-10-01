@@ -19,7 +19,7 @@ const SOUTH_GRIP := 0.55
 const OTHER_GRIP := 0.485                 # keeps the lower end where it was after the size change
 const GRIP := 0.33                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
-const LEAN := [-5.0, 15.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
+const LEAN := [-5.0, 5.0, -35.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
 
