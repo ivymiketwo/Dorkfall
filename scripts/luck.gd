@@ -10,7 +10,7 @@ const QUEST := "vorly"
 
 const BOB_PERIOD := 0.6        ## seconds per up/down step
 const SPLIT_ROW := 32          ## art row where the upper body ends (below the belt and hands)
-const OVERLAP := 4             ## rows the legs sprite shares with the upper body, so the seam never opens
+const OVERLAP := 0             ## rows shared by both halves (none: the upper body only ever moves down over the legs, so no seam opens)
 
 var _near := false
 var _upper: Sprite2D
@@ -44,7 +44,7 @@ func _split_sprite() -> void:
 func _process(delta: float) -> void:
 	_bob += delta
 	if _upper:
-		_upper.position.y = -1.0 if int(_bob / BOB_PERIOD) % 2 == 0 else 0.0
+		_upper.position.y = 0.0 if int(_bob / BOB_PERIOD) % 2 == 0 else 1.0
 	var player := Players.local(get_tree())
 	var near := player != null and global_position.distance_to(player.global_position) <= interact_range
 	if near != _near:
