@@ -12,6 +12,9 @@ const LAYER_ORDER := ["chest", "helmet", "shield", "weapon"]
 
 @export var starting: Array[Item] = []
 
+## Where the held weapon sits relative to the player, per facing (down, up, left, right), in world px.
+const HELD_OFFSET := [Vector2(4, 1), Vector2(-4, 1), Vector2(-3, 1), Vector2(3, 1)]
+
 var items := {}          # slot name -> Item
 var _layers := {}        # slot name -> Sprite2D
 
@@ -27,6 +30,10 @@ func _ready() -> void:
 		s.scale = base.scale
 		s.hframes = base.hframes
 		s.vframes = base.vframes
+		if slot == "weapon":            # held weapons still use the old 5x4 worn sheets (standing frame per facing)
+			s.hframes = 5
+			s.vframes = 4
+			s.offset = Vector2(0, -15)
 		s.visible = false
 		player.add_child.call_deferred(s)
 		_layers[slot] = s
@@ -56,6 +63,10 @@ func _save() -> void:
 func _process(_delta: float) -> void:
 	for slot in _layers:
 		var s: Sprite2D = _layers[slot]
+		if slot == "weapon":
+			s.frame = int(player.facing) * 5 + 4
+			s.position = base.position + HELD_OFFSET[int(player.facing)]
+			continue
 		if s.visible:
 			s.frame = base.frame
 		if s.material != base.material:
@@ -78,7 +89,7 @@ func _refresh() -> void:
 		var s: Sprite2D = _layers[slot]
 		var it := get_item(slot)
 		s.texture = it.worn_texture if it else null
-		s.visible = false   # TODO: worn gear is hidden until sprites exist for the 48x48 body
+		s.visible = slot == "weapon" and it != null and it.worn_texture != null   # only held weapons for now; armour needs 48x48 art
 	_apply_stats()
 	changed.emit()
 
