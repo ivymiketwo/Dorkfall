@@ -8,15 +8,43 @@ extends StaticBody2D
 const PX := 0.5
 const QUEST := "vorly"
 
+const BOB_PERIOD := 0.6        ## seconds per up/down step
+const SPLIT_ROW := 32          ## art row where the upper body ends (below the belt and hands)
+const OVERLAP := 4             ## rows the legs sprite shares with the upper body, so the seam never opens
+
 var _near := false
+var _upper: Sprite2D
+var _bob := 0.0
 
 
 func _ready() -> void:
 	add_to_group("interactables")
 	add_to_group("quest_giver_npc")
+	_split_sprite()
 
 
-func _process(_delta: float) -> void:
+## Idle animation: the sprite is cut in two so the upper body can bob 1px up and down.
+func _split_sprite() -> void:
+	var legs: Sprite2D = $Sprite2D
+	var tex := legs.texture
+	var h := tex.get_height()
+	legs.region_enabled = true
+	legs.region_rect = Rect2(0, SPLIT_ROW - OVERLAP, tex.get_width(), h - SPLIT_ROW + OVERLAP)
+	legs.offset = Vector2(0, -(h - SPLIT_ROW + OVERLAP) / 2.0)
+	_upper = Sprite2D.new()
+	_upper.texture = tex
+	_upper.scale = legs.scale
+	_upper.region_enabled = true
+	_upper.region_rect = Rect2(0, 0, tex.get_width(), SPLIT_ROW)
+	_upper.offset = Vector2(0, -(h - SPLIT_ROW / 2.0))
+	add_child(_upper)
+	_bob = randf() * BOB_PERIOD * 2.0
+
+
+func _process(delta: float) -> void:
+	_bob += delta
+	if _upper:
+		_upper.position.y = -1.0 if int(_bob / BOB_PERIOD) % 2 == 0 else 0.0
 	var player := Players.local(get_tree())
 	var near := player != null and global_position.distance_to(player.global_position) <= interact_range
 	if near != _near:
