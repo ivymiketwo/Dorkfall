@@ -9,7 +9,7 @@ animations are idle (4 frames), run (4), jump (9).
 
 For each frame it stores [x, y, behind]: the hand position in art pixels, and whether the held weapon
 should be drawn BEHIND the body (1) or in front of it (0). The weapon is behind when the right hand is
-on the far side of the body (facing up or right) or when no hand is visible in the frame.
+on the far side of the body (facing up or left) or when no hand is visible in the frame.
 """
 import json, os
 import numpy as np
@@ -45,7 +45,7 @@ def find_hand(frame, facing):
         c = sk & mid
         if c.sum() >= 2:
             yy, xx = np.where(c)
-            x = float(np.median(xx)) + (4 if facing == "right" else 0)   # far hand: hold the weapon a little in front of the body so it peeks out
+            x = float(np.median(xx))
             return x, float(np.median(yy)), c.sum()
         return None
     # only the character's right side of the body counts (down = screen-left, up = screen-right)
@@ -74,11 +74,8 @@ def smooth(rowdata, anim, n):
     xs = np.array([p[0] for p in pts]); ys = np.array([p[1] for p in pts])
     if anim == 0:
         xs[:] = np.median(xs); ys[:] = np.round(np.mean(ys) * 2) / 2
-    elif anim == 1:
-        xs = (np.roll(xs, 1) + xs + np.roll(xs, -1)) / 3
-        ys = (np.roll(ys, 1) + ys + np.roll(ys, -1)) / 3
     else:
-        xs = (np.concatenate([[xs[0]], xs[:-1]]) + xs + np.concatenate([xs[1:], [xs[-1]]])) / 3
+        return rowdata          # run and jump: follow the hand exactly
     for i, p in enumerate(pts):
         p[0] = round(float(xs[i]), 1); p[1] = round(float(ys[i]), 1)
     return rowdata
@@ -103,7 +100,7 @@ def process(path):
                 else:
                     x, y, _ = hand
                     last = (x, y)
-                    behind = 1 if facing in ("up", "right") else 0
+                    behind = 1 if facing in ("up", "left") else 0
                     rowdata.append([round(x, 1), round(y, 1), behind])
             out[str(row)] = smooth(rowdata, anim, n)
     return out
