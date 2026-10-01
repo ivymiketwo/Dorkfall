@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://scripts/night_glow.gd" id="99_glow"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(96, 40)
+size = Vector2(96, 44)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
 size = Vector2(10, 4)
@@ -18,7 +18,7 @@ centered = false
 position = Vector2(-52.0, -97.19999999999999)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(8.0, -28.0)
+position = Vector2(8.0, -26)
 shape = SubResource("RectangleShape2D_body")
 
 [node name="Door" type="Area2D" parent="."]
