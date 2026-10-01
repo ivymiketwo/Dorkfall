@@ -88,6 +88,12 @@ func _process(_delta: float) -> void:
 	rotation_degrees = LEAN[facing]
 	if row == 2:
 		rotation_degrees = -LEAN[3]          # west idle: mirror of the east idle angle
+		# ...and mirror the east idle position too, so the orb sits just in front of the head
+		var he = rows.get("3", [])
+		if col < he.size() and he[col] != null:
+			var le := Vector2(float(he[col][0]) - FRAME_PX / 2.0, float(he[col][1]) - FRAME_PX / 2.0) + body.offset
+			le += Vector2(0, -3) + Vector2(2, 0)
+			position = body.position + Vector2(-le.x, le.y) * body.scale
 	var jump_pose := Vector3.ZERO
 	var has_jump_pose := false
 	if row >= 8 and (facing == 2 or facing == 3):
@@ -98,7 +104,7 @@ func _process(_delta: float) -> void:
 	_show_top_only(row % 4 == 2)
 	# facing south the staff is drawn taller (top above the head) and held nearer its middle
 	scale = body.scale * WEST_SCALE     # same staff size in every direction
-	var g := SOUTH_GRIP if facing == 2 else OTHER_GRIP
+	var g := SOUTH_GRIP if (facing == 2 and row != 2) else OTHER_GRIP
 	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
 	if has_jump_pose:
 		rotation_degrees = jump_pose.z
