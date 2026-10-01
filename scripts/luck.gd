@@ -9,7 +9,7 @@ const PX := 0.5
 const QUEST := "vorly"
 
 const BOB_PERIOD := 0.6        ## seconds per up/down step
-const SPLIT_ROW := 32          ## art row where the upper body ends (below the belt and hands)
+const SPLIT_ROW := 34          ## art row where the upper body ends (below the hands and their outlines)
 const OVERLAP := 0             ## rows shared by both halves (none: the upper body only ever moves down over the legs, so no seam opens)
 
 var _near := false
