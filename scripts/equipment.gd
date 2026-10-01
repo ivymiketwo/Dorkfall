@@ -58,6 +58,8 @@ func _process(_delta: float) -> void:
 		var s: Sprite2D = _layers[slot]
 		if s.visible:
 			s.frame = base.frame
+		if s.material != base.material:
+			s.material = base.material      # shares the idle-bob shader
 		s.position = base.position
 
 

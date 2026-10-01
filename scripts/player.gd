@@ -36,6 +36,9 @@ var aim_world := Vector2.ZERO      ## where in the world the player is aiming
 
 var facing := Facing.DOWN
 var _anim_time := 0.0
+var _idle_mat: ShaderMaterial
+var _idle_time := 0.0
+const IDLE_BOB_PERIOD := 0.6   ## seconds per up/down step while standing still
 var _spawn_point: Vector2
 
 # Gust hop (bunnyhop): leap along a ballistic arc; landing opens a quick window to press Space again.
@@ -54,6 +57,10 @@ func _ready() -> void:
 	_ensure_input_actions()
 	_spawn_point = position
 	stats.died.connect(_on_died)
+	_idle_mat = ShaderMaterial.new()
+	_idle_mat.shader = load("res://shaders/idle_bob.gdshader")
+	_idle_mat.set_shader_parameter("vframes", float(sprite.vframes))
+	sprite.material = _idle_mat    # gear layers copy this (see Equipment)
 
 
 func _gather_input() -> void:
@@ -173,6 +180,8 @@ func _hop_leap() -> void:
 
 
 func _hop_step(delta: float) -> void:
+	_idle_time = 0.0
+	_idle_mat.set_shader_parameter("bob", 0.0)
 	sprite.frame = facing * sprite.hframes + 4
 	if _hop_t >= 0.0:
 		_hop_t += delta
@@ -275,7 +284,9 @@ func _leave_gravestone() -> void:
 func _update_animation(dir: Vector2, delta: float) -> void:
 	if dir == Vector2.ZERO:
 		_anim_time = 0.0
+		_idle_time += delta
 	else:
+		_idle_time = 0.0
 		_anim_time += delta
 		if absf(dir.x) > absf(dir.y):
 			facing = Facing.RIGHT if dir.x > 0 else Facing.LEFT
@@ -284,6 +295,8 @@ func _update_animation(dir: Vector2, delta: float) -> void:
 	# columns 0-3 are the four walk steps, column 4 is standing still
 	var frame_col := 4 if dir == Vector2.ZERO else int(_anim_time * walk_fps) % 4
 	sprite.frame = facing * sprite.hframes + frame_col
+	# standing still: the upper body dips 1px every other step
+	_idle_mat.set_shader_parameter("bob", 1.0 if (dir == Vector2.ZERO and int(_idle_time / IDLE_BOB_PERIOD) % 2 == 1) else 0.0)
 
 
 ## Adds key bindings if they aren't already defined in
