@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/skeleton.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/skeleton.png" id="2_tex"]
+[ext_resource type="Script" path="res://scripts/stats.gd" id="3_stats"]
+[ext_resource type="Script" path="res://scripts/nameplate.gd" id="4_nameplate"]
+[ext_resource type="Resource" path="res://items/coins.tres" id="5_coins"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 4.5
+height = 14.0
+
+[node name="Skeleton" type="CharacterBody2D"]
+collision_mask = 3
+motion_mode = 1
+script = ExtResource("1_script")
+drop_item = ExtResource("5_coins")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+offset = Vector2(0, -20)
+scale = Vector2(0.5, 0.5)
+hframes = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -7)
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="Stats" type="Node" parent="."]
+script = ExtResource("3_stats")
+max_health = 140.0
+max_stamina = 50.0
+max_mana = 50.0
+health_regen = 1.0
+
+[node name="Nameplate" type="Node2D" parent="."]
+z_index = 10
+position = Vector2(0, -24)
+script = ExtResource("4_nameplate")
+bar_width = 22

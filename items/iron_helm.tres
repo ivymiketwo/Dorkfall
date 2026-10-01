@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Item" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://art/worn_iron_helm.png" id="2_worn"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"iron_helm"
+display_name = "Iron Helm"
+description = "A dented steel helmet."
+icon_frame = 17
+value = 70
+equip_slot = "helmet"
+two_handed = false
+worn_texture = ExtResource("2_worn")
+

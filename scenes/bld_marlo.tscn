@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" path="res://art/bld_marlo.png" id="1_tex"]
+
+[ext_resource type="Script" path="res://scripts/night_glow.gd" id="99_glow"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(64, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(10, 4)
+
+[node name="House_marlo" type="StaticBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tex")
+centered = false
+position = Vector2(-29.0, -85.19999999999999)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(8.0, -28.0)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="NightGlow" type="Node2D" parent="."]
+script = ExtResource("99_glow")
+rects = Array[Rect2]([Rect2(13.0, -25.2, 12, 9), Rect2(-2.0, -21.2, 5, 6), Rect2(-12.0, -18.2, 4, 5)])
+light_scale = 0.6

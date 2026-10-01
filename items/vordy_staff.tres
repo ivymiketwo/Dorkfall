@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="Item" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://art/worn_vordy_staff.png" id="2_worn"]
+[ext_resource type="Resource" path="res://abilities/poison_beam.tres" id="3_beam"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"vordy_staff"
+display_name = "Vorly's Staff"
+description = "A green staff that shoots a poison beam. Two-handed."
+icon_frame = 21
+value = 250
+mana_regen_bonus = 0.7
+int_bonus = 3
+equip_slot = "weapon"
+two_handed = true
+worn_texture = ExtResource("2_worn")
+weapon_kind = "staff"
+melee_damage = 15.0
+melee_range = 22.0
+melee_arc = 80.0
+melee_cooldown = 0.6
+melee_stamina = 4.0
+basic_attack = ExtResource("3_beam")

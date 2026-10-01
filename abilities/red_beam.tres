@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ability.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Red Beam"
+kind = 2
+icon_index = 2
+mana_cost = 10.0
+cooldown = 1.0
+damage = 120.0
+beam_length = 150.0
+beam_color = Color(1, 0.15, 0.12, 1)
+beam_lightning = true

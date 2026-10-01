@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" path="res://art/lamp.png" id="1_tex"]
+[ext_resource type="Script" path="res://scripts/night_glow.gd" id="2_glow"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_base"]
+radius = 2.5
+
+[node name="Lamp" type="StaticBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tex")
+offset = Vector2(0, -24)
+scale = Vector2(0.5, 0.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2)
+shape = SubResource("CircleShape2D_base")
+
+[node name="NightGlow" type="Node2D" parent="."]
+script = ExtResource("2_glow")
+rects = Array[Rect2]([Rect2(-1.5, -21, 3, 4)])
+light_scale = 1.1
+light_energy = 1.1

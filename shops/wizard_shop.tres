@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Shop" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/shop.gd" id="1_shop"]
+[ext_resource type="Script" path="res://scripts/item.gd" id="2_item"]
+[ext_resource type="Resource" path="res://items/wooden_staff.tres" id="3_staff"]
+[ext_resource type="Resource" path="res://items/wizard_robe.tres" id="4_robe"]
+[ext_resource type="Resource" path="res://items/wizard_hat.tres" id="5_hat"]
+
+[ext_resource type="Resource" path="res://items/health_potion.tres" id="6_hp"]
+[ext_resource type="Resource" path="res://items/mana_potion.tres" id="7_mp"]
+
+[resource]
+script = ExtResource("1_shop")
+title = "WIZARD SHOP"
+items = Array[ExtResource("2_item")]([ExtResource("3_staff"), ExtResource("4_robe"), ExtResource("5_hat"), ExtResource("6_hp"), ExtResource("7_mp")])

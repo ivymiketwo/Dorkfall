@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/interior.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/interior_blacksmith.png" id="2_tex"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
+size = Vector2(24, 6)
+
+[node name="Blacksmith" type="Node2D"]
+script = ExtResource("1_script")
+solids = Array[Rect2]([Rect2(0, 0, 224, 32), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(80, 32, 64, 12), Rect2(54, 62, 18, 16), Rect2(44, 98, 144, 14), Rect2(12, 124, 34, 16), Rect2(12, 142, 36, 20), Rect2(170, 134, 38, 22), Rect2(190, 66, 18, 20)])
+
+[node name="Room" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+centered = false
+scale = Vector2(0.5, 0.5)
+
+[node name="Entry" type="Marker2D" parent="."]
+position = Vector2(112, 152)
+
+[node name="Exit" type="Area2D" parent="."]
+position = Vector2(112, 171)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
+shape = SubResource("RectangleShape2D_exit")

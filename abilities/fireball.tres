@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ability.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/fireball.tscn" id="2_fb"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Fireball"
+kind = 0
+icon_index = 0
+mana_cost = 15.0
+stamina_cost = 5.0
+cast_time = 0.5
+cooldown = 1.0
+projectile_scene = ExtResource("2_fb")
+projectile_speed = 215.0
+damage = 40.0

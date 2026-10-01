@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ability.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Begone"
+kind = 3
+icon_index = 3
+mana_cost = 15.0
+cooldown = 10.0
+hop_speed = 150.0
+hop_time = 0.5
+hop_height = 13.0
+hop_window = 0.15
+hop_health_cost = 0.0
+hop_chain_health_cost = 35.0

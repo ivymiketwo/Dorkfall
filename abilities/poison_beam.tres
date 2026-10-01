@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ability.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Poison Beam"
+kind = 2
+icon_index = 1
+mana_cost = 10.0
+cooldown = 1.0
+damage = 30.0
+beam_length = 150.0
+beam_color = Color(0.35, 1, 0.3, 1)
+poison_dps = 2.0
+poison_time = 5.0

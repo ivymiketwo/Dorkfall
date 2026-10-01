@@ -1,0 +1,35 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/interior.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/interior_potion_shop.png" id="2_tex"]
+
+[ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="3_npc"]
+[ext_resource type="Resource" path="res://shops/potion_shop.tres" id="4_shop"]
+[ext_resource type="Texture2D" path="res://art/potion_keeper.png" id="5_keeper"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
+size = Vector2(24, 6)
+
+[node name="PotionShop" type="Node2D"]
+script = ExtResource("1_script")
+solids = Array[Rect2]([Rect2(0, 0, 224, 32), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(176, 34, 36, 30), Rect2(20, 52, 28, 20), Rect2(64, 96, 96, 14), Rect2(22, 126, 28, 18), Rect2(166, 152, 38, 12)])
+
+[node name="Room" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+centered = false
+scale = Vector2(0.5, 0.5)
+
+[node name="Entry" type="Marker2D" parent="."]
+position = Vector2(112, 152)
+
+[node name="Exit" type="Area2D" parent="."]
+position = Vector2(112, 171)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
+shape = SubResource("RectangleShape2D_exit")
+
+[node name="Mirelle" parent="." instance=ExtResource("3_npc")]
+position = Vector2(112, 88)
+display_name = "Mirelle"
+shop = ExtResource("4_shop")
+sprite_texture = ExtResource("5_keeper")

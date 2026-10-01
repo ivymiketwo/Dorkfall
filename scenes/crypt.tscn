@@ -1,0 +1,40 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://art/crypt.png" id="1_tex"]
+[ext_resource type="Script" path="res://scripts/door.gd" id="2_door"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_side"]
+size = Vector2(26, 22)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_back"]
+size = Vector2(14, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(30, 18)
+
+[node name="Crypt" type="StaticBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tex")
+offset = Vector2(0, -58)
+scale = Vector2(0.5, 0.5)
+
+[node name="CollisionLeft" type="CollisionShape2D" parent="."]
+position = Vector2(-21, -11)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="CollisionRight" type="CollisionShape2D" parent="."]
+position = Vector2(21, -11)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="CollisionBack" type="CollisionShape2D" parent="."]
+position = Vector2(0, -22)
+shape = SubResource("RectangleShape2D_back")
+
+[node name="Door" type="Area2D" parent="."]
+position = Vector2(0, -9)
+script = ExtResource("2_door")
+interior_id = "Cave"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
+shape = SubResource("RectangleShape2D_door")

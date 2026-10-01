@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Item" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"coins"
+display_name = "Coins"
+description = "Lovely money."
+stackable = true
+stack_thresholds = PackedInt32Array(1, 2, 3, 4, 5, 25, 100, 250, 1000, 10000)

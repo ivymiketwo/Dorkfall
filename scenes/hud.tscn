@@ -1,0 +1,100 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/hotbar_ui.gd" id="2_hotbar_ui"]
+[ext_resource type="Script" path="res://scripts/inventory_ui.gd" id="3_inv_ui"]
+[ext_resource type="Script" path="res://scripts/shop_ui.gd" id="4_shop_ui"]
+[ext_resource type="Script" path="res://scripts/quest_ui.gd" id="400_quest_ui"]
+[ext_resource type="Script" path="res://scripts/quest_menu.gd" id="403_qmenu"]
+[ext_resource type="Script" path="res://scripts/dialogue_ui.gd" id="402_dlg"]
+[ext_resource type="Script" path="res://scripts/quest_tracker.gd" id="401_quest_tr"]
+[ext_resource type="Script" path="res://scripts/context_menu.gd" id="5_menu"]
+[ext_resource type="Script" path="res://scripts/paperdoll_ui.gd" id="6_doll"]
+[ext_resource type="Script" path="res://scripts/nav_menu_ui.gd" id="7_home"]
+[ext_resource type="Script" path="res://scripts/spellbook_ui.gd" id="8_book"]
+[ext_resource type="Script" path="res://scripts/escape_menu_ui.gd" id="9_esc"]
+[ext_resource type="Script" path="res://scripts/chat_log_ui.gd" id="10_chat"]
+[ext_resource type="Script" path="res://scripts/stats_ui.gd" id="11_stats"]
+
+[node name="HUD" type="CanvasLayer"]
+layer = 2
+scale = Vector2(2, 2)
+
+[node name="Bars" type="Control" parent="."]
+layout_mode = 3
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="HotbarUI" type="Control" parent="."]
+layout_mode = 3
+mouse_filter = 2
+script = ExtResource("2_hotbar_ui")
+
+[node name="NavMenuUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("7_home")
+
+[node name="InventoryUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("3_inv_ui")
+
+[node name="SpellbookUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("8_book")
+
+[node name="PaperdollUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("6_doll")
+
+[node name="StatsUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("11_stats")
+
+[node name="ShopUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("4_shop_ui")
+
+[node name="QuestUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("400_quest_ui")
+
+[node name="DialogueUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("402_dlg")
+
+[node name="QuestMenu" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("403_qmenu")
+
+[node name="QuestTracker" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("401_quest_tr")
+
+[node name="ContextMenu" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("5_menu")
+
+[node name="ChatLogUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("10_chat")
+
+[node name="EscapeMenuUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("9_esc")

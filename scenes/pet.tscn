@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/pet.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/tiny_dragon.png" id="2_tex"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pet"]
+radius = 3.0
+
+[node name="TinyDragon" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_script")
+grabs_loot = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+offset = Vector2(-2, -13)
+scale = Vector2(0.5, 0.5)
+hframes = 5
+vframes = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("CircleShape2D_pet")

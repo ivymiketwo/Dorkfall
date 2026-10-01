@@ -1,0 +1,89 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/player.png" id="2_tex"]
+[ext_resource type="Script" path="res://scripts/stats.gd" id="3_stats"]
+[ext_resource type="Script" path="res://scripts/hotbar.gd" id="4_hotbar"]
+[ext_resource type="Script" path="res://scripts/ability.gd" id="5_ability"]
+[ext_resource type="Resource" path="res://abilities/fireball.tres" id="6_fireball"]
+[ext_resource type="Resource" path="res://abilities/beam.tres" id="7_beam"]
+[ext_resource type="Resource" path="res://abilities/red_beam.tres" id="70_redbeam"]
+[ext_resource type="Resource" path="res://abilities/gust_hop.tres" id="71_hop"]
+[ext_resource type="Texture2D" path="res://art/fireball.png" id="10_orb"]
+[ext_resource type="Script" path="res://scripts/nameplate.gd" id="11_nameplate"]
+[ext_resource type="Script" path="res://scripts/experience.gd" id="90_exp"]
+[ext_resource type="Script" path="res://scripts/inventory.gd" id="12_inv"]
+[ext_resource type="Script" path="res://scripts/home_teleport.gd" id="95_home"]
+[ext_resource type="Script" path="res://scripts/melee.gd" id="13_melee"]
+[ext_resource type="Resource" path="res://items/wooden_staff.tres" id="14_staff"]
+[ext_resource type="Resource" path="res://items/wizard_robe.tres" id="15_robe"]
+[ext_resource type="Resource" path="res://items/fists.tres" id="16_fists"]
+[ext_resource type="Script" path="res://scripts/equipment.gd" id="17_equip"]
+[ext_resource type="Script" path="res://scripts/attributes.gd" id="99_attr"]
+[ext_resource type="Script" path="res://scripts/guard.gd" id="98_guard"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_feet"]
+size = Vector2(10, 6)
+
+[node name="Player" type="CharacterBody2D"]
+collision_mask = 3
+motion_mode = 1
+script = ExtResource("1_script")
+hop_ability = ExtResource("71_hop")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+offset = Vector2(0, -15)
+scale = Vector2(0.5, 0.5)
+hframes = 5
+vframes = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_feet")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+
+[node name="Stats" type="Node" parent="."]
+script = ExtResource("3_stats")
+
+[node name="Experience" type="Node" parent="."]
+script = ExtResource("90_exp")
+
+[node name="Attributes" type="Node" parent="."]
+script = ExtResource("99_attr")
+
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("12_inv")
+
+[node name="HomeTeleport" type="Node2D" parent="."]
+script = ExtResource("95_home")
+
+[node name="Guard" type="Node2D" parent="."]
+script = ExtResource("98_guard")
+
+[node name="Melee" type="Node" parent="."]
+script = ExtResource("13_melee")
+unarmed = ExtResource("16_fists")
+
+[node name="Equipment" type="Node" parent="."]
+script = ExtResource("17_equip")
+starting = Array[Resource]([ExtResource("14_staff"), ExtResource("15_robe")])
+
+[node name="Hotbar" type="Node" parent="."]
+script = ExtResource("4_hotbar")
+slots = Array[ExtResource("5_ability")]([ExtResource("6_fireball"), ExtResource("70_redbeam"), null, null, null, null])
+
+[node name="CastOrb" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(5, -12)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("10_orb")
+
+[node name="Nameplate" type="Node2D" parent="."]
+z_index = 10
+position = Vector2(0, -24)
+script = ExtResource("11_nameplate")
+bar_width = 16
+name_color = Color(0.85, 0.95, 1, 1)

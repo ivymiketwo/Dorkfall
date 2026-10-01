@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Item" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://art/worn_wooden_shield.png" id="2_worn"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"wooden_shield"
+display_name = "Wooden Shield"
+description = "Planks with an iron boss. One hand only."
+icon_frame = 18
+value = 50
+equip_slot = "shield"
+two_handed = false
+block_percent = 70.0
+worn_texture = ExtResource("2_worn")
+

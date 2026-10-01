@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Texture2D" path="res://art/bld_library.png" id="1_tex"]
+[ext_resource type="Script" path="res://scripts/door.gd" id="2_door"]
+[ext_resource type="Script" path="res://scripts/night_glow.gd" id="99_glow"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(96, 56)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(10, 4)
+
+[node name="WizardShop" type="StaticBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tex")
+centered = false
+position = Vector2(-46.0, -103.19999999999999)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(8.0, -36.0)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Door" type="Area2D" parent="."]
+position = Vector2(0, -4)
+script = ExtResource("2_door")
+interior_id = "WizardShop"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
+shape = SubResource("RectangleShape2D_door")
+
+[node name="NightGlow" type="Node2D" parent="."]
+script = ExtResource("99_glow")
+rects = Array[Rect2]([Rect2(-32.0, -42.2, 7, 12), Rect2(17.0, -25.2, 12, 9), Rect2(37.0, -25.2, 12, 9), Rect2(-32.0, -23.2, 7, 12), Rect2(-3.0, -21.2, 6, 6), Rect2(-14.0, -18.2, 4, 5)])
+light_scale = 0.6

@@ -1,0 +1,32 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/interior.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/interior_pet_shop.png" id="2_tex"]
+[ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="3_npc"]
+[ext_resource type="Resource" path="res://shops/pet_shop.tres" id="4_shop"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
+size = Vector2(24, 6)
+
+[node name="PetShop" type="Node2D"]
+script = ExtResource("1_script")
+solids = Array[Rect2]([Rect2(0, 0, 224, 34), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(16, 122, 32, 20), Rect2(12, 146, 34, 16), Rect2(166, 112, 46, 36)])
+
+[node name="Room" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_tex")
+centered = false
+
+[node name="Entry" type="Marker2D" parent="."]
+position = Vector2(112, 152)
+
+[node name="Exit" type="Area2D" parent="."]
+position = Vector2(112, 171)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
+shape = SubResource("RectangleShape2D_exit")
+
+[node name="Petra" parent="." instance=ExtResource("3_npc")]
+position = Vector2(112, 88)
+display_name = "Petra"
+shop = ExtResource("4_shop")
