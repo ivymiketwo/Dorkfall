@@ -84,7 +84,7 @@ func _process(_delta: float) -> void:
 	position = body.position + local * body.scale
 	var facing := row % 4
 	rotation_degrees = LEAN[facing]
-	if row >= 8:                      # jumping: the staff swings out nearly horizontal
+	if row >= 8 and (facing == 2 or facing == 3):   # jumping east or west: the staff swings out nearly horizontal
 		rotation_degrees = signf(LEAN[facing]) * JUMP_LEAN
 	_show_top_only(row % 4 == 2)
 	# facing south the staff is drawn taller (top above the head) and held nearer its middle
