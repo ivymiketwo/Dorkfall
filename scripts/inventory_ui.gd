@@ -8,6 +8,7 @@ const SLOT := 10
 const ICON := 8     # icons come from items_small.png (8x8 frames)
 const GAP := 0
 const PAD := 3
+const TOP := 10          ## top margin: room for the close button above the slots
 const ITEM_ICONS := preload("res://art/items_small.png")
 
 const PANEL_BG := Color("3b3226")
@@ -35,8 +36,8 @@ var _mouse := Vector2.ZERO
 
 
 func _ready() -> void:
-	add_to_group(CloseButton.GROUP)    # no X button here: it would cover an item slot (Esc still closes it)
-	size = Vector2(COLS * SLOT + (COLS - 1) * GAP + PAD * 2, ROWS * SLOT + (ROWS - 1) * GAP + PAD * 2)
+	CloseButton.attach(self)
+	size = Vector2(COLS * SLOT + (COLS - 1) * GAP + PAD * 2, ROWS * SLOT + (ROWS - 1) * GAP + PAD + TOP)
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
 	position = Vector2(screen.x - size.x - 4, screen.y - size.y - 4 - 17)   # sits above the nav bar
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -55,7 +56,7 @@ func _px() -> float:
 
 
 func _slot_at(p: Vector2) -> int:
-	var q := p - Vector2(PAD, PAD)
+	var q := p - Vector2(PAD, TOP)
 	if q.x < 0 or q.y < 0:
 		return -1
 	var col := floori(q.x / (SLOT + GAP))
@@ -68,7 +69,7 @@ func _slot_at(p: Vector2) -> int:
 
 
 func _slot_pos(i: int) -> Vector2:
-	return Vector2(PAD + (i % COLS) * (SLOT + GAP), PAD + (i / COLS) * (SLOT + GAP))
+	return Vector2(PAD + (i % COLS) * (SLOT + GAP), TOP + (i / COLS) * (SLOT + GAP))
 
 
 func _gui_input(event: InputEvent) -> void:
