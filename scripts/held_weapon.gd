@@ -70,6 +70,8 @@ func _process(_delta: float) -> void:
 	var local := Vector2(float(h[0]) - FRAME_PX / 2.0, float(h[1]) - FRAME_PX / 2.0) + body.offset
 	if row % 4 == 0:
 		local += Vector2(2, 0)             # facing south: hold it a little closer to the body
+	if row < 4 and (row % 4 == 0 or row % 4 == 3):
+		local += Vector2(0, -3)            # standing facing south / east: the staff sits a bit higher
 	if row % 4 == 2:
 		local += WEST_SHIFT      # facing west: hold it a bit forward so the top pokes out in front of the shoulder
 	position = body.position + local * body.scale
