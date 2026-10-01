@@ -1,10 +1,13 @@
 class_name CloseButton
 extends Control
 ## The little X in the top-right corner of every menu and dialogue box.
-## `CloseButton.attach(menu)` adds one to a menu; the menu needs `close_ui()`.
+## Every window must have one: call `CloseButton.attach(self)` in the menu's _ready() and give it a
+## `close_ui()` method (then Esc closes it too). It sits flush inside the top-right corner.
 ## `CloseButton.close_top(tree)` closes the front-most open menu (used by Esc).
 
 const SZ := 7.0
+## Thickness of the window frame (outline + bevel), so the button sits inside it, not over it.
+const BORDER := 1.0
 ## Menus join this group and offer `close_ui()`; optional `ui_is_open()` (default: `visible`).
 const GROUP := "closable_ui"
 
@@ -60,7 +63,7 @@ func _ready() -> void:
 
 
 func _place() -> void:
-	position = Vector2((_menu as Control).size.x - SZ, 0.0)    # flush with the top-right corner
+	position = Vector2((_menu as Control).size.x - SZ - BORDER, BORDER)    # flush inside the window frame
 
 
 func _gui_input(event: InputEvent) -> void:
