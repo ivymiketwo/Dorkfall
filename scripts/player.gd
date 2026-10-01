@@ -14,8 +14,16 @@ extends CharacterBody2D
 @export var debug_mana_cost := 50.0    ## F2
 ## F3 gives 100 coins, F4 gives a set of test gear
 
-# Rows in player.png: down, up, left, right. 5 columns: 4 walk steps + standing
+# player_new.png: 9 columns; rows = animation * 4 + facing (down, up, left, right).
+# Animations: 0 idle (4 frames), 1 run (4 frames), 2 jump (9 frames, 8 for the robed north/south).
 enum Facing { DOWN, UP, LEFT, RIGHT }
+const ANIM_IDLE := 0
+const ANIM_RUN := 1
+const ANIM_JUMP := 2
+const IDLE_FPS := 4.0
+const ROBE_JUMP_TEX := preload("res://art/player_new_robe_jump.png")
+const NAKED_TEX := preload("res://art/player_new.png")
+const ROBE_JUMP_FRAMES := [8, 8, 9, 9]   # per facing, in the robed jump
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var stats: Stats = $Stats
@@ -182,16 +190,31 @@ func _hop_leap() -> void:
 func _hop_step(delta: float) -> void:
 	_idle_time = 0.0
 	_idle_mat.set_shader_parameter("bob", 0.0)
-	sprite.frame = facing * sprite.hframes + 4
 	if _hop_t >= 0.0:
 		_hop_t += delta
 		_jump_buffer = maxf(_jump_buffer - delta, 0.0)
 		var k := clampf(_hop_t / _hop_ab.hop_time, 0.0, 1.0)
+		_set_jump_frame(k)
 		sprite.position.y = -4.0 * _hop_ab.hop_height * k * (1.0 - k)      # parabola, apex at k = 0.5
 		velocity = _hop_dir * _hop_ab.hop_speed
 		move_and_slide()
 		if k >= 1.0:
 			_hop_land()
+
+
+func _wearing_robe() -> bool:
+	var eq := get_node_or_null("Equipment") as Equipment
+	var it: Item = eq.get_item("chest") if eq else null
+	return it != null and it.id == &"wizard_robe"
+
+
+func _set_jump_frame(k: float) -> void:
+	var robe := _wearing_robe()
+	var tex: Texture2D = ROBE_JUMP_TEX if robe else NAKED_TEX
+	if sprite.texture != tex:
+		sprite.texture = tex
+	var n: int = ROBE_JUMP_FRAMES[facing] if robe else 9
+	sprite.frame = (ANIM_JUMP * 4 + facing) * sprite.hframes + mini(int(k * n), n - 1)
 
 
 func _hop_land() -> void:
@@ -292,11 +315,13 @@ func _update_animation(dir: Vector2, delta: float) -> void:
 			facing = Facing.RIGHT if dir.x > 0 else Facing.LEFT
 		else:
 			facing = Facing.DOWN if dir.y > 0 else Facing.UP
-	# columns 0-3 are the four walk steps, column 4 is standing still
-	var frame_col := 4 if dir == Vector2.ZERO else int(_anim_time * walk_fps) % 4
-	sprite.frame = facing * sprite.hframes + frame_col
-	# standing still: the upper body dips 1px every other step
-	_idle_mat.set_shader_parameter("bob", 1.0 if (dir == Vector2.ZERO and int(_idle_time / IDLE_BOB_PERIOD) % 2 == 1) else 0.0)
+	if sprite.texture != NAKED_TEX:
+		sprite.texture = NAKED_TEX
+	var anim := ANIM_IDLE if dir == Vector2.ZERO else ANIM_RUN
+	var t := _idle_time if dir == Vector2.ZERO else _anim_time
+	var col := int(t * (IDLE_FPS if dir == Vector2.ZERO else walk_fps * 1.15)) % 4
+	sprite.frame = (anim * 4 + facing) * sprite.hframes + col
+	_idle_mat.set_shader_parameter("bob", 0.0)   # the new body has real idle frames
 
 
 ## Adds key bindings if they aren't already defined in

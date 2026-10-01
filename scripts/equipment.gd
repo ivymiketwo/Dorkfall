@@ -78,7 +78,7 @@ func _refresh() -> void:
 		var s: Sprite2D = _layers[slot]
 		var it := get_item(slot)
 		s.texture = it.worn_texture if it else null
-		s.visible = it != null and it.worn_texture != null
+		s.visible = false   # TODO: worn gear is hidden until sprites exist for the 48x48 body
 	_apply_stats()
 	changed.emit()
 
