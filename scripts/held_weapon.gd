@@ -13,6 +13,7 @@ const HANDS_PATH := "res://data/hands.json"
 const SRC_FRAME := Rect2i(96, 0, 24, 40)    # standing, facing down, in the old 24x40 worn sheets
 const GRIP := 0.55                          # how far down the weapon the hand holds it (0 = tip)
 const FRAME_PX := 48.0
+const LEAN := [-15.0, 15.0, -15.0, 15.0]    # degrees per facing (down, up, left, right): the top leans forward / outward
 
 static var _hands: Dictionary = {}
 
@@ -55,6 +56,7 @@ func _process(_delta: float) -> void:
 	visible = true
 	var local := Vector2(float(h[0]) - FRAME_PX / 2.0, float(h[1]) - FRAME_PX / 2.0) + body.offset
 	position = body.position + local * body.scale
+	rotation_degrees = LEAN[row % 4]
 	_set_behind(int(h[2]) == 1)
 
 
