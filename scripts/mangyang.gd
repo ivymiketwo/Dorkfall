@@ -15,7 +15,7 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 @export var chase_speed := 30.0
 @export var wander_radius := 30.0
 @export var aggro_range := 90.0
-@export var leash_range := 160.0
+@export var leash_range := 208.0
 
 @export_group("Knife throw")
 @export var throw_range := 85.0

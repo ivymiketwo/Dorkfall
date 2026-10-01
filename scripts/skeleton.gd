@@ -20,7 +20,7 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 @export var chase_speed := 34.0
 @export var wander_radius := 40.0
 @export var aggro_range := 95.0
-@export var leash_range := 170.0
+@export var leash_range := 221.0
 
 @export_group("Lunge")
 ## Starts the wind-up when you're this close.

@@ -23,7 +23,7 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 ## Starts chasing when you're this close (pixels).
 @export var aggro_range := 110.0
 ## Gives up if dragged this far from home.
-@export var leash_range := 220.0
+@export var leash_range := 286.0
 
 @export_group("Attacks")
 @export var bite_damage := 30.0
