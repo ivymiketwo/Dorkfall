@@ -26,6 +26,8 @@ var _crop: AtlasTexture
 var _behind := false
 var _full_region := Rect2()
 var _west := false
+var _hand: Sprite2D          # a copy of the hand pixels, drawn on top of the weapon so the hand grips it
+const HAND_BOX := 6                    # art px around the hand that get re-drawn over the weapon
 
 
 func _ready() -> void:
@@ -40,6 +42,13 @@ func _ready() -> void:
 	vframes = 1
 	offset = Vector2.ZERO
 	scale = body.scale
+	_hand = Sprite2D.new()
+	_hand.name = "HeldWeaponHand"
+	_hand.centered = false
+	_hand.region_enabled = true
+	_hand.scale = body.scale
+	_hand.visible = false
+	get_parent().add_child.call_deferred(_hand)
 
 
 func _process(_delta: float) -> void:
@@ -59,12 +68,38 @@ func _process(_delta: float) -> void:
 		return
 	visible = true
 	var local := Vector2(float(h[0]) - FRAME_PX / 2.0, float(h[1]) - FRAME_PX / 2.0) + body.offset
+	if row % 4 == 0:
+		local += Vector2(2, 0)             # facing south: hold it a little closer to the body
 	if row % 4 == 2:
 		local += WEST_SHIFT      # facing west: hold it a bit forward so the top pokes out in front of the shoulder
 	position = body.position + local * body.scale
-	rotation_degrees = LEAN[row % 4]
+	var facing := row % 4
+	rotation_degrees = LEAN[facing]
 	_show_top_only(row % 4 == 2)
-	_set_behind(int(h[2]) == 1)
+	var behind := int(h[2]) == 1
+	_set_behind(behind)
+	_update_hand(facing, col, row, h, behind)
+
+
+## Facing down or right the weapon is held in front of the body, so re-draw the hand over it:
+## the hand sits in front of the staff and the rest of the body behind it.
+func _update_hand(facing: int, col: int, row: int, h: Array, behind: bool) -> void:
+	if _hand == null or _hand.get_parent() == null:
+		return
+	var on := (facing == 0 or facing == 3) and not behind
+	_hand.visible = on
+	if not on:
+		return
+	var half := HAND_BOX / 2.0
+	var x0 := clampf(float(h[0]) - half, 0.0, FRAME_PX - HAND_BOX)
+	var y0 := clampf(float(h[1]) - half, 0.0, FRAME_PX - HAND_BOX)
+	_hand.texture = body.texture
+	_hand.region_rect = Rect2(col * FRAME_PX + x0, row * FRAME_PX + y0, HAND_BOX, HAND_BOX)
+	_hand.position = body.position + (Vector2(x0 - FRAME_PX / 2.0, y0 - FRAME_PX / 2.0) + body.offset) * body.scale
+	var p := get_parent()
+	if p.get_child(p.get_child_count() - 1) != _hand:
+		p.move_child(self, p.get_child_count() - 1)
+		p.move_child(_hand, p.get_child_count() - 1)
 
 
 func _show_top_only(on: bool) -> void:
