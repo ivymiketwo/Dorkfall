@@ -23,7 +23,7 @@ const ANIM_JUMP := 2
 const IDLE_FPS := 4.0
 const ROBE_TEX := preload("res://art/player_new_robe.png")   # robed run + jump (idle is still the naked body)
 const NAKED_TEX := preload("res://art/player_new.png")
-const ROBE_JUMP_FRAMES := [8, 8, 9, 9]   # per facing, in the robed jump
+const ROBE_JUMP_FRAMES := [7, 7, 8, 8]   # per facing, in the robed jump
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var stats: Stats = $Stats
