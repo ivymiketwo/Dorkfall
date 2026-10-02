@@ -53,6 +53,6 @@ health_regen = 1.0
 
 [node name="Nameplate" type="Node2D" parent="."]
 z_index = 10
-position = Vector2(0, -56)
+position = Vector2(0, -66)
 script = ExtResource("4_nameplate")
 bar_width = 34
