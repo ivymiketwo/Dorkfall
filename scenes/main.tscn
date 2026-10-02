@@ -29,7 +29,8 @@
 [ext_resource type="PackedScene" path="res://scenes/bone_lord.tscn" id="73_boss"]
 [ext_resource type="PackedScene" path="res://scenes/bld_home.tscn" id="201_bh"]
 [ext_resource type="PackedScene" path="res://scenes/bld_wren.tscn" id="202_bw"]
-[ext_resource type="PackedScene" path="res://scenes/bld_shack.tscn" id="203_bs"]
+[ext_resource type="PackedScene" path="res://scenes/fishing_shop.tscn" id="203_bs"]
+[ext_resource type="PackedScene" path="res://scenes/interior_fishing_shop.tscn" id="204_intfish"]
 [ext_resource type="Script" uid="uid://22k4mw8uk1tj" path="res://scripts/map_ui.gd" id="300_map"]
 [ext_resource type="Script" uid="uid://b40ngpex8r5ry" path="res://scripts/ducks.gd" id="301_ducks"]
 [ext_resource type="PackedScene" path="res://scenes/bulletin_board.tscn" id="302_board"]
@@ -155,6 +156,9 @@ position = Vector2(2800, 2600)
 
 [node name="WizardShop" parent="Interiors" unique_id=1288735632 instance=ExtResource("61_int_wiz")]
 position = Vector2(3200, 2600)
+
+[node name="FishingShop" parent="Interiors" instance=ExtResource("204_intfish")]
+position = Vector2(2000, 3000)
 
 [node name="Cave" parent="Interiors" unique_id=583781566 instance=ExtResource("72_cave")]
 position = Vector2(3700, 2600)
@@ -4693,7 +4697,7 @@ position = Vector2(41, 24)
 [node name="HousePink" parent="Entities" unique_id=769539735 instance=ExtResource("202_bw")]
 position = Vector2(128, 24)
 
-[node name="HouseBlue" parent="Entities" unique_id=1932270750 instance=ExtResource("203_bs")]
+[node name="FishingShop" parent="Entities" unique_id=1932270750 instance=ExtResource("203_bs")]
 position = Vector2(276, 24)
 
 [node name="WFenceN0" parent="Entities" unique_id=560723709 instance=ExtResource("50_decor")]

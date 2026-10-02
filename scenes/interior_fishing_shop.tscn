@@ -1,0 +1,91 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/interior.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/interior_fishing_shop.png" id="2_tex"]
+[ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="3_npc"]
+[ext_resource type="Resource" path="res://shops/fishing_shop.tres" id="4_shop"]
+[ext_resource type="Texture2D" path="res://art/fishing_keeper.png" id="5_keeper"]
+[ext_resource type="Script" path="res://scripts/critter.gd" id="6_critter"]
+[ext_resource type="Texture2D" path="res://art/fish_tank_gold.png" id="t0"]
+[ext_resource type="Texture2D" path="res://art/fish_tank_tropical.png" id="t1"]
+[ext_resource type="Texture2D" path="res://art/fish_tank_deep.png" id="t2"]
+[ext_resource type="Texture2D" path="res://art/fish_tank_jelly.png" id="t3"]
+[ext_resource type="Texture2D" path="res://art/fish_tank_bass.png" id="t4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
+size = Vector2(24, 6)
+
+[node name="FishingShop" type="Node2D"]
+script = ExtResource("1_script")
+solids = Array[Rect2]([Rect2(0, 0, 224, 32), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(10, 78, 44, 22), Rect2(12, 122, 104, 44), Rect2(166, 52, 48, 52), Rect2(170, 130, 48, 36)])
+
+[node name="Room" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_tex")
+centered = false
+
+[node name="TankGold" type="Sprite2D" parent="."]
+position = Vector2(9.0, 3.0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("t0")
+centered = false
+hframes = 8
+script = ExtResource("6_critter")
+frames = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+durations = PackedFloat32Array(0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18)
+
+[node name="TankTropical" type="Sprite2D" parent="."]
+position = Vector2(50.0, 3.0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("t1")
+centered = false
+hframes = 8
+script = ExtResource("6_critter")
+frames = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+durations = PackedFloat32Array(0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18)
+
+[node name="TankDeep" type="Sprite2D" parent="."]
+position = Vector2(138.0, 3.0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("t2")
+centered = false
+hframes = 8
+script = ExtResource("6_critter")
+frames = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+durations = PackedFloat32Array(0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18)
+
+[node name="TankJelly" type="Sprite2D" parent="."]
+position = Vector2(179.0, 3.0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("t3")
+centered = false
+hframes = 8
+script = ExtResource("6_critter")
+frames = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+durations = PackedFloat32Array(0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18)
+
+[node name="TankBass" type="Sprite2D" parent="."]
+position = Vector2(168.0, 53.0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("t4")
+centered = false
+hframes = 8
+script = ExtResource("6_critter")
+frames = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7)
+durations = PackedFloat32Array(0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18, 0.18)
+
+[node name="Entry" type="Marker2D" parent="."]
+position = Vector2(112, 152)
+
+[node name="Exit" type="Area2D" parent="."]
+position = Vector2(112, 171)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
+shape = SubResource("RectangleShape2D_exit")
+
+[node name="Marlow" parent="." instance=ExtResource("3_npc")]
+position = Vector2(112, 88)
+display_name = "Old Marlow"
+shop = ExtResource("4_shop")
+sprite_texture = ExtResource("5_keeper")
+idle_split_row = 27

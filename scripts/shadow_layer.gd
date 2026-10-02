@@ -11,6 +11,7 @@ const CASTERS := {
 	"Blacksmith": ["tall", 28.0, 34.0],
 	"PotionShop": ["tall", 28.0, 34.0],
 	"PetShop": ["tall", 28.0, 34.0],
+	"FishingShop": ["tall", 28.0, 34.0],
 	"WizardShop": ["tall", 28.0, 34.0],
 	"Lamp": ["tall", 1.5, 18.0],
 	"Player": ["blob", 6.5, 2.4],
