@@ -131,15 +131,15 @@ metadata/_edit_lock_ = true
 
 [node name="WaterRiver" type="Sprite2D" parent="GroundArt"]
 material = SubResource("water_mat")
-position = Vector2(-1202.0, -992)
+position = Vector2(-1229.5, -992)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("winfo_river")
 centered = false
 metadata/_edit_lock_ = true
 
 [node name="RiverBridge" type="Sprite2D" parent="GroundArt"]
-position = Vector2(210.25, -142)
-scale = Vector2(1, 1)
+position = Vector2(209, -143)
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("bridge_river")
 
 [node name="Ducks" type="Node2D" parent="GroundArt" unique_id=17853052]
@@ -814,9 +814,16 @@ kind = "pine"
 position = Vector2(879, -171)
 kind = "pine"
 
+[node name="TreeW13" parent="Entities" unique_id=1257298222 instance=ExtResource("4_tree")]
+position = Vector2(-274, -157)
+
 [node name="TreeW14" parent="Entities" unique_id=688391347 instance=ExtResource("4_tree")]
 position = Vector2(957, -26)
 kind = "oak2"
+
+[node name="TreeW16" parent="Entities" unique_id=1424615600 instance=ExtResource("4_tree")]
+position = Vector2(432, -266)
+kind = "pine"
 
 [node name="TreeW17" parent="Entities" unique_id=616640441 instance=ExtResource("4_tree")]
 position = Vector2(-112, -71)
@@ -830,6 +837,10 @@ position = Vector2(554, -101)
 
 [node name="TreeW24" parent="Entities" unique_id=1639161930 instance=ExtResource("4_tree")]
 position = Vector2(-291, 131)
+kind = "pine"
+
+[node name="TreeW25" parent="Entities" unique_id=1038900539 instance=ExtResource("4_tree")]
+position = Vector2(373, -114)
 kind = "pine"
 
 [node name="TreeW26" parent="Entities" unique_id=1720969605 instance=ExtResource("4_tree")]
@@ -889,6 +900,10 @@ kind = "pine"
 [node name="TreeW44" parent="Entities" unique_id=1761171638 instance=ExtResource("4_tree")]
 position = Vector2(1616, -263)
 
+[node name="TreeW45" parent="Entities" unique_id=1966632044 instance=ExtResource("4_tree")]
+position = Vector2(22, -103)
+kind = "pine"
+
 [node name="TreeW46" parent="Entities" unique_id=476450488 instance=ExtResource("4_tree")]
 position = Vector2(-268, 189)
 
@@ -914,6 +929,10 @@ kind = "pine"
 [node name="TreeW56" parent="Entities" unique_id=1048130021 instance=ExtResource("4_tree")]
 position = Vector2(-166, 435)
 kind = "cherry"
+
+[node name="TreeW57" parent="Entities" unique_id=125615825 instance=ExtResource("4_tree")]
+position = Vector2(337, -164)
+kind = "oak2"
 
 [node name="TreeW58" parent="Entities" unique_id=758085074 instance=ExtResource("4_tree")]
 position = Vector2(-132, -264)
@@ -1011,6 +1030,10 @@ position = Vector2(1477, -256)
 
 [node name="BushW2" parent="Entities" unique_id=464656038 instance=ExtResource("50_decor")]
 position = Vector2(569, -121)
+
+[node name="BushW3" parent="Entities" unique_id=652514513 instance=ExtResource("50_decor")]
+position = Vector2(399, -235)
+kind = "bush_pink"
 
 [node name="BushW4" parent="Entities" unique_id=1161870062 instance=ExtResource("50_decor")]
 position = Vector2(594, -107)
@@ -3800,6 +3823,10 @@ kind = "pine"
 position = Vector2(-797, -27)
 kind = "pine"
 
+[node name="TreeN452" parent="Entities" unique_id=2000495722 instance=ExtResource("4_tree")]
+position = Vector2(-860, -166)
+kind = "pine"
+
 [node name="TreeN455" parent="Entities" unique_id=838384488 instance=ExtResource("4_tree")]
 position = Vector2(-942, -28)
 
@@ -3812,6 +3839,10 @@ kind = "pine"
 
 [node name="TreeN458" parent="Entities" unique_id=745811654 instance=ExtResource("4_tree")]
 position = Vector2(-1058, -29)
+kind = "pine"
+
+[node name="TreeN459" parent="Entities" unique_id=822790520 instance=ExtResource("4_tree")]
+position = Vector2(-830, -159)
 kind = "pine"
 
 [node name="TreeN460" parent="Entities" unique_id=1083975753 instance=ExtResource("4_tree")]
@@ -3881,6 +3912,14 @@ kind = "pine"
 
 [node name="TreeN478" parent="Entities" unique_id=545231296 instance=ExtResource("4_tree")]
 position = Vector2(-625, -503)
+
+[node name="TreeN486" parent="Entities" unique_id=559958271 instance=ExtResource("4_tree")]
+position = Vector2(686, -573)
+kind = "pine"
+
+[node name="TreeN487" parent="Entities" unique_id=2109993077 instance=ExtResource("4_tree")]
+position = Vector2(718, -654)
+kind = "oak2"
 
 [node name="TreeN490" parent="Entities" unique_id=685362618 instance=ExtResource("4_tree")]
 position = Vector2(755, -549)

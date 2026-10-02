@@ -8,14 +8,14 @@ extends Node2D
 
 const DATA := "res://data/river_life.json"
 const WATER_MAP := "res://art/water_info_river.png"
+const WATER_POS := Vector2(-1229.5, -992)
 const FERNS := ["res://art/fern_a.png", "res://art/fern_b.png", "res://art/fern_c.png"]
 const SWIMMERS := 4
 const MIN_DEPTH := 8             # water-map value needed (distance from the bank)
 const SPEED := 7.0
-const KEEP_OUT := Rect2(130, -222, 160, 160)   # swimmers stay out from under the bridge
+const KEEP_OUT := Rect2(150, -200, 116, 110)   # swimmers stay out from under the bridge
 
 var _img: Image
-var _water_pos := Vector2.ZERO   # where the river's water map sits (the WaterRiver sprite)
 var _swimmers: Array = []
 var _t := 0.0
 
@@ -27,9 +27,6 @@ func _ready() -> void:
 		var data: Variant = JSON.parse_string(f.get_as_text())
 		if data is Dictionary:
 			_build_shore.call_deferred(data)
-	var water := get_parent().get_node_or_null("WaterRiver") as Sprite2D
-	if water != null:
-		_water_pos = water.position
 	var tex: Texture2D = load(WATER_MAP)
 	if tex != null:
 		_img = tex.get_image()
@@ -90,7 +87,7 @@ func _build_shore(data: Dictionary) -> void:
 func _depth_at(p: Vector2) -> int:
 	if _img == null:
 		return 0
-	var q: Vector2 = ((p - _water_pos) * 2.0).floor()
+	var q: Vector2 = ((p - WATER_POS) * 2.0).floor()
 	if q.x < 0 or q.y < 0 or q.x >= _img.get_width() or q.y >= _img.get_height():
 		return 0
 	var px := _img.get_pixel(int(q.x), int(q.y))
