@@ -19,7 +19,7 @@ const WALL := Vector2i(4, 0)    # has collision
 @onready var camera: Camera2D = $Entities/Player/Camera2D
 @onready var player: CharacterBody2D = $Entities/Player
 
-const ARRIVAL_LOCK := 0.5   # seconds the player can't move after going through a door
+const ARRIVAL_LOCK := 0.2   # seconds the player can't move after going through a door
 
 var _outside_limits := Rect2i()
 var _inside: Node2D = null       # the interior the player is in, if any
@@ -142,6 +142,7 @@ func _travel(to_pos: Vector2, limits: Rect2i, new_inside: Node2D) -> void:
 	_busy = true
 	player.set_physics_process(false)
 	player.velocity = Vector2.ZERO
+	player.show_idle()
 	var tw := create_tween()
 	tw.tween_property(_fade, "color:a", 1.0, 0.15)
 	await tw.finished
@@ -156,5 +157,7 @@ func _travel(to_pos: Vector2, limits: Rect2i, new_inside: Node2D) -> void:
 	await tw.finished
 	await get_tree().create_timer(ARRIVAL_LOCK).timeout   # brief movement lock after arriving
 	player.velocity = Vector2.ZERO
+	player.show_idle()
+	player._gather_input()    # keys still held from before the lock count straight away
 	player.set_physics_process(true)
 	_busy = false

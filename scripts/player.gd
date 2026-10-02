@@ -308,6 +308,16 @@ func _leave_gravestone() -> void:
 	get_parent().add_child(stone)
 
 
+## Snap to the standing pose (first idle frame, current facing). Used when something
+## freezes the player (door / teleport fade) so they don't stop on a mid-stride frame.
+func show_idle() -> void:
+	_anim_time = 0.0
+	_idle_time = 0.0
+	_use_body_texture()
+	sprite.frame = (ANIM_IDLE * 4 + facing) * sprite.hframes
+	_idle_mat.set_shader_parameter("bob", 0.0)
+
+
 func _update_animation(dir: Vector2, delta: float) -> void:
 	if dir == Vector2.ZERO:
 		_anim_time = 0.0
