@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Item" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"bamboo_rod"
+display_name = "Bamboo Fishing Pole"
+description = "A light, springy pole for calm ponds. Good for beginners."
+icon_frame = 22
+value = 1000
