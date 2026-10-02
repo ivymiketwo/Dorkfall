@@ -17,7 +17,7 @@ size = Vector2(24, 6)
 
 [node name="FishingShop" type="Node2D"]
 script = ExtResource("1_script")
-solids = Array[Rect2]([Rect2(0, 0, 224, 32), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(10, 78, 44, 22), Rect2(12, 122, 104, 44), Rect2(166, 52, 48, 52), Rect2(170, 130, 48, 36)])
+solids = Array[Rect2]([Rect2(0, 0, 224, 32), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(10, 78, 44, 22), Rect2(12, 122, 46, 44), Rect2(166, 52, 48, 52), Rect2(170, 130, 48, 36)])
 
 [node name="Room" type="Sprite2D" parent="."]
 scale = Vector2(0.5, 0.5)
