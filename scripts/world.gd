@@ -19,7 +19,7 @@ const WALL := Vector2i(4, 0)    # has collision
 @onready var camera: Camera2D = $Entities/Player/Camera2D
 @onready var player: CharacterBody2D = $Entities/Player
 
-const ARRIVAL_LOCK := 0.2   # seconds the player can't move after going through a door
+const ARRIVAL_LOCK := 0.1   # seconds the player can't move after going through a door
 
 var _outside_limits := Rect2i()
 var _inside: Node2D = null       # the interior the player is in, if any
