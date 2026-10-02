@@ -15,10 +15,6 @@ const PATH := Vector2i(2, 0)
 const WATER := Vector2i(3, 0)   # has collision
 const WALL := Vector2i(4, 0)    # has collision
 
-# The river: tile x positions of water for each tile row (data/river_tiles.json, made with the river art).
-# The two road tiles under the bridge are left out so the road runs straight across it.
-var _river: Dictionary = {}
-
 @onready var ground: TileMapLayer = $Ground
 @onready var camera: Camera2D = $Entities/Player/Camera2D
 @onready var player: CharacterBody2D = $Entities/Player
@@ -55,21 +51,7 @@ func _ready() -> void:
 	player.stats.died.connect(_on_player_died)
 
 
-func _load_river() -> void:
-	var f := FileAccess.open("res://data/river_tiles.json", FileAccess.READ)
-	if f == null:
-		return
-	var data: Variant = JSON.parse_string(f.get_as_text())
-	if data is Dictionary:
-		for row: String in data:
-			var xs := {}
-			for x in data[row]:
-				xs[int(x)] = true
-			_river[int(row)] = xs
-
-
 func _generate_map() -> void:
-	_load_river()
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 1234  # same map every run
 	for y in range(MAP_ORIGIN.y, MAP_ORIGIN.y + MAP_SIZE.y):
@@ -83,9 +65,6 @@ func _pick_tile(x: int, y: int, rng: RandomNumberGenerator) -> Vector2i:
 		return WALL
 	# West ocean
 	if x - MAP_ORIGIN.x < OCEAN_SHORE[y - MAP_ORIGIN.y]:
-		return WATER
-	# River (painted into the ground art; see data/river_tiles.json)
-	if _river.has(y) and _river[y].has(x):
 		return WATER
 	# Pond (ellipse)
 	var d := Vector2((x - 33) / 5.0, (y - 8) / 3.0)

@@ -40,7 +40,6 @@ const KINDS := {
 	"cave_stalag": ["res://art/cave_stalag.png", Vector2.ZERO, true],
 	"cave_bones": ["res://art/cave_bones.png", Vector2.ZERO, true],
 	"cave_crystal": ["res://art/cave_crystal.png", Vector2.ZERO, true],
-	"beaver_lodge": ["res://art/beaver_lodge.png", Vector2(30, 11), true],
 	"warn_sign_skull": ["res://art/warn_sign_skull.png", Vector2(4, 3), true],
 	"warn_sign_x": ["res://art/warn_sign_x.png", Vector2(4, 3), true],
 	"warn_sign_bang": ["res://art/warn_sign_bang.png", Vector2(4, 3), true],

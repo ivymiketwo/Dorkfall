@@ -44,9 +44,6 @@
 [ext_resource type="Texture2D" uid="uid://dntgaj6rccrmh" path="res://art/wheat_field.png" id="wheat_tex"]
 [ext_resource type="Texture2D" uid="uid://dmaei4vim0kt7" path="res://art/water_info_1.png" id="winfo1"]
 [ext_resource type="Texture2D" path="res://art/water_info_ocean.png" id="winfo_ocean"]
-[ext_resource type="Texture2D" path="res://art/water_info_river.png" id="winfo_river"]
-[ext_resource type="Script" path="res://scripts/river_life.gd" id="river_life"]
-[ext_resource type="Texture2D" path="res://art/bridge_river.png" id="bridge_river"]
 [ext_resource type="Texture2D" uid="uid://bqpnk7i4h35gx" path="res://art/water_info_2.png" id="winfo2"]
 
 [sub_resource type="ShaderMaterial" id="water_mat"]
@@ -129,24 +126,8 @@ texture = ExtResource("winfo2")
 centered = false
 metadata/_edit_lock_ = true
 
-[node name="WaterRiver" type="Sprite2D" parent="GroundArt"]
-material = SubResource("water_mat")
-position = Vector2(-1229.5, -992)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("winfo_river")
-centered = false
-metadata/_edit_lock_ = true
-
-[node name="RiverBridge" type="Sprite2D" parent="GroundArt"]
-position = Vector2(209, -143)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("bridge_river")
-
 [node name="Ducks" type="Node2D" parent="GroundArt" unique_id=17853052]
 script = ExtResource("301_ducks")
-
-[node name="RiverLife" type="Node2D" parent="GroundArt"]
-script = ExtResource("river_life")
 
 [node name="WheatField" type="Sprite2D" parent="GroundArt" unique_id=496559631]
 material = SubResource("wheat_mat")
@@ -787,6 +768,10 @@ position = Vector2(384, 714)
 [node name="TreeW1" parent="Entities" unique_id=1578836312 instance=ExtResource("4_tree")]
 position = Vector2(1621, -149)
 
+[node name="TreeW2" parent="Entities" unique_id=374766520 instance=ExtResource("4_tree")]
+position = Vector2(284, -121)
+kind = "pine"
+
 [node name="TreeW3" parent="Entities" unique_id=1591107993 instance=ExtResource("4_tree")]
 position = Vector2(-361, 491)
 kind = "cherry"
@@ -808,6 +793,10 @@ position = Vector2(180, -266)
 
 [node name="TreeW9" parent="Entities" unique_id=1779340285 instance=ExtResource("4_tree")]
 position = Vector2(-162, 863)
+kind = "pine"
+
+[node name="TreeW11" parent="Entities" unique_id=601725565 instance=ExtResource("4_tree")]
+position = Vector2(-120, -178)
 kind = "pine"
 
 [node name="TreeW12" parent="Entities" unique_id=1541752851 instance=ExtResource("4_tree")]
@@ -889,6 +878,9 @@ kind = "pine"
 position = Vector2(1814, -163)
 kind = "pine"
 
+[node name="TreeW40" parent="Entities" unique_id=105228905 instance=ExtResource("4_tree")]
+position = Vector2(-312, -227)
+
 [node name="TreeW42" parent="Entities" unique_id=1302517061 instance=ExtResource("4_tree")]
 position = Vector2(1077, -275)
 kind = "oak2"
@@ -949,6 +941,9 @@ position = Vector2(1728, -27)
 position = Vector2(-171, 226)
 kind = "pine"
 
+[node name="TreeW63" parent="Entities" unique_id=1682347188 instance=ExtResource("4_tree")]
+position = Vector2(-225, -222)
+
 [node name="TreeW64" parent="Entities" unique_id=1346986046 instance=ExtResource("4_tree")]
 position = Vector2(-228, 16)
 kind = "pine"
@@ -977,6 +972,10 @@ kind = "oak2"
 position = Vector2(880, -49)
 kind = "pine"
 
+[node name="TreeW73" parent="Entities" unique_id=1693673825 instance=ExtResource("4_tree")]
+position = Vector2(64, -108)
+kind = "pine"
+
 [node name="TreeW74" parent="Entities" unique_id=95535578 instance=ExtResource("4_tree")]
 position = Vector2(-33, 424)
 kind = "cherry"
@@ -987,6 +986,10 @@ kind = "pine"
 
 [node name="TreeW76" parent="Entities" unique_id=1467842048 instance=ExtResource("4_tree")]
 position = Vector2(559, -255)
+
+[node name="TreeW77" parent="Entities" unique_id=1615077007 instance=ExtResource("4_tree")]
+position = Vector2(-153, -205)
+kind = "pine"
 
 [node name="TreeW79" parent="Entities" unique_id=1390492447 instance=ExtResource("4_tree")]
 position = Vector2(807, -28)
@@ -1039,9 +1042,20 @@ kind = "bush_pink"
 position = Vector2(594, -107)
 kind = "bush_yellow"
 
+[node name="BushW5" parent="Entities" unique_id=1687207236 instance=ExtResource("50_decor")]
+position = Vector2(-29, -152)
+kind = "bush_pink"
+
+[node name="BushW6" parent="Entities" unique_id=804814768 instance=ExtResource("50_decor")]
+position = Vector2(-188, -183)
+
 [node name="BushW9" parent="Entities" unique_id=792905010 instance=ExtResource("50_decor")]
 position = Vector2(-335, -12)
 kind = "bush_pink"
+
+[node name="BushW10" parent="Entities" unique_id=365699033 instance=ExtResource("50_decor")]
+position = Vector2(137, -120)
+kind = "bush_yellow"
 
 [node name="BushW11" parent="Entities" unique_id=335418414 instance=ExtResource("50_decor")]
 position = Vector2(424, -33)
@@ -1050,11 +1064,23 @@ position = Vector2(424, -33)
 position = Vector2(667, -44)
 kind = "bush_yellow"
 
+[node name="BushW15" parent="Entities" unique_id=1162774822 instance=ExtResource("50_decor")]
+position = Vector2(122, -144)
+kind = "bush_yellow"
+
 [node name="BushW18" parent="Entities" unique_id=1358964175 instance=ExtResource("50_decor")]
 position = Vector2(-62, -220)
 
 [node name="BushW19" parent="Entities" unique_id=1541354379 instance=ExtResource("50_decor")]
 position = Vector2(-71, 292)
+
+[node name="BushW20" parent="Entities" unique_id=412642386 instance=ExtResource("50_decor")]
+position = Vector2(287, -164)
+kind = "bush_yellow"
+
+[node name="BushW21" parent="Entities" unique_id=273147796 instance=ExtResource("50_decor")]
+position = Vector2(273, -146)
+kind = "bush_yellow"
 
 [node name="BushW22" parent="Entities" unique_id=1775748939 instance=ExtResource("50_decor")]
 position = Vector2(455, -142)
@@ -3694,6 +3720,10 @@ position = Vector2(2206, -873)
 position = Vector2(-615, -52)
 kind = "oak2"
 
+[node name="TreeN403" parent="Entities" unique_id=852887473 instance=ExtResource("4_tree")]
+position = Vector2(-695, -135)
+kind = "oak2"
+
 [node name="TreeN404" parent="Entities" unique_id=1492271284 instance=ExtResource("4_tree")]
 position = Vector2(-771, -73)
 kind = "pine"
@@ -3712,6 +3742,10 @@ kind = "cherry"
 [node name="TreeN408" parent="Entities" unique_id=732696985 instance=ExtResource("4_tree")]
 position = Vector2(-811, 152)
 kind = "pine"
+
+[node name="TreeN409" parent="Entities" unique_id=851066128 instance=ExtResource("4_tree")]
+position = Vector2(-627, -106)
+kind = "cherry"
 
 [node name="TreeN410" parent="Entities" unique_id=95540699 instance=ExtResource("4_tree")]
 position = Vector2(-184, -685)
@@ -3827,6 +3861,10 @@ kind = "pine"
 position = Vector2(-860, -166)
 kind = "pine"
 
+[node name="TreeN454" parent="Entities" unique_id=199858788 instance=ExtResource("4_tree")]
+position = Vector2(-875, -97)
+kind = "pine"
+
 [node name="TreeN455" parent="Entities" unique_id=838384488 instance=ExtResource("4_tree")]
 position = Vector2(-942, -28)
 
@@ -3848,6 +3886,9 @@ kind = "pine"
 [node name="TreeN460" parent="Entities" unique_id=1083975753 instance=ExtResource("4_tree")]
 position = Vector2(-1015, -42)
 kind = "oak2"
+
+[node name="TreeN461" parent="Entities" unique_id=1754713795 instance=ExtResource("4_tree")]
+position = Vector2(-967, -135)
 
 [node name="TreeN462" parent="Entities" unique_id=759102545 instance=ExtResource("4_tree")]
 position = Vector2(-998, -80)
@@ -3920,6 +3961,13 @@ kind = "pine"
 [node name="TreeN487" parent="Entities" unique_id=2109993077 instance=ExtResource("4_tree")]
 position = Vector2(718, -654)
 kind = "oak2"
+
+[node name="TreeN488" parent="Entities" unique_id=44642944 instance=ExtResource("4_tree")]
+position = Vector2(621, -693)
+
+[node name="TreeN489" parent="Entities" unique_id=1472926429 instance=ExtResource("4_tree")]
+position = Vector2(615, -595)
+kind = "pine"
 
 [node name="TreeN490" parent="Entities" unique_id=685362618 instance=ExtResource("4_tree")]
 position = Vector2(755, -549)
@@ -4342,6 +4390,10 @@ kind = "pine"
 position = Vector2(-589, 1367)
 kind = "oak2"
 
+[node name="TreeN652" parent="Entities" unique_id=1492408063 instance=ExtResource("4_tree")]
+position = Vector2(361, -396)
+kind = "pine"
+
 [node name="TreeN653" parent="Entities" unique_id=854581448 instance=ExtResource("4_tree")]
 position = Vector2(-967, 936)
 kind = "oak2"
@@ -4383,6 +4435,10 @@ kind = "oak2"
 
 [node name="TreeN667" parent="Entities" unique_id=1517775902 instance=ExtResource("4_tree")]
 position = Vector2(-939, 522)
+kind = "pine"
+
+[node name="TreeN668" parent="Entities" unique_id=226102656 instance=ExtResource("4_tree")]
+position = Vector2(615, -757)
 kind = "pine"
 
 [node name="TreeN669" parent="Entities" unique_id=2047218050 instance=ExtResource("4_tree")]
