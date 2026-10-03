@@ -7,3 +7,4 @@ script = ExtResource("1_style")
 tip_inset = 1.5
 grip = 0.9
 grip_west_motion = 0.92
+size_scale = 0.85
