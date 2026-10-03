@@ -13,6 +13,9 @@ var _check := 0.0
 
 func _ready() -> void:
 	add_to_group("pickups")
+	# always match the icon sheet (32px frames), so adding icons can't misalign ground items again
+	var sheet: Sprite2D = $Sprite2D
+	sheet.hframes = maxi(sheet.texture.get_width() / 32, 1)
 	_refresh()
 	# little hop when it appears
 	var sprite: Sprite2D = $Sprite2D
