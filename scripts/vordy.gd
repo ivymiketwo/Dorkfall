@@ -93,6 +93,8 @@ const ACID_BLOB := preload("res://scripts/acid_blob.gd")
 const WIND_CONE := preload("res://scripts/wind_cone.gd")
 const BITE_STRIKE := preload("res://scripts/bite_strike.gd")
 ## His big-attack animation starts this long before the ground telegraph appears.
+## The bite wedge starts this far in front of his centre so his body doesn't cover it.
+const BITE_REACH_START := 24.0
 const BITE_RECOVER := 0.12   ## swipe follow-through after the hit
 const ANIM_LEAD := 0.4
 const DEATH_ANIM := 2.85     ## how long the death animation plays before the respawn countdown (seconds)
@@ -336,14 +338,15 @@ func _bite(player: Node2D) -> void:
 	var strike: BiteStrike = BITE_STRIKE.new()
 	strike.direction = dir.normalized()
 	strike.damage = bite_damage
-	strike.length = bite_range + 6.0
+	strike.length = bite_range + 17.0
+	strike.spread_deg = 95.0
 	strike.warn_time = bite_warn
 	strike.caster = self
 	AttackGuard.bind(strike, self)
 	# same lead-in animation as the big attacks, then the wedge starts filling
 	_begin_cast("bite", ANIM_LEAD + bite_warn + BITE_RECOVER)
 	_after_lead(func():
-		strike.global_position = global_position + Vector2(0, -6)
+		strike.global_position = global_position + Vector2(0, -6) + strike.direction * BITE_REACH_START
 		_add_ground_attack(strike)
 		bitten.emit())
 
