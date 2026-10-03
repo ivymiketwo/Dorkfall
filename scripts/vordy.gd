@@ -105,6 +105,8 @@ const BITE_STRIKE := preload("res://scripts/bite_strike.gd")
 ## His big-attack animation starts this long before the ground telegraph appears.
 ## The bite wedge starts this far in front of his centre so his body doesn't cover it.
 const BITE_REACH_START := 24.0
+## Where red orbs start: just above his head.
+const ORB_ORIGIN_OFFSET := Vector2(0, -66)
 const BITE_RECOVER := 0.12   ## swipe follow-through after the hit
 ## How long the sit-down takes before the barrage starts firing.
 const BARRAGE_SIT := 0.8
@@ -301,7 +303,7 @@ func _start_blob(_target_at_cast: Node2D) -> void:
 		var target := _target
 		if not _valid_target(target):
 			return
-		var mouth := global_position + Vector2(30 if facing_right else -30, -30)
+		var mouth := global_position + ORB_ORIGIN_OFFSET
 		var blob: RedOrb = RED_ORB.new()
 		blob.damage = blob_damage
 		blob.radius = blob_radius
@@ -339,7 +341,7 @@ func _barrage_loop() -> void:
 
 func _fire_small_orb(target: Node2D) -> void:
 	facing = target.global_position - global_position
-	var mouth := global_position + Vector2(30 if facing_right else -30, -30)
+	var mouth := global_position + ORB_ORIGIN_OFFSET
 	var orb: RedOrb = RED_ORB.new()
 	orb.damage = barrage_damage
 	orb.radius = barrage_radius
