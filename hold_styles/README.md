@@ -25,3 +25,10 @@ Everything the preset does is a number in `melee_hand.tres` - change it and ever
 To give one item its own look, set its **Hold Style** to a copy of `melee_hand.tres` (that always wins).
 
 Order of choice: item Hold Style > one-handed weapon / Handle At Bottom (`melee_hand.tres`) > `<weapon_kind>.tres` (staff) > defaults.
+
+## How the 1hand module lines items up (always from the bottom of the sprite)
+The hand is placed by measuring from the **bottom edge of the item's picture**, in pixels, so item size does not matter:
+- If the item has a short handle under a crossguard (a sword), the hand sits in the middle of that handle (worked out from the picture).
+- If it has no short handle (a fishing rod), the hand sits at the very bottom pixel.
+- **Hold Grip Offset** (on the item): +3 / +4 leaves that many more pixels of the item showing below the hand; negative moves the hand toward the very bottom. 0 = automatic.
+The staff module is not affected (it still uses its own grip number).

@@ -86,6 +86,7 @@ func _refresh() -> void:
 		if slot == "weapon":
 			s.style = HoldStyle.for_item(it)
 			s.item_scale = it.hold_scale if it != null else 1.0
+			s.grip_extra = it.hold_grip_offset if it != null else 0.0
 			s._crop = null                # re-crop with this style's grip
 		s.visible = slot == "weapon" and it != null and it.worn_texture != null   # only held weapons for now; armour needs 48x48 art
 	_apply_stats()

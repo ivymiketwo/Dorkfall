@@ -39,6 +39,9 @@ extends Resource
 @export var handle_at_bottom := false
 ## Scales this item's held picture on top of its style (1 = the style's own size).
 @export var hold_scale := 1.0
+## Melee (1hand) module: art pixels of the item left showing below the hand (+3 / +4 = a bit more handle past the hand,
+## negative = hand nearer the very bottom). 0 = the module's automatic grip.
+@export var hold_grip_offset := 0.0
 ## Weapons: decides the left-click melee animation.
 @export_enum("none", "fist", "staff", "sword") var weapon_kind := "none"
 ## Locked to the account: it stays with you when you die (never left on a gravestone),

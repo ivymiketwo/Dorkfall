@@ -20,6 +20,9 @@ var body: Sprite2D
 var style: HoldStyle = HoldStyle.new()
 ## Item > Hold Scale: shrinks or grows this one item relative to its style.
 var item_scale := 1.0
+## Item > Hold Grip Offset: art pixels of the item left showing below the hand (+ = hand higher up the item).
+var grip_extra := 0.0
+var _grip_tex := 0.0           # half the length of the handle section at the bottom of the picture (texture px)
 var player: Node2D
 var _src: Texture2D
 var _crop: AtlasTexture
@@ -127,7 +130,14 @@ func _process(_delta: float) -> void:
 	var along := style.length_south if facing == 0 else (style.length_north if facing == 1 else 1.0)
 	scale = body.scale * style.size_scale * item_scale * Vector2(1.0, along)     # same size in every direction (a rod pointing at / away from the camera is foreshortened)
 	var g := style.grip_west_motion if (facing == 2 and row != 2) else style.grip
-	if facing == 0 and style.butt_overhang_south >= 0.0:
+	if style.grip_from_sprite:
+		# melee (1hand) module: measure from the bottom of the picture, in screen art pixels
+		var mult := style.size_scale * item_scale * along
+		var up_px := _grip_tex * mult + grip_extra
+		if facing == 0 and style.butt_overhang_south >= 0.0:
+			up_px += style.butt_overhang_south
+		g = clampf(1.0 - up_px / maxf(_full_region.size.y * mult, 1.0), 0.0, 1.0)
+	elif facing == 0 and style.butt_overhang_south >= 0.0:
 		var shown := _full_region.size.y * style.size_scale * item_scale * style.length_south
 		g = clampf(1.0 - style.butt_overhang_south / maxf(shown, 1.0), 0.0, 1.0)
 	elif facing == 0 and style.grip_south >= 0.0:
@@ -198,6 +208,7 @@ func _rebuild(tex: Texture2D) -> void:
 	if used.size == Vector2i.ZERO:
 		texture = null
 		return
+	_grip_tex = _measure_grip(img.get_region(SRC_FRAME), used)
 	_crop = AtlasTexture.new()
 	_crop.atlas = tex
 	_full_region = Rect2(SRC_FRAME.position + used.position, used.size)
@@ -205,3 +216,27 @@ func _rebuild(tex: Texture2D) -> void:
 	_crop.region = _full_region
 	offset = Vector2(-used.size.x / 2.0, -used.size.y * style.grip)   # origin = the grip point
 	texture = _crop
+
+
+## Half the length of the narrow handle section at the bottom of the picture (texture px): the middle of a sword's
+## grip under its crossguard. Items without a short handle (a long fishing-rod butt) get 0: held at the very bottom.
+func _measure_grip(img: Image, used: Rect2i) -> float:
+	var widths: Array[int] = []
+	for y in range(used.end.y - 1, used.position.y - 1, -1):
+		var n := 0
+		for x in range(used.position.x, used.end.x):
+			if img.get_pixel(x, y).a > 0.0:
+				n += 1
+		widths.append(n)
+	if widths.is_empty():
+		return 0.0
+	var ref := widths[0]
+	for i in mini(3, widths.size()):
+		ref = mini(ref, widths[i])
+	var rows := 0
+	for w in widths:
+		if w <= ref + 1:
+			rows += 1
+		else:
+			break
+	return rows * 0.5 if rows <= 4 and rows < widths.size() else 0.0

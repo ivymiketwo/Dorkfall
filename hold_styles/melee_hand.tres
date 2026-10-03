@@ -20,3 +20,4 @@ offset_west = Vector2(1, -4)
 offset_west_run = Vector2(4, 0)
 butt_overhang_south = 3.3
 hand_cover_south = 0.5
+grip_from_sprite = true

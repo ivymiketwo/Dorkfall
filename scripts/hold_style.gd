@@ -14,6 +14,10 @@ extends Resource
 ## from it (north) looks shorter on screen. 1 = no change.
 @export var length_south := 1.0
 @export var length_north := 1.0
+## The melee (1hand) module: ignore `grip` and hold the item by the BOTTOM of its picture. The hand sits at the
+## middle of the handle (found from the picture: the narrow section under the crossguard), or at the very bottom
+## when the item has no short handle (a fishing rod). Measured in pixels from the bottom, so any item size lines up.
+@export var grip_from_sprite := false
 ## How far down the item the hand holds it (0 = the very tip, 1 = the bottom end). Used standing and running.
 @export var grip := 0.485
 ## Same, but while running or jumping west (hand on the far side of the body).
