@@ -1,12 +1,19 @@
 extends Node
-## Everything you SEE of Vorly: walk frames, waddle, belly breathing, squash and stretch while
-## casting, the red hit flash, the belly-up death flop, fading out and back in.
+## Everything you SEE of Vorly: 4-way idle/walk art, the sitting "big attack" animation while
+## casting, a quick squash on bites, the red hit flash, the belly-up death flop, fading out and back in.
 ## The brain (vordy.gd) never touches this; this only listens to it. A server simply has no Look.
 
-const BASE_SCALE := Vector2(0.5, 0.5)   # sprite art is 2x, drawn at half scale
+const BASE_SCALE := Vector2(1.0, 1.0)
+## Sheet art/vorly_dragon.png: 80px cells, 8 columns x 6 rows.
+## Row 0: idle, one frame per direction (cols 0-3 = down, right, up, left).
+## Rows 1-4: walk (8 frames) down, up, left, right.  Row 5: big attack (8 frames).
+const WALK_ROW := {"down": 1, "up": 2, "left": 3, "right": 4}
+const IDLE_COL := {"down": 0, "right": 1, "up": 2, "left": 3}
 
 var _t := 0.0
 var _dead := false
+var _cast_t := 0.0
+var _cast_len := 0.0
 
 @onready var brain: Vordy = get_parent()
 @onready var sprite: Sprite2D = brain.get_node("Sprite2D")
@@ -25,15 +32,29 @@ func _process(delta: float) -> void:
 	_t += delta
 	if _dead:
 		return
-	sprite.flip_h = brain.facing_right
+	sprite.flip_h = false
+	sprite.rotation = 0.0
+	var dir := _dir_name()
+	if _cast_len > 0.0:
+		_cast_t += delta
+		var f := clampi(int(_cast_t / _cast_len * 8.0), 0, 7)
+		sprite.frame_coords = Vector2i(f, 5)
+		if _cast_t >= _cast_len:
+			_cast_len = 0.0
+		return
 	if brain.velocity != Vector2.ZERO:
-		sprite.frame = int(_t * 5.0) % 2
-		sprite.rotation = sin(_t * 10.0) * 0.07   # waddle
+		sprite.frame_coords = Vector2i(int(_t * 10.0) % 8, WALK_ROW[dir])
 	else:
-		sprite.frame = 0
-		sprite.rotation = 0.0
+		sprite.frame_coords = Vector2i(IDLE_COL[dir], 0)
 		if not brain.is_casting():
 			sprite.scale.y = BASE_SCALE.y * (1.0 + sin(_t * 2.5) * 0.03)   # belly breathing
+
+
+func _dir_name() -> String:
+	var f := brain.facing
+	if absf(f.x) > absf(f.y):
+		return "right" if f.x > 0.0 else "left"
+	return "down" if f.y >= 0.0 else "up"
 
 
 func _on_hit(_amount: float) -> void:
@@ -47,25 +68,16 @@ func _on_bite() -> void:
 	tw.tween_property(sprite, "scale", BASE_SCALE, 0.12)
 
 
-func _on_cast(kind: String, duration: float) -> void:
-	var tw := create_tween()
-	match kind:
-		"slam":   # rears up while charging, slams down when the smoke goes off
-			tw.tween_property(sprite, "scale", BASE_SCALE * Vector2(0.9, 1.12), duration - 0.23)
-			tw.tween_property(sprite, "scale", BASE_SCALE * Vector2(1.2, 0.85), 0.08)
-			tw.tween_property(sprite, "scale", BASE_SCALE, 0.15)
-		"blob":   # hocks it up: rears back, then lurches forward as it launches
-			tw.tween_property(sprite, "scale", BASE_SCALE * Vector2(0.92, 1.15), 0.25)
-			tw.tween_property(sprite, "scale", BASE_SCALE * Vector2(1.18, 0.88), 0.1)
-			tw.tween_property(sprite, "scale", BASE_SCALE, 0.15)
-		"gust":   # sucks in a huge breath (puffing up), then blows it all out
-			tw.tween_property(sprite, "scale", BASE_SCALE * Vector2(1.3, 1.22), brain.gust_warn)
-			tw.tween_property(sprite, "scale", BASE_SCALE * Vector2(0.85, 0.9), 0.1)
-			tw.tween_property(sprite, "scale", BASE_SCALE, maxf(duration - brain.gust_warn - 0.1, 0.05))
+func _on_cast(_kind: String, duration: float) -> void:
+	# all his big attacks use the sitting "big attack" animation, stretched over the cast
+	_cast_t = 0.0
+	_cast_len = maxf(duration, 0.1)
+	sprite.scale = BASE_SCALE
 
 
 func _on_died() -> void:
 	_dead = true
+	_cast_len = 0.0
 	# flops over belly-up with his feet in the air, then fades out
 	sprite.rotation = 0.0
 	var tw := create_tween()
@@ -78,6 +90,7 @@ func _on_died() -> void:
 
 func _on_respawn() -> void:
 	_dead = false
+	_cast_len = 0.0
 	sprite.flip_v = false
 	sprite.scale = BASE_SCALE
 	create_tween().tween_property(brain, "modulate:a", 1.0, 0.8)

@@ -93,7 +93,8 @@ const DEATH_ANIM := 2.85     ## how long the death animation plays before the re
 const RETARGET_EVERY := 0.5
 
 var state := State.WANDER
-var facing_right := false       ## logical facing (his art faces left by default)
+var facing_right := false
+var facing := Vector2.DOWN      ## last direction he moved or aimed (the look picks the 4-way art from it)
 var _home: Vector2
 var _wander_target: Vector2
 var _wander_timer := 0.0
@@ -184,6 +185,10 @@ func _physics_process(delta: float) -> void:
 		move = Vector2.ZERO
 	if move.x != 0.0:
 		facing_right = move.x > 0.0
+	if move != Vector2.ZERO:
+		facing = move
+	elif _target != null and is_casting():
+		facing = _target.global_position - global_position
 	velocity = move * speed
 	move_and_slide()
 
@@ -292,6 +297,8 @@ func _start_gust(target: Node2D) -> void:
 
 func _begin_cast(kind: String, duration: float) -> void:
 	_cast_lock = duration
+	if _target != null:
+		facing = _target.global_position - global_position
 	cast_started.emit(kind, duration)
 
 
@@ -306,6 +313,7 @@ func _pick_wander_target() -> void:
 
 func _bite(player: Node2D) -> void:
 	_bite_timer = bite_cooldown
+	facing = player.global_position - global_position
 	AttackRules.deal(player, bite_damage, self, global_position)
 	bitten.emit()
 
