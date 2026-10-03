@@ -33,7 +33,7 @@ extends Resource
 @export var worn_texture: Texture2D
 ## Held weapons: how it sits in the hand (angle, size, grip, jump poses...). Empty = the standard style for its weapon type (res://hold_styles/<type>.tres).
 @export var hold_style: HoldStyle
-## Tick this for anything gripped at the bottom of its picture (swords, fishing rods, axes, spears...): it is then held with
+## One-handed weapons already get this automatically. Tick it to force it on a two-handed item gripped at the bottom of its picture (a spear, say): it is then held with
 ## the shared bottom-grip preset (res://hold_styles/bottom_grip.tres) in every direction, with no per-item tuning.
 ## An item's own Hold Style, if set, still wins.
 @export var handle_at_bottom := false

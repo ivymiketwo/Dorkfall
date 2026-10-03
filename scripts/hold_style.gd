@@ -70,14 +70,16 @@ extends Resource
 const BOTTOM_GRIP := "res://hold_styles/bottom_grip.tres"
 
 
-## Which style an item is held with: its own Hold Style, else the bottom-grip preset when its
-## `handle_at_bottom` box is ticked, else the standard style for its weapon type.
+## Which style an item is held with: its own Hold Style, else the bottom-grip preset for every ONE-HANDED
+## weapon (swords, fishing rods, axes... anything with its handle at the bottom) and for any item with the
+## `handle_at_bottom` box ticked, else the standard style for its weapon type (two-handed staves).
 static func for_item(item: Item) -> HoldStyle:
 	if item == null:
 		return HoldStyle.new()
 	if item.hold_style != null:
 		return item.hold_style
-	if item.handle_at_bottom and ResourceLoader.exists(BOTTOM_GRIP):
+	var one_handed_weapon := item.equip_slot == "weapon" and not item.two_handed
+	if (item.handle_at_bottom or one_handed_weapon) and ResourceLoader.exists(BOTTOM_GRIP):
 		var r := load(BOTTOM_GRIP) as HoldStyle
 		if r != null:
 			return r
