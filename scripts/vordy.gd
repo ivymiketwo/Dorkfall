@@ -89,7 +89,7 @@ signal respawned
 
 const FIREBALL := preload("res://scenes/fireball.tscn")
 const TOXIC_ZONE := preload("res://scripts/toxic_zone.gd")
-const ACID_BLOB := preload("res://scripts/acid_blob.gd")
+const RED_ORB := preload("res://scripts/red_orb.gd")
 const WIND_CONE := preload("res://scripts/wind_cone.gd")
 const BITE_STRIKE := preload("res://scripts/bite_strike.gd")
 ## His big-attack animation starts this long before the ground telegraph appears.
@@ -122,9 +122,10 @@ func _ready() -> void:
 	_home = position
 	_wander_target = position
 	_spells = SpellRotation.new(spell_cooldown)
-	# Spells are switched off for now: only the melee bite is active. To bring one back,
-	# add it here, e.g.  _spells.add("slam", slam_range, func(): _start_slam())
-	# (the _start_slam / _start_blob / _start_gust / _burp functions below are still there).
+	# Spells are mostly switched off for now: the melee bite and the red orb are active. To bring
+	# one back, add it here, e.g.  _spells.add("slam", slam_range, func(): _start_slam())
+	# (the _start_slam / _start_gust / _burp functions below are still there).
+	_spells.add("blob", blob_range, func(): _start_blob(_target))
 	stats.died.connect(_on_died)
 	stats.damaged.connect(_on_damaged)
 
@@ -288,7 +289,7 @@ func _start_blob(_target_at_cast: Node2D) -> void:
 		if not _valid_target(target):
 			return
 		var mouth := global_position + Vector2(30 if facing_right else -30, -30)
-		var blob: AcidBlob = ACID_BLOB.new()
+		var blob: RedOrb = RED_ORB.new()
 		blob.damage = blob_damage
 		blob.radius = blob_radius
 		blob.launch_from = mouth
