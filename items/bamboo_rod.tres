@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="Item" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="Item" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://art/worn_bamboo_rod.png" id="2_worn"]
+[ext_resource type="Resource" path="res://hold_styles/rod.tres" id="3_hold"]
 
 [resource]
 script = ExtResource("1_item")
@@ -12,3 +14,5 @@ value = 1000
 equip_slot = "weapon"
 fishing_rod = true
 fishing_power = 1
+worn_texture = ExtResource("2_worn")
+hold_style = ExtResource("3_hold")

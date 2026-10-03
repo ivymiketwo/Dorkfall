@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="HoldStyle" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/hold_style.gd" id="1_style"]
+
+[resource]
+script = ExtResource("1_style")
+tip_inset = 1.5
+grip = 0.9
+grip_west_motion = 0.92

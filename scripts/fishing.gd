@@ -66,6 +66,15 @@ func _rod_item() -> Item:
 	return w if w != null and w.fishing_rod else null
 
 
+## Where the line leaves the rod: the tip of the rod held in the character's hand.
+func _rod_tip() -> Vector2:
+	for n in get_tree().get_nodes_in_group("held_weapon"):
+		var w := n as HeldWeapon
+		if w != null and w.player == caster and w.visible:
+			return w.orb_global()
+	return _hand() + _dir * 12.0 + Vector2(0, -6)
+
+
 func _hand() -> Vector2:
 	return caster.global_position + Vector2(5.0 if _dir.x >= 0.0 else -5.0, -9.0)
 
@@ -104,7 +113,7 @@ func _cast() -> void:
 	var from := caster.global_position + Vector2(0, -9)
 	var aim: Vector2 = caster.aim_world - from
 	_dir = aim.normalized() if aim.length() > 1.0 else Vector2.DOWN
-	_tip_start = _hand() + _dir * 15.0
+	_tip_start = _rod_tip()
 	_land = from + _dir * clampf(aim.length(), MIN_CAST, MAX_CAST)
 	_water = _is_water(_land)
 	_fly_time = 0.3 + _land.distance_to(from) / 420.0
@@ -233,8 +242,7 @@ func _bobber_pos() -> Vector2:
 	match state:
 		S.FLYING:
 			var f := clampf(_t / _fly_time, 0.0, 1.0)
-			var tip := _hand() + _dir * 15.0
-			return tip.lerp(_land, f) - Vector2(0, sin(f * PI) * 18.0)
+			return _rod_tip().lerp(_land, f) - Vector2(0, sin(f * PI) * 18.0)
 		S.WAIT:
 			return _land + Vector2(0, snappedf(sin(_t * 3.0) * 0.5, PX))
 		S.BITE, S.MINI:
@@ -252,17 +260,7 @@ func _draw() -> void:
 		_draw_splash()
 	if state == S.IDLE:
 		return
-	# the rod: swings back during the wind-up, then points at the target
-	var wind := -0.9 * (1.0 - clampf(_t / 0.18, 0.0, 1.0)) if state == S.FLYING else 0.0
-	var hand := _hand()
-	var tip := hand + _dir.rotated(wind) * 15.0
-	var col: Color = ROD_COLS[clampi((_rod.fishing_power if _rod else 1) - 1, 0, 2)]
-	var mid := hand + (tip - hand) * 0.5 + Vector2(0, 0.5)
-	_px_line(hand + Vector2(0.5, 0.5), tip + Vector2(0.5, 0.5), OUTLINE)
-	_px_line(hand, hand + (tip - hand) * 0.3, ROD_DARK)
-	_px_line(hand + (tip - hand) * 0.3, mid, col.darkened(0.25))
-	_px_line(mid, tip, col)
-	_px(hand + (tip - hand) * 0.35 + Vector2(0, 1.0), Color("d8d8e0"))        # reel
+	var tip := _rod_tip()      # the rod itself is the held item (HeldWeapon)
 	# the line and bobber
 	var b := _bobber_pos()
 	var sag := 7.0 if state == S.WAIT else (3.0 if state == S.FLYING else 1.5)
