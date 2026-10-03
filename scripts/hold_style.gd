@@ -67,7 +67,7 @@ extends Resource
 ## to change how every weapon of that type is held), otherwise the defaults above. An Item's own
 ## Hold Style, if set, wins over this.
 ## The standard style for the "handle at the bottom" preset (fishing rods, swords, anything gripped at the butt).
-const BOTTOM_GRIP := "res://hold_styles/bottom_grip.tres"
+const MELEE_HAND := "res://hold_styles/melee_hand.tres"
 
 
 ## Which style an item is held with: its own Hold Style, else the bottom-grip preset for every ONE-HANDED
@@ -79,8 +79,8 @@ static func for_item(item: Item) -> HoldStyle:
 	if item.hold_style != null:
 		return item.hold_style
 	var one_handed_weapon := item.equip_slot == "weapon" and not item.two_handed
-	if (item.handle_at_bottom or one_handed_weapon) and ResourceLoader.exists(BOTTOM_GRIP):
-		var r := load(BOTTOM_GRIP) as HoldStyle
+	if (item.handle_at_bottom or one_handed_weapon) and ResourceLoader.exists(MELEE_HAND):
+		var r := load(MELEE_HAND) as HoldStyle
 		if r != null:
 			return r
 	return for_kind(item.weapon_kind)

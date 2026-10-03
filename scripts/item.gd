@@ -34,7 +34,7 @@ extends Resource
 ## Held weapons: how it sits in the hand (angle, size, grip, jump poses...). Empty = the standard style for its weapon type (res://hold_styles/<type>.tres).
 @export var hold_style: HoldStyle
 ## One-handed weapons already get this automatically. Tick it to force it on a two-handed item gripped at the bottom of its picture (a spear, say): it is then held with
-## the shared bottom-grip preset (res://hold_styles/bottom_grip.tres) in every direction, with no per-item tuning.
+## the shared melee (1-hand) hand placement (res://hold_styles/melee_hand.tres) in every direction, with no per-item tuning.
 ## An item's own Hold Style, if set, still wins.
 @export var handle_at_bottom := false
 ## Scales this item's held picture on top of its style (1 = the style's own size).
