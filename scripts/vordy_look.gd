@@ -49,7 +49,7 @@ func _process(delta: float) -> void:
 			sprite.frame_coords = Vector2i(mf, MELEE_ROW[_cast_dir])
 		elif _cast_kind == "barrage":
 			# sits down, then stays sat for the whole barrage
-			sprite.frame_coords = Vector2i(clampi(int(_cast_t / brain.BARRAGE_SIT * 8.0), 0, 7), SIT_ROW[dir])   # turns to face whoever he is shooting
+			sprite.frame_coords = Vector2i(clampi(int(_cast_t / brain.BARRAGE_SIT * 8.0), 0, 7), SIT_ROW[_cast_dir])   # keeps the direction he sat down facing
 		else:
 			var f := clampi(int(_cast_t / _cast_len * 8.0), 0, 7)
 			sprite.frame_coords = Vector2i(f, SIT_ROW[_cast_dir])
