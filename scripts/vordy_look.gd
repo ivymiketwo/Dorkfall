@@ -77,8 +77,8 @@ func _on_bite() -> void:
 
 
 func _on_cast(kind: String, duration: float) -> void:
-	# only the melee bite has attack art; the sit-up "big attack" row is unused for now
-	if kind != "bite":
+	# the bite has its own swipe; the red orb uses the sit-up "big attack" row; nothing else has art yet
+	if kind != "bite" and kind != "blob":
 		return
 	# big attacks use the sitting "big attack" animation stretched over the cast; the bite has its own
 	_cast_kind = kind

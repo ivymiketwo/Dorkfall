@@ -283,7 +283,7 @@ func _start_slam() -> void:
 
 func _start_blob(_target_at_cast: Node2D) -> void:
 	# the blob keeps crawling on its own, so he is free to move again soon after
-	_begin_cast("blob", 0.25 + 0.1 + 0.15)
+	_begin_cast("blob", ANIM_LEAD + 0.25 + 0.1 + 0.15)
 	_after_lead(func():
 		var target := _target
 		if not _valid_target(target):
@@ -296,7 +296,7 @@ func _start_blob(_target_at_cast: Node2D) -> void:
 		blob.travel_time = clampf(mouth.distance_to(target.global_position) / blob_speed, 1.6, 3.6)
 		blob.global_position = target.global_position   # circle sits right on top of them
 		AttackGuard.bind(blob, self)
-		_add_ground_attack(blob), 0.0)
+		_add_ground_attack(blob))
 
 
 func _start_gust(target: Node2D) -> void:
