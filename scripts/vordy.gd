@@ -19,20 +19,20 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 @export_group("Movement")
 @export var wander_speed := 18.0
 @export var chase_speed := 36.0
-@export var wander_radius := 60.0
+@export var wander_radius := 90.0
 ## Starts chasing when you're this close (pixels).
-@export var aggro_range := 110.0
+@export var aggro_range := 165.0
 ## Gives up if dragged this far from home.
-@export var leash_range := 286.0
+@export var leash_range := 429.0
 
 @export_group("Attacks")
 @export var bite_damage := 30.0
-@export var bite_range := 30.0
+@export var bite_range := 45.0
 @export var bite_cooldown := 1.2
 ## How long the red wedge takes to fill before the bite lands.
 @export var bite_warn := 0.5
 @export var burp_damage := 20.0
-@export var burp_range := 100.0
+@export var burp_range := 150.0
 @export var burp_speed := 90.0
 
 @export_group("Spell casting")
@@ -43,12 +43,12 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 
 @export_group("Boss mechanic")
 ## Rising-sun ground attack: yellow -> red over 2s, then green smoke.
-@export var slam_range := 150.0
+@export var slam_range := 225.0
 @export var slam_damage := 250.0
 
 @export_group("Acid blob")
 ## Lobs a slow green blob at where you're standing; a big circle marks the landing.
-@export var blob_range := 190.0
+@export var blob_range := 285.0
 @export var blob_damage := 250.0
 @export var blob_radius := 90.0
 ## How fast the blob crawls (world units per second).
@@ -56,9 +56,9 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 
 @export_group("Wind gust")
 ## Huge cone telegraph, then a gust of green wind blasts across it.
-@export var gust_range := 170.0
+@export var gust_range := 255.0
 @export var gust_damage := 200.0
-@export var gust_length := 160.0
+@export var gust_length := 240.0
 @export var gust_spread := 50.0
 @export var gust_warn := 1.1
 ## How long the wind wisps hang around after the gust reaches full length.

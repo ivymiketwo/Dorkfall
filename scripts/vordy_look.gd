@@ -7,13 +7,17 @@ const BASE_SCALE := Vector2(1.5, 1.5)
 ## Sheet art/vorly_dragon.png: 80px cells, 8 columns x 6 rows.
 ## Row 0: idle, one frame per direction (cols 0-3 = down, right, up, left).
 ## Rows 1-4: walk (8 frames) down, up, left, right.  Row 5: big attack (8 frames).
+## Rows 6-9: melee bite (7 frames, the swipe lands on frame 4) down, up, left, right.
 const WALK_ROW := {"down": 1, "up": 2, "left": 3, "right": 4}
+const MELEE_ROW := {"down": 6, "up": 7, "left": 8, "right": 9}
 const IDLE_COL := {"down": 0, "right": 1, "up": 2, "left": 3}
 
 var _t := 0.0
 var _dead := false
 var _cast_t := 0.0
 var _cast_len := 0.0
+var _cast_kind := ""
+var _cast_dir := "down"
 
 @onready var brain: Vordy = get_parent()
 @onready var sprite: Sprite2D = brain.get_node("Sprite2D")
@@ -37,8 +41,14 @@ func _process(delta: float) -> void:
 	var dir := _dir_name()
 	if _cast_len > 0.0:
 		_cast_t += delta
-		var f := clampi(int(_cast_t / _cast_len * 8.0), 0, 7)
-		sprite.frame_coords = Vector2i(f, 5)
+		if _cast_kind == "bite":
+			# swipe lands exactly when the red wedge is full
+			var pre := brain.ANIM_LEAD + brain.bite_warn
+			var mf := clampi(int(_cast_t / pre * 4.0), 0, 3) if _cast_t < pre else clampi(4 + int((_cast_t - pre) / 0.15 * 3.0), 4, 6)
+			sprite.frame_coords = Vector2i(mf, MELEE_ROW[_cast_dir])
+		else:
+			var f := clampi(int(_cast_t / _cast_len * 8.0), 0, 7)
+			sprite.frame_coords = Vector2i(f, 5)
 		if _cast_t >= _cast_len:
 			_cast_len = 0.0
 		return
@@ -66,8 +76,10 @@ func _on_bite() -> void:
 	pass   # the bite is a "bite" cast now (big-attack animation), nothing extra to do
 
 
-func _on_cast(_kind: String, duration: float) -> void:
-	# all his big attacks use the sitting "big attack" animation, stretched over the cast
+func _on_cast(kind: String, duration: float) -> void:
+	# big attacks use the sitting "big attack" animation stretched over the cast; the bite has its own
+	_cast_kind = kind
+	_cast_dir = _dir_name()
 	_cast_t = 0.0
 	_cast_len = maxf(duration, 0.1)
 	sprite.scale = BASE_SCALE
