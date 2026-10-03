@@ -28,6 +28,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if _ui_blocking():
 			return
+		if weapon != null and weapon.fishing_rod:   # a fishing rod: left-click casts (fishing.gd)
+			return
 		attack()
 		get_viewport().set_input_as_handled()
 

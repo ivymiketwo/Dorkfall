@@ -9,3 +9,6 @@ display_name = "Bamboo Fishing Pole"
 description = "A light, springy pole for calm ponds. Good for beginners."
 icon_frame = 22
 value = 1000
+equip_slot = "weapon"
+fishing_rod = true
+fishing_power = 1

@@ -38,6 +38,8 @@ const TEST_GEAR := [preload("res://items/iron_sword.tres"), preload("res://items
 ## everything else (movement, casting, melee, guarding) uses these values, so a server can
 ## be fed the same data over the network.
 var input_dir := Vector2.ZERO
+## Set by minigames (fishing) so the keys don't walk the character.
+var control_locked := false
 var input_sprint := false
 var input_guard := false
 var aim_world := Vector2.ZERO      ## where in the world the player is aiming
@@ -79,6 +81,9 @@ func _gather_input() -> void:
 		input_dir = Vector2.ZERO
 		input_sprint = false
 		input_guard = false
+	if control_locked:
+		input_dir = Vector2.ZERO
+		input_sprint = false
 	aim_world = get_global_mouse_position()
 
 
@@ -119,6 +124,8 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if control_locked and event.is_action_pressed("jump"):
+		return
 	if event.is_action_pressed("jump") and _hop_ab:
 		if _hop_t >= 0.0:
 			_jump_buffer = 0.05

@@ -54,6 +54,11 @@ extends Resource
 @export var block_percent := 0.0
 @export var str_bonus := 0
 @export var dex_bonus := 0
+@export_group("Fishing")
+## Fishing rods are equipped in the weapon slot. Left-click casts (see fishing.gd).
+@export var fishing_rod := false
+## 1-3: bigger = a wider catch zone, a calmer fish and better fish.
+@export_range(1, 3) var fishing_power := 1
 @export_group("Melee")
 @export var melee_damage := 15.0
 ## How far the swing reaches (pixels) and how wide it is (degrees).
@@ -95,6 +100,8 @@ func stat_lines() -> PackedStringArray:
 		out.append("STRENGTH +%d" % str_bonus)
 	if dex_bonus != 0:
 		out.append("DEXTERITY +%d" % dex_bonus)
+	if fishing_rod:
+		out.append("FISHING POWER %d" % fishing_power)
 	if soulbound:
 		out.append("ACCOUNT BOUND")
 	return out

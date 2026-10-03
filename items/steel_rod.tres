@@ -9,3 +9,6 @@ display_name = "Steel Fishing Pole"
 description = "A strong, flexible pole with a smooth reel. Handles bigger fish."
 icon_frame = 23
 value = 50000
+equip_slot = "weapon"
+fishing_rod = true
+fishing_power = 2

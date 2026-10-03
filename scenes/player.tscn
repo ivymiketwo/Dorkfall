@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://scripts/equipment.gd" id="17_equip"]
 [ext_resource type="Script" path="res://scripts/attributes.gd" id="99_attr"]
 [ext_resource type="Script" path="res://scripts/guard.gd" id="98_guard"]
+[ext_resource type="Script" path="res://scripts/fishing.gd" id="97_fishing"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_feet"]
 size = Vector2(10, 6)
@@ -62,6 +63,9 @@ script = ExtResource("95_home")
 
 [node name="Guard" type="Node2D" parent="."]
 script = ExtResource("98_guard")
+
+[node name="Fishing" type="Node2D" parent="."]
+script = ExtResource("97_fishing")
 
 [node name="Melee" type="Node" parent="."]
 script = ExtResource("13_melee")

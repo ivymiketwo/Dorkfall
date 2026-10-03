@@ -9,3 +9,6 @@ display_name = "Gilded Fishing Pole"
 description = "A masterwork pole trimmed in gold. Made for legendary catches."
 icon_frame = 24
 value = 150000
+equip_slot = "weapon"
+fishing_rod = true
+fishing_power = 3
