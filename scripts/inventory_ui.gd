@@ -97,12 +97,29 @@ func _gui_input(event: InputEvent) -> void:
 				if eq:
 					opts.append({"label": "Equip " + inventory.items[slot].display_name,
 							"callback": eq.equip_from.bind(inventory, slot)})
+			var shop_ui := get_tree().get_first_node_in_group("shop_ui") as ShopUI
+			if shop_ui and shop_ui.is_open():
+				var it_s := inventory.items[slot]
+				var each := Trade.sell_price(shop_ui.shop, it_s)
+				if each > 0:
+					opts.append({"label": "Sell %s (%d)" % [it_s.display_name, each],
+							"callback": shop_ui.sell_item.bind(it_s, false)})
+					if inventory.counts[slot] > 1:
+						opts.append({"label": "Sell all (%d)" % [each * mini(inventory.count_of(it_s), Trade.MAX_SELL)],
+								"callback": shop_ui.sell_item.bind(it_s, true)})
 			opts.append({"label": "Drop " + inventory.items[slot].display_name,
 					"callback": inventory.drop_slot.bind(slot)})
 			menu.open_at_screen(get_viewport().get_mouse_position(), opts)
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		_mouse = event.position
 		var i := _slot_at(_mouse)
+		if event.pressed and i != -1 and inventory.items[i] != null:
+			var shop_ui := get_tree().get_first_node_in_group("shop_ui") as ShopUI
+			if shop_ui and shop_ui.is_open():
+				_drag_from = -1
+				shop_ui.show_value(inventory.items[i])   # shopping: a click just shows its value
+				queue_redraw()
+				return
 		if event.pressed:
 			if event.double_click and i != -1 and inventory.items[i] != null and inventory.items[i].is_equippable():
 				var eq := inventory.get_parent().get_node_or_null("Equipment") as Equipment

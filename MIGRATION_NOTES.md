@@ -16,7 +16,7 @@ changes in one place, and visuals are separate from logic.
 - `AttackRules`: pure hit tests + `deal` for boss/monster attacks.
 - `Trade.buy`: shop purchase rules, no UI. The shop window only shows the message.
 - `Trade.sell(inv, shop, item, amount)`: selling to a vendor, no UI. Price comes from `Item.sell_price`
-  and only if the item is in `Shop.buys` (never from the request); amount is clamped to what the bag
+  (or a quarter of the shop price if unset; coins / account-bound never sell), never from the request; amount is clamped to what the bag
   holds; items out + coins in are one `Inventory.transact` with a before/after ledger check. On a
   server this runs server-side per request (also check the player is next to that shopkeeper, and
   rate-limit requests); the client just shows the returned message.

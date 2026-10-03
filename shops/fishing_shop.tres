@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Shop" load_steps=10 format=3]
+[gd_resource type="Resource" script_class="Shop" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/shop.gd" id="1_shop"]
 [ext_resource type="Script" path="res://scripts/item.gd" id="2_item"]
@@ -6,13 +6,7 @@
 [ext_resource type="Resource" path="res://items/steel_rod.tres" id="4_rod"]
 [ext_resource type="Resource" path="res://items/gilded_rod.tres" id="5_rod"]
 
-[ext_resource type="Resource" path="res://items/minnow.tres" id="6_f"]
-[ext_resource type="Resource" path="res://items/perch.tres" id="7_f"]
-[ext_resource type="Resource" path="res://items/bass.tres" id="8_f"]
-[ext_resource type="Resource" path="res://items/golden_carp.tres" id="9_f"]
-
 [resource]
 script = ExtResource("1_shop")
 title = "FISHING SHOP"
 items = Array[ExtResource("2_item")]([ExtResource("3_rod"), ExtResource("4_rod"), ExtResource("5_rod")])
-buys = Array[ExtResource("2_item")]([ExtResource("6_f"), ExtResource("7_f"), ExtResource("8_f"), ExtResource("9_f")])

@@ -27,14 +27,24 @@ static func buy(inv: Inventory, item: Item) -> Dictionary:
 const MAX_SELL := 9999
 
 
-## What `shop` would pay for one `item` (0 = it won't buy it). The price only ever comes from
-## the item's own data here: nothing the player sends is trusted.
-static func sell_price(shop: Shop, item: Item) -> int:
-	if shop == null or item == null or item == COINS:
+## Why an item can't be sold ("" = it can).
+static func unsellable_reason(item: Item) -> String:
+	if item == null or item == COINS:
+		return "Coins can't be sold"
+	if item.soulbound or item.chase_item:
+		return "Account bound: can't be sold"
+	return ""
+
+
+## What a vendor pays for one `item` (0 = it won't buy it): the item's own Sell Price, or a quarter
+## of its shop price (at least 1) if none is set. The price only ever comes from the item's data:
+## nothing the player sends is trusted.
+static func sell_price(_shop: Shop, item: Item) -> int:
+	if unsellable_reason(item) != "":
 		return 0
-	if item.soulbound or item.chase_item or not shop.buys.has(item):
-		return 0
-	return maxi(item.sell_price, 0)
+	if item.sell_price > 0:
+		return item.sell_price
+	return maxi(item.value / 4, 1)
 
 
 ## Sells up to `amount` of `item` from the bag to `shop`.
@@ -46,7 +56,7 @@ static func sell_price(shop: Shop, item: Item) -> int:
 static func sell(inv: Inventory, shop: Shop, item: Item, amount: int = 1) -> Dictionary:
 	var price := sell_price(shop, item)
 	if price <= 0:
-		return {"ok": false, "message": "They don't buy that", "sold": 0, "earned": 0}
+		return {"ok": false, "message": unsellable_reason(item), "sold": 0, "earned": 0}
 	var n := mini(mini(amount, MAX_SELL), inv.count_of(item))
 	if n <= 0:
 		return {"ok": false, "message": "You don't have any", "sold": 0, "earned": 0}

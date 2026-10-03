@@ -4,5 +4,3 @@ extends Resource
 
 @export var title := "SHOP"
 @export var items: Array[Item] = []
-## Items this shopkeeper will buy from players (each pays its own Sell Price). Empty = buys nothing.
-@export var buys: Array[Item] = []
