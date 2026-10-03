@@ -120,7 +120,8 @@ func _process(_delta: float) -> void:
 			jump_pose = table[pc]
 			has_jump_pose = true
 	_show_top_only(row % 4 == 2)
-	scale = body.scale * style.size_scale     # same size in every direction
+	var along := style.length_south if facing == 0 else (style.length_north if facing == 1 else 1.0)
+	scale = body.scale * style.size_scale * Vector2(1.0, along)     # same size in every direction (a rod pointing at / away from the camera is foreshortened)
 	var g := style.grip_west_motion if (facing == 2 and row != 2) else style.grip
 	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
 	if has_jump_pose:

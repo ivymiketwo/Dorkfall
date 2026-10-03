@@ -10,6 +10,10 @@ extends Resource
 @export_group("Size and grip")
 ## Drawn size relative to the 24x40 worn art.
 @export var size_scale := 1.3
+## Length multipliers along the item when facing south / north. A rod held pointing at the camera (south) or away
+## from it (north) looks shorter on screen. 1 = no change.
+@export var length_south := 1.0
+@export var length_north := 1.0
 ## How far down the item the hand holds it (0 = the very tip, 1 = the bottom end). Used standing and running.
 @export var grip := 0.485
 ## Same, but while running or jumping west (hand on the far side of the body).

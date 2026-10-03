@@ -4,11 +4,15 @@
 
 [resource]
 script = ExtResource("1_style")
-tip_inset = 1.5
-grip = 0.9
-grip_west_motion = 0.92
 size_scale = 0.85
-lean_south = 58.0
-lean_north = 58.0
-lean_east = 58.0
-lean_west_run = -58.0
+grip = 1.0
+grip_west_motion = 1.0
+length_south = 0.55
+length_north = 0.85
+lean_south = 200.0
+lean_north = 12.0
+lean_east = 60.0
+lean_west_run = -60.0
+offset_south = Vector2(0, 0)
+offset_east = Vector2(0, 0)
+tip_inset = 1.5
