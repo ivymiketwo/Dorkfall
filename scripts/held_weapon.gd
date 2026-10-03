@@ -134,8 +134,8 @@ func _process(_delta: float) -> void:
 		# melee (1hand) module: measure from the bottom of the picture, in screen art pixels
 		var mult := style.size_scale * item_scale * along
 		var up_px := _grip_tex * mult + grip_extra
-		if facing == 0 and style.butt_overhang_south >= 0.0:
-			up_px += style.butt_overhang_south
+		if facing == 0 and style.butt_overhang_south >= 0.0 and _grip_tex == 0.0:
+			up_px += style.butt_overhang_south      # no short handle (a rod): let a little butt show past the hand
 		g = clampf(1.0 - up_px / maxf(_full_region.size.y * mult, 1.0), 0.0, 1.0)
 	elif facing == 0 and style.butt_overhang_south >= 0.0:
 		var shown := _full_region.size.y * style.size_scale * item_scale * style.length_south
