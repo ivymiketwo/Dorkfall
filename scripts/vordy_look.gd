@@ -77,6 +77,9 @@ func _on_bite() -> void:
 
 
 func _on_cast(kind: String, duration: float) -> void:
+	# only the rising sun (slam) and the melee bite have attack art so far; other casts just stand there
+	if kind != "slam" and kind != "bite":
+		return
 	# big attacks use the sitting "big attack" animation stretched over the cast; the bite has its own
 	_cast_kind = kind
 	_cast_dir = _dir_name()

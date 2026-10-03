@@ -260,8 +260,9 @@ func _add_ground_attack(node: Node2D) -> void:
 
 
 ## Runs `action` after the animation lead-in, unless he died in the meantime.
-func _after_lead(action: Callable) -> void:
-	await get_tree().create_timer(ANIM_LEAD).timeout
+func _after_lead(action: Callable, lead := ANIM_LEAD) -> void:
+	if lead > 0.0:
+		await get_tree().create_timer(lead).timeout
 	if state != State.DEAD and is_inside_tree():
 		action.call()
 
@@ -279,7 +280,7 @@ func _start_slam() -> void:
 
 func _start_blob(_target_at_cast: Node2D) -> void:
 	# the blob keeps crawling on its own, so he is free to move again soon after
-	_begin_cast("blob", ANIM_LEAD + 0.25 + 0.1 + 0.15)
+	_begin_cast("blob", 0.25 + 0.1 + 0.15)
 	_after_lead(func():
 		var target := _target
 		if not _valid_target(target):
@@ -292,7 +293,7 @@ func _start_blob(_target_at_cast: Node2D) -> void:
 		blob.travel_time = clampf(mouth.distance_to(target.global_position) / blob_speed, 1.6, 3.6)
 		blob.global_position = target.global_position   # circle sits right on top of them
 		AttackGuard.bind(blob, self)
-		_add_ground_attack(blob))
+		_add_ground_attack(blob), 0.0)
 
 
 func _start_gust(target: Node2D) -> void:
@@ -307,10 +308,10 @@ func _start_gust(target: Node2D) -> void:
 	AttackGuard.bind(cone, self)
 	facing_right = aim.x > 0.0
 	# he settles back exactly as the last wisp of wind dies out
-	_begin_cast("gust", ANIM_LEAD + gust_warn + cone.sweep_time + cone.linger_time)
+	_begin_cast("gust", gust_warn + cone.sweep_time + cone.linger_time)
 	_after_lead(func():
 		cone.global_position = global_position + Vector2(0, -4)
-		_add_ground_attack(cone))
+		_add_ground_attack(cone), 0.0)
 
 
 func _begin_cast(kind: String, duration: float) -> void:
