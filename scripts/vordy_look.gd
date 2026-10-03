@@ -46,6 +46,9 @@ func _process(delta: float) -> void:
 			var pre := brain.ANIM_LEAD + brain.bite_warn
 			var mf := clampi(int(_cast_t / pre * 4.0), 0, 3) if _cast_t < pre else clampi(4 + int((_cast_t - pre) / brain.BITE_RECOVER * 3.0), 4, 6)
 			sprite.frame_coords = Vector2i(mf, MELEE_ROW[_cast_dir])
+		elif _cast_kind == "barrage":
+			# sits down, then stays sat for the whole barrage
+			sprite.frame_coords = Vector2i(clampi(int(_cast_t / brain.BARRAGE_SIT * 8.0), 0, 7), 5)
 		else:
 			var f := clampi(int(_cast_t / _cast_len * 8.0), 0, 7)
 			sprite.frame_coords = Vector2i(f, 5)
@@ -78,7 +81,7 @@ func _on_bite() -> void:
 
 func _on_cast(kind: String, duration: float) -> void:
 	# the bite has its own swipe; the red orb uses the sit-up "big attack" row; nothing else has art yet
-	if kind != "bite" and kind != "blob":
+	if kind != "bite" and kind != "blob" and kind != "barrage":
 		return
 	# big attacks use the sitting "big attack" animation stretched over the cast; the bite has its own
 	_cast_kind = kind

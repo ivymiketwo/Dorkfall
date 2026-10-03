@@ -54,6 +54,16 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 ## How fast the blob crawls (world units per second).
 @export var blob_speed := 55.0
 
+@export_group("Orb barrage")
+## Sits down, then rapid-fires small red orbs with quick little circles, one player after
+## another. Lasts about `barrage_time` seconds; the cooldown counts from when it ends.
+@export var barrage_range := 285.0
+@export var barrage_time := 6.0
+@export var barrage_cooldown := 10.0
+@export var barrage_interval := 0.25
+@export var barrage_damage := 60.0
+@export var barrage_radius := 28.0
+@export var barrage_travel := 0.7
 @export_group("Wind gust")
 ## Huge cone telegraph, then a gust of green wind blasts across it.
 @export var gust_range := 255.0
@@ -96,6 +106,8 @@ const BITE_STRIKE := preload("res://scripts/bite_strike.gd")
 ## The bite wedge starts this far in front of his centre so his body doesn't cover it.
 const BITE_REACH_START := 24.0
 const BITE_RECOVER := 0.12   ## swipe follow-through after the hit
+## How long the sit-down takes before the barrage starts firing.
+const BARRAGE_SIT := 0.8
 const ANIM_LEAD := 0.4
 const DEATH_ANIM := 2.85     ## how long the death animation plays before the respawn countdown (seconds)
 const RETARGET_EVERY := 0.5
@@ -126,6 +138,7 @@ func _ready() -> void:
 	# one back, add it here, e.g.  _spells.add("slam", slam_range, func(): _start_slam())
 	# (the _start_slam / _start_gust / _burp functions below are still there).
 	_spells.add("blob", blob_range, func(): _start_blob(_target))
+	_spells.add("barrage", barrage_range, func(): _start_barrage(), 1.0, barrage_time + barrage_cooldown)
 	stats.died.connect(_on_died)
 	stats.damaged.connect(_on_damaged)
 
@@ -297,6 +310,46 @@ func _start_blob(_target_at_cast: Node2D) -> void:
 		blob.global_position = target.global_position   # circle sits right on top of them
 		AttackGuard.bind(blob, self)
 		_add_ground_attack(blob))
+
+
+## Sit-down orb barrage: after sitting down he fires a small red orb every `barrage_interval`
+## seconds, each landing in a small quick circle on a player, taking turns between players.
+func _start_barrage() -> void:
+	_begin_cast("barrage", barrage_time)
+	_barrage_loop()
+
+
+func _barrage_loop() -> void:
+	await get_tree().create_timer(BARRAGE_SIT).timeout
+	var shots := int((barrage_time - BARRAGE_SIT - 0.2) / barrage_interval)
+	var turn := 0
+	for i in shots:
+		if state == State.DEAD or not is_inside_tree():
+			return
+		var who: Array[Node2D] = []
+		for p in Players.alive(get_tree()):
+			if p.global_position.distance_to(_home) <= leash_range:
+				who.append(p)
+		if not who.is_empty():
+			var target := who[turn % who.size()]
+			turn += 1
+			_fire_small_orb(target)
+		await get_tree().create_timer(barrage_interval).timeout
+
+
+func _fire_small_orb(target: Node2D) -> void:
+	facing = target.global_position - global_position
+	var mouth := global_position + Vector2(30 if facing_right else -30, -30)
+	var orb: RedOrb = RED_ORB.new()
+	orb.damage = barrage_damage
+	orb.radius = barrage_radius
+	orb.blob_size = 5.0
+	orb.arc_height = 14.0
+	orb.launch_from = mouth
+	orb.travel_time = barrage_travel
+	orb.global_position = target.global_position
+	AttackGuard.bind(orb, self)
+	_add_ground_attack(orb)
 
 
 func _start_gust(target: Node2D) -> void:
