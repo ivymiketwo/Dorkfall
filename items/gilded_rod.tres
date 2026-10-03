@@ -15,4 +15,4 @@ fishing_rod = true
 fishing_power = 3
 worn_texture = ExtResource("2_worn")
 handle_at_bottom = true
-hold_scale = 0.654
+hold_scale = 0.769
