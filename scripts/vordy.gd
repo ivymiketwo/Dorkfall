@@ -177,10 +177,10 @@ func _physics_process(delta: float) -> void:
 				move = to_target / dist
 			if is_casting():
 				move = Vector2.ZERO
+			elif dist <= bite_range and _bite_timer <= 0.0:
+				_bite(_target)           # up close, the melee swing comes first
 			elif _cast_spell(_target, dist):
 				move = Vector2.ZERO
-			elif dist <= bite_range and _bite_timer <= 0.0:
-				_bite(_target)
 		State.RETURN:
 			speed = chase_speed
 			move = position.direction_to(_home)
