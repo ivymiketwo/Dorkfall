@@ -6,10 +6,11 @@ extends Node
 const BASE_SCALE := Vector2(1.5, 1.5)
 ## Sheet art/vorly_dragon.png: 80px cells, 8 columns x 6 rows.
 ## Row 0: idle, one frame per direction (cols 0-3 = down, right, up, left).
-## Rows 1-4: walk (8 frames) down, up, left, right.  Row 5: big attack (8 frames).
+## Rows 1-4: walk (8 frames) down, up, left, right.  Rows 5 + 10-12: sit-down "big attack" (8 frames) down, up, left, right.
 ## Rows 6-9: melee bite (7 frames, the swipe lands on frame 4) down, up, left, right.
 const WALK_ROW := {"down": 1, "up": 2, "left": 3, "right": 4}
 const MELEE_ROW := {"down": 6, "up": 7, "left": 8, "right": 9}
+const SIT_ROW := {"down": 5, "up": 10, "left": 11, "right": 12}
 const IDLE_COL := {"down": 0, "right": 1, "up": 2, "left": 3}
 
 var _t := 0.0
@@ -48,10 +49,10 @@ func _process(delta: float) -> void:
 			sprite.frame_coords = Vector2i(mf, MELEE_ROW[_cast_dir])
 		elif _cast_kind == "barrage":
 			# sits down, then stays sat for the whole barrage
-			sprite.frame_coords = Vector2i(clampi(int(_cast_t / brain.BARRAGE_SIT * 8.0), 0, 7), 5)
+			sprite.frame_coords = Vector2i(clampi(int(_cast_t / brain.BARRAGE_SIT * 8.0), 0, 7), SIT_ROW[dir])   # turns to face whoever he is shooting
 		else:
 			var f := clampi(int(_cast_t / _cast_len * 8.0), 0, 7)
-			sprite.frame_coords = Vector2i(f, 5)
+			sprite.frame_coords = Vector2i(f, SIT_ROW[_cast_dir])
 		if _cast_t >= _cast_len:
 			_cast_len = 0.0
 		return

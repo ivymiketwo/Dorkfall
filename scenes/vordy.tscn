@@ -27,7 +27,7 @@ texture = ExtResource("2_tex")
 offset = Vector2(0, -32)
 scale = Vector2(1.5, 1.5)
 hframes = 8
-vframes = 10
+vframes = 13
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(3, -22)
