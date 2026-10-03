@@ -8,3 +8,7 @@ tip_inset = 1.5
 grip = 0.9
 grip_west_motion = 0.92
 size_scale = 0.85
+lean_south = 58.0
+lean_north = 58.0
+lean_east = 58.0
+lean_west_run = -58.0
