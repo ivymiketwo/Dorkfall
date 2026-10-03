@@ -40,6 +40,9 @@ extends Resource
 ## Facing south only: grip fraction override (-1 = use `grip`), and how much of the hand is re-drawn over the
 ## item (1 = the whole hand sits on top, 0.5 = the item covers the bottom half of the hand).
 @export var grip_south := -1.0
+## Better than `grip_south` for items of any length: how many art pixels of the handle's end stick out past the
+## hand when facing south (-1 = off). The grip is worked out from the item's drawn length.
+@export var butt_overhang_south := -1.0
 @export_range(0.0, 1.0) var hand_cover_south := 1.0
 ## Facing south: how many art pixels further left the re-drawn hand patch reaches (so an item nudged left stays under the hand).
 @export var hand_cover_left_south := 0.0
@@ -63,6 +66,24 @@ extends Resource
 ## The standard style for a weapon type: res://hold_styles/<weapon_kind>.tres when there is one (edit that file
 ## to change how every weapon of that type is held), otherwise the defaults above. An Item's own
 ## Hold Style, if set, wins over this.
+## The standard style for the "handle at the bottom" preset (fishing rods, swords, anything gripped at the butt).
+const BOTTOM_GRIP := "res://hold_styles/bottom_grip.tres"
+
+
+## Which style an item is held with: its own Hold Style, else the bottom-grip preset when its
+## `handle_at_bottom` box is ticked, else the standard style for its weapon type.
+static func for_item(item: Item) -> HoldStyle:
+	if item == null:
+		return HoldStyle.new()
+	if item.hold_style != null:
+		return item.hold_style
+	if item.handle_at_bottom and ResourceLoader.exists(BOTTOM_GRIP):
+		var r := load(BOTTOM_GRIP) as HoldStyle
+		if r != null:
+			return r
+	return for_kind(item.weapon_kind)
+
+
 static func for_kind(kind: String) -> HoldStyle:
 	var path := "res://hold_styles/%s.tres" % kind
 	if ResourceLoader.exists(path):

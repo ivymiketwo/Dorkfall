@@ -4,7 +4,6 @@
 
 [resource]
 script = ExtResource("1_style")
-size_scale = 0.85
 grip = 1.0
 grip_west_motion = 1.0
 length_south = 0.55
@@ -19,5 +18,5 @@ tip_inset = 1.5
 offset_north = Vector2(-3, 6)
 offset_west = Vector2(4, 0)
 offset_west_run = Vector2(4, 0)
-grip_south = 0.8
+butt_overhang_south = 3.3
 hand_cover_south = 0.5

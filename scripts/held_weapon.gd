@@ -18,6 +18,8 @@ static var _hands: Dictionary = {}
 var body: Sprite2D
 ## How this item sits in the hand (Item > Hold Style). Null means the default (staff) style.
 var style: HoldStyle = HoldStyle.new()
+## Item > Hold Scale: shrinks or grows this one item relative to its style.
+var item_scale := 1.0
 var player: Node2D
 var _src: Texture2D
 var _crop: AtlasTexture
@@ -123,9 +125,12 @@ func _process(_delta: float) -> void:
 			has_jump_pose = true
 	_show_top_only(row % 4 == 2)
 	var along := style.length_south if facing == 0 else (style.length_north if facing == 1 else 1.0)
-	scale = body.scale * style.size_scale * Vector2(1.0, along)     # same size in every direction (a rod pointing at / away from the camera is foreshortened)
+	scale = body.scale * style.size_scale * item_scale * Vector2(1.0, along)     # same size in every direction (a rod pointing at / away from the camera is foreshortened)
 	var g := style.grip_west_motion if (facing == 2 and row != 2) else style.grip
-	if facing == 0 and style.grip_south >= 0.0:
+	if facing == 0 and style.butt_overhang_south >= 0.0:
+		var shown := _full_region.size.y * style.size_scale * item_scale * style.length_south
+		g = clampf(1.0 - style.butt_overhang_south / maxf(shown, 1.0), 0.0, 1.0)
+	elif facing == 0 and style.grip_south >= 0.0:
 		g = style.grip_south
 	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
 	if has_jump_pose:

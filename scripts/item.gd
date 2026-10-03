@@ -33,6 +33,12 @@ extends Resource
 @export var worn_texture: Texture2D
 ## Held weapons: how it sits in the hand (angle, size, grip, jump poses...). Empty = the standard style for its weapon type (res://hold_styles/<type>.tres).
 @export var hold_style: HoldStyle
+## Tick this for anything gripped at the bottom of its picture (swords, fishing rods, axes, spears...): it is then held with
+## the shared bottom-grip preset (res://hold_styles/bottom_grip.tres) in every direction, with no per-item tuning.
+## An item's own Hold Style, if set, still wins.
+@export var handle_at_bottom := false
+## Scales this item's held picture on top of its style (1 = the style's own size).
+@export var hold_scale := 1.0
 ## Weapons: decides the left-click melee animation.
 @export_enum("none", "fist", "staff", "sword") var weapon_kind := "none"
 ## Locked to the account: it stays with you when you die (never left on a gravestone),
