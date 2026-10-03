@@ -5,7 +5,7 @@ extends Node2D
 
 @export var length := 36.0
 @export var spread_deg := 80.0
-@export var warn_time := 0.5
+@export var warn_time := 0.4
 @export var damage := 30.0
 
 var direction := Vector2.RIGHT
@@ -29,7 +29,7 @@ func _process(delta: float) -> void:
 			var p := to_local(player.global_position + AttackRules.CHEST)
 			if p.length() <= length and absf(rad_to_deg(p.angle())) <= spread_deg * 0.5:
 				AttackRules.deal(player, damage, caster, global_position)
-	if _t >= warn_time + 0.15:
+	if _t >= warn_time + 0.12:
 		queue_free()
 		return
 	queue_redraw()
@@ -52,7 +52,7 @@ func _draw() -> void:
 		edge.append(Vector2.ZERO)
 		draw_polyline(edge, Color(0.95, 0.2, 0.15, 0.7), 1.0)
 	else:
-		var a := 1.0 - (_t - warn_time) / 0.15
+		var a := 1.0 - (_t - warn_time) / 0.12
 		draw_colored_polygon(_wedge(length), Color(1.0, 0.95, 0.85, 0.6 * a))
 
 

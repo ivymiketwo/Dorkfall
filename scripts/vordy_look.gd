@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 		if _cast_kind == "bite":
 			# swipe lands exactly when the red wedge is full
 			var pre := brain.ANIM_LEAD + brain.bite_warn
-			var mf := clampi(int(_cast_t / pre * 4.0), 0, 3) if _cast_t < pre else clampi(4 + int((_cast_t - pre) / 0.15 * 3.0), 4, 6)
+			var mf := clampi(int(_cast_t / pre * 4.0), 0, 3) if _cast_t < pre else clampi(4 + int((_cast_t - pre) / brain.BITE_RECOVER * 3.0), 4, 6)
 			sprite.frame_coords = Vector2i(mf, MELEE_ROW[_cast_dir])
 		else:
 			var f := clampi(int(_cast_t / _cast_len * 8.0), 0, 7)

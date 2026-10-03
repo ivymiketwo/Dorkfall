@@ -26,11 +26,11 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 @export var leash_range := 429.0
 
 @export_group("Attacks")
-@export var bite_damage := 30.0
+@export var bite_damage := 100.0
 @export var bite_range := 45.0
 @export var bite_cooldown := 1.2
 ## How long the red wedge takes to fill before the bite lands.
-@export var bite_warn := 0.5
+@export var bite_warn := 0.4
 @export var burp_damage := 20.0
 @export var burp_range := 150.0
 @export var burp_speed := 90.0
@@ -93,7 +93,8 @@ const ACID_BLOB := preload("res://scripts/acid_blob.gd")
 const WIND_CONE := preload("res://scripts/wind_cone.gd")
 const BITE_STRIKE := preload("res://scripts/bite_strike.gd")
 ## His big-attack animation starts this long before the ground telegraph appears.
-const ANIM_LEAD := 0.5
+const BITE_RECOVER := 0.12   ## swipe follow-through after the hit
+const ANIM_LEAD := 0.4
 const DEATH_ANIM := 2.85     ## how long the death animation plays before the respawn countdown (seconds)
 const RETARGET_EVERY := 0.5
 
@@ -340,7 +341,7 @@ func _bite(player: Node2D) -> void:
 	strike.caster = self
 	AttackGuard.bind(strike, self)
 	# same lead-in animation as the big attacks, then the wedge starts filling
-	_begin_cast("bite", ANIM_LEAD + bite_warn + 0.15)
+	_begin_cast("bite", ANIM_LEAD + bite_warn + BITE_RECOVER)
 	_after_lead(func():
 		strike.global_position = global_position + Vector2(0, -6)
 		_add_ground_attack(strike)
