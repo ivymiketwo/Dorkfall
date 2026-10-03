@@ -100,6 +100,8 @@ func _process(_delta: float) -> void:
 		local += style.offset_east                      # standing facing east
 	if row % 4 == 2:
 		local += style.offset_west_run
+	if row % 4 == 1:
+		local += style.offset_north
 	position = body.position + local * body.scale
 	var facing := row % 4
 	rotation_degrees = [style.lean_south, style.lean_north, style.lean_west_run, style.lean_east][facing]
@@ -110,7 +112,7 @@ func _process(_delta: float) -> void:
 		if col < he.size() and he[col] != null:
 			var le := Vector2(float(he[col][0]) - FRAME_PX / 2.0, float(he[col][1]) - FRAME_PX / 2.0) + body.offset
 			le += style.offset_east
-			position = body.position + Vector2(-le.x, le.y) * body.scale
+			position = body.position + (Vector2(-le.x, le.y) + style.offset_west) * body.scale
 	var jump_pose := Vector3.ZERO
 	var has_jump_pose := false
 	if row >= 8 and (facing == 2 or facing == 3):
@@ -123,6 +125,8 @@ func _process(_delta: float) -> void:
 	var along := style.length_south if facing == 0 else (style.length_north if facing == 1 else 1.0)
 	scale = body.scale * style.size_scale * Vector2(1.0, along)     # same size in every direction (a rod pointing at / away from the camera is foreshortened)
 	var g := style.grip_west_motion if (facing == 2 and row != 2) else style.grip
+	if facing == 0 and style.grip_south >= 0.0:
+		g = style.grip_south
 	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
 	if has_jump_pose:
 		rotation_degrees = jump_pose.z
@@ -147,8 +151,10 @@ func _update_hand(facing: int, col: int, row: int, h: Array, behind: bool) -> vo
 	var x0 := clampf(float(h[0]) - half, 0.0, FRAME_PX - HAND_BOX)
 	var y0 := clampf(float(h[1]) - half, 0.0, FRAME_PX - HAND_BOX)
 	_hand.texture = body.texture
-	_hand.region_rect = Rect2(col * FRAME_PX + x0, row * FRAME_PX + y0, HAND_BOX, HAND_BOX)
-	_hand.position = body.position + (Vector2(x0 - FRAME_PX / 2.0, y0 - FRAME_PX / 2.0) + body.offset) * body.scale
+	var cover := style.hand_cover_south if facing == 0 else 1.0
+	var left := style.hand_cover_left_south if facing == 0 else 0.0
+	_hand.region_rect = Rect2(col * FRAME_PX + x0 - left, row * FRAME_PX + y0, HAND_BOX + left, HAND_BOX * cover)
+	_hand.position = body.position + (Vector2(x0 - left - FRAME_PX / 2.0, y0 - FRAME_PX / 2.0) + body.offset) * body.scale
 	var p := get_parent()
 	if p.get_child(p.get_child_count() - 1) != _hand:
 		p.move_child(self, p.get_child_count() - 1)

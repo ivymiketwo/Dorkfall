@@ -34,6 +34,15 @@ extends Resource
 @export var offset_south := Vector2(2, -7)
 @export var offset_east := Vector2(2, -3)
 @export var offset_west_run := Vector2.ZERO
+## Extra nudges: standing west (applied after the east mirror), and facing north.
+@export var offset_west := Vector2.ZERO
+@export var offset_north := Vector2.ZERO
+## Facing south only: grip fraction override (-1 = use `grip`), and how much of the hand is re-drawn over the
+## item (1 = the whole hand sits on top, 0.5 = the item covers the bottom half of the hand).
+@export var grip_south := -1.0
+@export_range(0.0, 1.0) var hand_cover_south := 1.0
+## Facing south: how many art pixels further left the re-drawn hand patch reaches (so an item nudged left stays under the hand).
+@export var hand_cover_left_south := 0.0
 
 @export_group("Jumping")
 ## One hand-placed pose per frame of the east / west jump (robed frames): x, y from the character's origin in
