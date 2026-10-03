@@ -284,7 +284,7 @@ func _start_blob(_target_at_cast: Node2D) -> void:
 		var target := _target
 		if not _valid_target(target):
 			return
-		var mouth := global_position + Vector2(20 if facing_right else -20, -20)
+		var mouth := global_position + Vector2(30 if facing_right else -30, -30)
 		var blob: AcidBlob = ACID_BLOB.new()
 		blob.damage = blob_damage
 		blob.radius = blob_radius
@@ -349,7 +349,7 @@ func _bite(player: Node2D) -> void:
 
 func _burp(dir: Vector2) -> void:
 	var p := FIREBALL.instantiate()
-	p.global_position = global_position + Vector2(20 if facing_right else -20, -22)
+	p.global_position = global_position + Vector2(30 if facing_right else -30, -33)
 	p.direction = dir
 	p.speed = burp_speed
 	p.damage = burp_damage

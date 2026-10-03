@@ -15,7 +15,7 @@ const CASTERS := {
 	"WizardShop": ["tall", 28.0, 34.0],
 	"Lamp": ["tall", 1.5, 18.0],
 	"Player": ["blob", 6.5, 2.4],
-	"Vorly": ["blob", 17.0, 5.5],
+	"Vorly": ["blob", 25.5, 8.0],
 	"Mangyang": ["blob", 6.0, 2.4],
 	"BoneLord": ["blob", 12.0, 4.0],
 	"Skeleton": ["blob", 6.0, 2.4],

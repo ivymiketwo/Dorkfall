@@ -3,7 +3,7 @@ extends Node
 ## casting, the red hit flash, the belly-up death flop, fading out and back in.
 ## The brain (vordy.gd) never touches this; this only listens to it. A server simply has no Look.
 
-const BASE_SCALE := Vector2(1.0, 1.0)
+const BASE_SCALE := Vector2(1.5, 1.5)
 ## Sheet art/vorly_dragon.png: 80px cells, 8 columns x 6 rows.
 ## Row 0: idle, one frame per direction (cols 0-3 = down, right, up, left).
 ## Rows 1-4: walk (8 frames) down, up, left, right.  Row 5: big attack (8 frames).
