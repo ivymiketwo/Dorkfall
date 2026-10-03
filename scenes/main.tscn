@@ -24,6 +24,7 @@
 [ext_resource type="PackedScene" path="res://scenes/wizard_shop.tscn" id="60_wizshop"]
 [ext_resource type="PackedScene" path="res://scenes/interior_wizard_shop.tscn" id="61_int_wiz"]
 [ext_resource type="PackedScene" path="res://scenes/skeleton.tscn" id="70_skel"]
+[ext_resource type="PackedScene" path="res://scenes/pirate.tscn" id="70_pirate"]
 [ext_resource type="PackedScene" path="res://scenes/crypt.tscn" id="71_crypt"]
 [ext_resource type="PackedScene" path="res://scenes/cave.tscn" id="72_cave"]
 [ext_resource type="PackedScene" path="res://scenes/bone_lord.tscn" id="73_boss"]
@@ -2174,6 +2175,27 @@ position = Vector2(365, -651)
 [node name="Skeleton10" parent="Entities" unique_id=1125714937 instance=ExtResource("70_skel")]
 position = Vector2(344, -593)
 level = 4
+
+[node name="PirateCaptain1" parent="Entities" instance=ExtResource("70_pirate")]
+position = Vector2(-1104, -592)
+
+[node name="PirateCaptain2" parent="Entities" instance=ExtResource("70_pirate")]
+position = Vector2(-1024, -272)
+
+[node name="PirateCaptain3" parent="Entities" instance=ExtResource("70_pirate")]
+position = Vector2(-1088, 48)
+
+[node name="PirateCaptain4" parent="Entities" instance=ExtResource("70_pirate")]
+position = Vector2(-1008, 368)
+
+[node name="PirateCaptain5" parent="Entities" instance=ExtResource("70_pirate")]
+position = Vector2(-1056, 688)
+
+[node name="PirateCaptain6" parent="Entities" instance=ExtResource("70_pirate")]
+position = Vector2(-976, 1008)
+
+[node name="PirateCaptain7" parent="Entities" instance=ExtResource("70_pirate")]
+position = Vector2(-1040, 1328)
 
 [node name="Crypt1" parent="Entities" unique_id=382195656 instance=ExtResource("71_crypt")]
 position = Vector2(225, -764)
