@@ -2,7 +2,7 @@ class_name Fishing
 extends Node2D
 ## Fishing. Equip a fishing rod (weapon slot), then left-click to cast.
 ##  - Aim at land: the line flies out, lands, and resets straight away.
-##  - Aim at water: the bobber splashes down. After about 4 seconds it sinks with a flash
+##  - Aim at water: the bobber splashes down. After a random 1-4 seconds it sinks with a flash
 ##    and a bar minigame starts (see FishingBar): keep your marker (A / D) inside the
 ##    wiggling catch zone until the meter fills and the fish goes into your bag. Let the
 ##    meter run dry and it gets away.
@@ -12,8 +12,8 @@ enum S { IDLE, FLYING, WAIT, BITE, MINI }
 
 const MAX_CAST := 120.0          ## world px
 const MIN_CAST := 22.0
-const BITE_MIN := 3.6
-const BITE_MAX := 4.6
+const BITE_MIN := 1.0
+const BITE_MAX := 4.0
 const SNAP_AWAY := 190.0         ## walk this far from the bobber and the line comes in
 const WATER_TILE := Vector2i(3, 0)
 const LINE_COL := Color(0.93, 0.95, 1.0, 0.85)
