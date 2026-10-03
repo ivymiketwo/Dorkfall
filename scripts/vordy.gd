@@ -119,10 +119,9 @@ func _ready() -> void:
 	_home = position
 	_wander_target = position
 	_spells = SpellRotation.new(spell_cooldown)
-	_spells.add("slam", slam_range, func(): _start_slam())
-	_spells.add("blob", blob_range, func(): _start_blob(_target))
-	_spells.add("gust", gust_range, func(): _start_gust(_target))
-	_spells.add("burp", burp_range, func(): _burp((_target.global_position - global_position).normalized()))
+	# Spells are switched off for now: only the melee bite is active. To bring one back,
+	# add it here, e.g.  _spells.add("slam", slam_range, func(): _start_slam())
+	# (the _start_slam / _start_blob / _start_gust / _burp functions below are still there).
 	stats.died.connect(_on_died)
 	stats.damaged.connect(_on_damaged)
 
