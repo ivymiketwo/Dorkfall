@@ -6,7 +6,7 @@ extends Node
 const BASE_SCALE := Vector2(1.5, 1.5)
 ## Sheet art/vorly_dragon.png: 80px cells, 8 columns x 6 rows.
 ## Row 0: idle, one frame per direction (cols 0-3 = down, right, up, left).
-## Rows 1-4: walk (8 frames) down, up, left, right.  Rows 5 + 10-12: sit-down "big attack" (8 frames) down, up, left, right.
+## Rows 1-4: walk (8 frames) down, up, left, right.  Row 13: death (8 frames, one direction). Rows 5 + 10-12: sit-down "big attack" (8 frames) down, up, left, right.
 ## Rows 6-9: melee bite (7 frames, the swipe lands on frame 4) down, up, left, right.
 const WALK_ROW := {"down": 1, "up": 2, "left": 3, "right": 4}
 const MELEE_ROW := {"down": 6, "up": 7, "left": 8, "right": 9}
@@ -17,6 +17,9 @@ var _t := 0.0
 var _dead := false
 var _cast_t := 0.0
 var _cast_len := 0.0
+var _death_t := 0.0
+const DEATH_ROW := 13
+const DEATH_FPS := 8.0
 var _cast_kind := ""
 var _cast_dir := "down"
 
@@ -36,6 +39,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	if _dead:
+		_death_t += delta
+		sprite.frame_coords = Vector2i(mini(int(_death_t * DEATH_FPS), 7), DEATH_ROW)
 		return
 	sprite.flip_h = false
 	sprite.rotation = 0.0
@@ -94,20 +99,21 @@ func _on_cast(kind: String, duration: float) -> void:
 
 func _on_died() -> void:
 	_dead = true
+	_death_t = 0.0
 	_cast_len = 0.0
-	# flops over belly-up with his feet in the air, then fades out
 	sprite.rotation = 0.0
+	sprite.scale = BASE_SCALE
+	sprite.flip_h = false
+	# plays the death animation (see _process), lies there a moment, then fades out
 	var tw := create_tween()
-	tw.tween_property(sprite, "scale", BASE_SCALE * Vector2(1.25, 0.5), 0.15)
-	tw.tween_callback(func(): sprite.flip_v = true)
-	tw.tween_property(sprite, "scale", BASE_SCALE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_interval(1.5)
+	tw.tween_interval(1.85)
 	tw.tween_property(brain, "modulate:a", 0.0, 1.0)
 
 
 func _on_respawn() -> void:
 	_dead = false
 	_cast_len = 0.0
+	_death_t = 0.0
 	sprite.flip_v = false
 	sprite.scale = BASE_SCALE
 	create_tween().tween_property(brain, "modulate:a", 1.0, 0.8)
