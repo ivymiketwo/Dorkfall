@@ -29,6 +29,8 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 @export var bite_damage := 30.0
 @export var bite_range := 30.0
 @export var bite_cooldown := 1.2
+## How long the red wedge takes to fill before the bite lands.
+@export var bite_warn := 0.5
 @export var burp_damage := 20.0
 @export var burp_range := 100.0
 @export var burp_speed := 90.0
@@ -89,6 +91,9 @@ const FIREBALL := preload("res://scenes/fireball.tscn")
 const TOXIC_ZONE := preload("res://scripts/toxic_zone.gd")
 const ACID_BLOB := preload("res://scripts/acid_blob.gd")
 const WIND_CONE := preload("res://scripts/wind_cone.gd")
+const BITE_STRIKE := preload("res://scripts/bite_strike.gd")
+## His big-attack animation starts this long before the ground telegraph appears.
+const ANIM_LEAD := 0.5
 const DEATH_ANIM := 2.85     ## how long the death animation plays before the respawn countdown (seconds)
 const RETARGET_EVERY := 0.5
 
@@ -254,28 +259,40 @@ func _add_ground_attack(node: Node2D) -> void:
 		root.move_child(node, ground.get_index() + 1)
 
 
+## Runs `action` after the animation lead-in, unless he died in the meantime.
+func _after_lead(action: Callable) -> void:
+	await get_tree().create_timer(ANIM_LEAD).timeout
+	if state != State.DEAD and is_inside_tree():
+		action.call()
+
+
 func _start_slam() -> void:
 	var zone: ToxicZone = TOXIC_ZONE.new()
 	zone.damage = slam_damage
-	zone.global_position = global_position + Vector2(0, -6)
 	AttackGuard.bind(zone, self)
-	_add_ground_attack(zone)
-	# rears up while charging, slams when the smoke goes off
-	_begin_cast("slam", zone.warn_time + 0.08 + 0.15)
+	# rears up first, then the sun appears and charges until the smoke goes off
+	_begin_cast("slam", ANIM_LEAD + zone.warn_time + 0.08 + 0.15)
+	_after_lead(func():
+		zone.global_position = global_position + Vector2(0, -6)
+		_add_ground_attack(zone))
 
 
-func _start_blob(target: Node2D) -> void:
-	var mouth := global_position + Vector2(20 if facing_right else -20, -20)
-	var blob: AcidBlob = ACID_BLOB.new()
-	blob.damage = blob_damage
-	blob.radius = blob_radius
-	blob.launch_from = mouth
-	blob.travel_time = clampf(mouth.distance_to(target.global_position) / blob_speed, 1.6, 3.6)
-	blob.global_position = target.global_position   # circle sits right on top of them
-	AttackGuard.bind(blob, self)
-	_add_ground_attack(blob)
+func _start_blob(_target_at_cast: Node2D) -> void:
 	# the blob keeps crawling on its own, so he is free to move again soon after
-	_begin_cast("blob", 0.25 + 0.1 + 0.15)
+	_begin_cast("blob", ANIM_LEAD + 0.25 + 0.1 + 0.15)
+	_after_lead(func():
+		var target := _target
+		if not _valid_target(target):
+			return
+		var mouth := global_position + Vector2(20 if facing_right else -20, -20)
+		var blob: AcidBlob = ACID_BLOB.new()
+		blob.damage = blob_damage
+		blob.radius = blob_radius
+		blob.launch_from = mouth
+		blob.travel_time = clampf(mouth.distance_to(target.global_position) / blob_speed, 1.6, 3.6)
+		blob.global_position = target.global_position   # circle sits right on top of them
+		AttackGuard.bind(blob, self)
+		_add_ground_attack(blob))
 
 
 func _start_gust(target: Node2D) -> void:
@@ -287,12 +304,13 @@ func _start_gust(target: Node2D) -> void:
 	cone.warn_time = gust_warn
 	cone.linger_time = gust_linger
 	cone.angle = aim.angle()
-	cone.global_position = global_position + Vector2(0, -4)
 	AttackGuard.bind(cone, self)
-	_add_ground_attack(cone)
 	facing_right = aim.x > 0.0
 	# he settles back exactly as the last wisp of wind dies out
-	_begin_cast("gust", gust_warn + cone.sweep_time + cone.linger_time)
+	_begin_cast("gust", ANIM_LEAD + gust_warn + cone.sweep_time + cone.linger_time)
+	_after_lead(func():
+		cone.global_position = global_position + Vector2(0, -4)
+		_add_ground_attack(cone))
 
 
 func _begin_cast(kind: String, duration: float) -> void:
@@ -312,10 +330,21 @@ func _pick_wander_target() -> void:
 
 
 func _bite(player: Node2D) -> void:
-	_bite_timer = bite_cooldown
-	facing = player.global_position - global_position
-	AttackRules.deal(player, bite_damage, self, global_position)
-	bitten.emit()
+	_bite_timer = bite_cooldown + ANIM_LEAD + bite_warn
+	var dir := player.global_position - global_position
+	var strike: BiteStrike = BITE_STRIKE.new()
+	strike.direction = dir.normalized()
+	strike.damage = bite_damage
+	strike.length = bite_range + 6.0
+	strike.warn_time = bite_warn
+	strike.caster = self
+	AttackGuard.bind(strike, self)
+	# same lead-in animation as the big attacks, then the wedge starts filling
+	_begin_cast("bite", ANIM_LEAD + bite_warn + 0.15)
+	_after_lead(func():
+		strike.global_position = global_position + Vector2(0, -6)
+		_add_ground_attack(strike)
+		bitten.emit())
 
 
 func _burp(dir: Vector2) -> void:

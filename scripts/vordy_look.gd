@@ -1,6 +1,6 @@
 extends Node
 ## Everything you SEE of Vorly: 4-way idle/walk art, the sitting "big attack" animation while
-## casting, a quick squash on bites, the red hit flash, the belly-up death flop, fading out and back in.
+## casting, the red hit flash, the belly-up death flop, fading out and back in.
 ## The brain (vordy.gd) never touches this; this only listens to it. A server simply has no Look.
 
 const BASE_SCALE := Vector2(1.0, 1.0)
@@ -63,9 +63,7 @@ func _on_hit(_amount: float) -> void:
 
 
 func _on_bite() -> void:
-	var tw := create_tween()
-	tw.tween_property(sprite, "scale", BASE_SCALE * Vector2(1.15, 0.9), 0.08)
-	tw.tween_property(sprite, "scale", BASE_SCALE, 0.12)
+	pass   # the bite is a "bite" cast now (big-attack animation), nothing extra to do
 
 
 func _on_cast(_kind: String, duration: float) -> void:
