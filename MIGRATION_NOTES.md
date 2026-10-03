@@ -15,6 +15,11 @@ changes in one place, and visuals are separate from logic.
 - `Inventory` rule functions (`try_use`, `prepare_drop`, `room_for`, `take_unbound`, `snapshot`).
 - `AttackRules`: pure hit tests + `deal` for boss/monster attacks.
 - `Trade.buy`: shop purchase rules, no UI. The shop window only shows the message.
+- `Trade.sell(inv, shop, item, amount)`: selling to a vendor, no UI. Price comes from `Item.sell_price`
+  and only if the item is in `Shop.buys` (never from the request); amount is clamped to what the bag
+  holds; items out + coins in are one `Inventory.transact` with a before/after ledger check. On a
+  server this runs server-side per request (also check the player is next to that shopkeeper, and
+  rate-limit requests); the client just shows the returned message.
 - `UniqueDrop.roll` and the account chase flags (`Item.account_has/mark_account`).
 - `Attributes`: stat points, pools and damage % computed in one class, applied to `Stats`.
 - `Experience.kill_xp` / `xp_to_next`: pure functions.

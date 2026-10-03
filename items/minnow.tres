@@ -11,3 +11,4 @@ stackable = true
 max_stack = 99
 icon_frame = 25
 value = 8
+sell_price = 20

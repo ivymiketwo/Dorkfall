@@ -16,6 +16,8 @@ extends Resource
 @export var paperdoll_texture: Texture2D
 ## Shop price in coins.
 @export var value := 1
+## What a vendor pays you for one, in coins. 0 = vendors won't buy it.
+@export var sell_price := 0
 ## If set, "Drop" puts this scene in the world (a follower pet) instead of an item on the ground.
 @export var pet_scene: PackedScene
 ## Food / consumables: eating one restores this much health. This is the

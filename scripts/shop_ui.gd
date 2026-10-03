@@ -1,6 +1,7 @@
 class_name ShopUI
 extends Control
 ## Shop window: a 6 wide x 3 tall grid (18 slots). Click an item to buy it.
+## Shops that buy things get BUY / SELL tabs: on SELL, click sells one, Shift+click sells all.
 ## Opened by pressing F next to a shopkeeper; closes with F, Esc, or by walking away.
 
 const COLS := 6
@@ -20,6 +21,7 @@ var _inv: Inventory
 var _hover := -1
 var _message := ""
 var _message_color := Color.WHITE
+var _selling := false     # which tab is showing
 
 
 func _ready() -> void:
@@ -44,8 +46,8 @@ func open(new_shop: Shop, npc: Node2D, player: Node2D) -> void:
 		_inv.changed.disconnect(queue_redraw)
 	_inv = player.get_node("Inventory")
 	_inv.changed.connect(queue_redraw)
-	_message = "Click an item to buy it"
-	_message_color = Color("b0a890")
+	_selling = false
+	_hint()
 	visible = true
 	queue_redraw()
 
@@ -77,10 +79,38 @@ func _slot_at(p: Vector2) -> int:
 	return -1
 
 
+func _hint() -> void:
+	_message = "Click sells one, Shift+click sells all" if _selling else "Click an item to buy it"
+	_message_color = Color("b0a890")
+
+
+## What the grid shows: the shop's stock, or (on SELL) the things you carry that it buys.
+func _listing() -> Array[Item]:
+	var out: Array[Item] = []
+	if shop == null:
+		return out
+	if not _selling:
+		return shop.items
+	for it in shop.buys:
+		if it != null and _inv != null and _inv.count_of(it) > 0 and Trade.sell_price(shop, it) > 0:
+			out.append(it)
+	return out
+
+
 func _item_at(i: int) -> Item:
-	if shop == null or i < 0 or i >= shop.items.size():
+	var list := _listing()
+	if i < 0 or i >= list.size():
 		return null
-	return shop.items[i]
+	return list[i]
+
+
+func _has_tabs() -> bool:
+	return shop != null and not shop.buys.is_empty()
+
+
+func _tab_rect(sell: bool) -> Rect2:
+	var w := 24.0
+	return Rect2(size.x - PAD - 14 - (w if not sell else 0.0) - w - (2.0 if not sell else 0.0), 2, w, 9)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -88,9 +118,19 @@ func _gui_input(event: InputEvent) -> void:
 		_hover = _slot_at(event.position)
 		queue_redraw()
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if _has_tabs():
+			for sell in [false, true]:
+				if _tab_rect(sell).has_point(event.position):
+					_selling = sell
+					_hint()
+					queue_redraw()
+					return
 		var i := _slot_at(event.position)
 		if _item_at(i) != null:
-			_buy(_item_at(i))
+			if _selling:
+				_sell(_item_at(i), event.shift_pressed)
+			else:
+				_buy(_item_at(i))
 
 
 func _notification(what: int) -> void:
@@ -101,6 +141,11 @@ func _notification(what: int) -> void:
 
 func _buy(item: Item) -> void:
 	var r := Trade.buy(_inv, item)
+	_say(r["message"], Color("40e070") if r["ok"] else Color("e03c3c"))
+
+
+func _sell(item: Item, all: bool) -> void:
+	var r := Trade.sell(_inv, shop, item, Trade.MAX_SELL if all else 1)
 	_say(r["message"], Color("40e070") if r["ok"] else Color("e03c3c"))
 
 
@@ -116,6 +161,14 @@ func _draw() -> void:
 	var px := _px()
 	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
 	HiFont.draw(self, Vector2(PAD, 4), shop.title, UiStyle.GOLD, px)
+	if _has_tabs():
+		for sell in [false, true]:
+			var tr := _tab_rect(sell)
+			var on: bool = sell == _selling
+			draw_rect(tr, UiStyle.BRONZE_MID if on else Color(0, 0, 0, 0.35))
+			var label := "SELL" if sell else "BUY"
+			HiFont.draw(self, tr.position + Vector2((tr.size.x - HiFont.text_width(label, px)) / 2.0, 2), label,
+					UiStyle.GOLD if on else Color("b0a890"), px)
 	draw_rect(Rect2(PAD, HEADER - 3, size.x - PAD * 2, px), UiStyle.BRONZE_MID)
 	for i in COLS * ROWS:
 		var p := _slot_pos(i)
@@ -124,14 +177,16 @@ func _draw() -> void:
 		if item:
 			draw_texture_rect_region(ICONS, Rect2(p + Vector2(2, 1), Vector2(16, 16)),
 					Rect2(item.frame_for(1) * 32, 0, 32, 32))
-			var price := str(item.value)
+			var price := str(Trade.sell_price(shop, item) if _selling else item.value)
+			if _selling:
+				HiFont.draw(self, p + Vector2(2, 1), str(_inv.count_of(item)), Color.WHITE, px)
 			HiFont.draw(self, p + Vector2(SLOT - 2 - HiFont.text_width(price, px), SLOT - 5), price, Color("f0d040"), px)
 	var fy := HEADER + ROWS * SLOT + (ROWS - 1) * GAP + 4
 	var hovered := _item_at(_hover)
 	var line := _message
 	var col := _message_color
 	if hovered:
-		line = "%s  %d coins" % [hovered.display_name, hovered.value]
+		line = "%s  %d coins" % [hovered.display_name, Trade.sell_price(shop, hovered) if _selling else hovered.value]
 		col = Color.WHITE
 	HiFont.draw(self, Vector2(PAD, fy), line, col, px)
 	if hovered and not hovered.stat_lines().is_empty():
