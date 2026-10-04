@@ -59,6 +59,22 @@ static func beam_origin(caster: Node2D) -> Vector2:
 	return plain
 
 
+## Draw order for something that sits on the staff tip (the cast orb): always just above the staff.
+## When the staff is tucked behind the body (facing west/north) that puts it behind the head too.
+static func layer_above_staff(caster: Node2D, thing: Node2D) -> void:
+	var parent := thing.get_parent()
+	if parent == null:
+		return
+	var target := parent.get_child_count() - 1
+	for n in caster.get_tree().get_nodes_in_group("held_weapon"):
+		var w := n as HeldWeapon
+		if w != null and w.player == caster and w.visible and w._behind and w.get_parent() == parent:
+			target = w.get_index() + 1 if w.get_index() < thing.get_index() else w.get_index()
+			break
+	if thing.get_index() != target:
+		parent.move_child(thing, target)
+
+
 func _ready() -> void:
 	if _hands.is_empty():
 		var f := FileAccess.open(HANDS_PATH, FileAccess.READ)

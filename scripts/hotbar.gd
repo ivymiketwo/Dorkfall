@@ -329,4 +329,5 @@ func _update_cast_orb() -> void:
 	if showing:
 		# sit on the tip of the staff, which moves sides as the player turns
 		cast_orb.global_position = HeldWeapon.beam_origin(caster)
+		HeldWeapon.layer_above_staff(caster, cast_orb)
 		cast_orb.scale = Vector2.ONE * lerpf(0.15, 0.5, cast_progress())   # art is 2x, so 0.5 = full size
