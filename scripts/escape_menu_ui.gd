@@ -8,7 +8,7 @@ const BTN_H := 14.0
 const ROW_H := 11.0
 
 var _mode := "menu"            ## "menu", "keys" or "sound"
-var _drag := ""                ## slider being dragged: "music" / "sfx"
+var _drag := ""                ## slider being dragged: "ambient" / "sfx"
 var _hover := ""               ## hovered button id / "row:N"
 var _listening := ""           ## action waiting for a key press
 var _scroll := 0.0
@@ -114,7 +114,7 @@ func _sound_rect() -> Rect2:
 	return Rect2(((size - s) / 2.0).floor(), s)
 
 
-func _slider_rect(i: int) -> Rect2:    # 0 = music, 1 = effects
+func _slider_rect(i: int) -> Rect2:    # 0 = ambient, 1 = effects
 	var r := _sound_rect()
 	return Rect2(r.position + Vector2(12, 34 + i * 22), Vector2(r.size.x - 24, 6))
 
@@ -172,8 +172,8 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _set_slider(which: String, x: float) -> void:
-	if which == "music":
-		Sound.set_music_volume(_slider_value(0, x))
+	if which == "ambient":
+		Sound.set_ambient_volume(_slider_value(0, x))
 	else:
 		Sound.set_sfx_volume(_slider_value(1, x))
 
@@ -216,8 +216,8 @@ func _click(p: Vector2) -> void:
 			_mode = "menu"
 			Sound.save()
 		elif _hover == "s0":
-			_drag = "music"
-			_set_slider("music", p.x)
+			_drag = "ambient"
+			_set_slider("ambient", p.x)
 		elif _hover == "s1":
 			_drag = "sfx"
 			_set_slider("sfx", p.x)
@@ -259,8 +259,8 @@ func _draw() -> void:
 		var sr := _sound_rect()
 		UiStyle.panel(self, sr)
 		HiFont.draw(self, sr.position + Vector2(8, 7), "SOUND", UiStyle.GOLD, px)
-		var names := ["Music", "Sound effects"]
-		var vals := [Sound.music_volume, Sound.sfx_volume]
+		var names := ["Ambient sound", "Sound effects"]
+		var vals := [Sound.ambient_volume, Sound.sfx_volume]
 		for i in 2:
 			var t := _slider_rect(i)
 			HiFont.draw(self, t.position + Vector2(0, -10), names[i], UiStyle.TEXT, px)
@@ -269,7 +269,7 @@ func _draw() -> void:
 			draw_rect(t, Color(0.1, 0.08, 0.14, 1.0))
 			draw_rect(Rect2(t.position, Vector2(t.size.x * float(vals[i]), t.size.y)), Color(0.75, 0.6, 0.3, 0.9))
 			draw_rect(t, Color(0.4, 0.33, 0.2), false, 1.0)
-			var hot := _hover == "s%d" % i or _drag == ("music" if i == 0 else "sfx")
+			var hot := _hover == "s%d" % i or _drag == ("ambient" if i == 0 else "sfx")
 			var kx: float = t.position.x + t.size.x * float(vals[i])
 			draw_rect(Rect2(kx - 2, t.position.y - 3, 4, t.size.y + 6), UiStyle.GOLD if hot else Color("e8d8b0"))
 		_button(_sound_back(), "Back", _hover == "sb")
