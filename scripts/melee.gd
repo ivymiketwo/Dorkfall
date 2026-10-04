@@ -22,6 +22,11 @@ var weapon: Item:
 
 func _process(delta: float) -> void:
 	_cooldown = maxf(_cooldown - delta, 0.0)
+	# Holding left click keeps firing a staff's beam (swings still need a click each).
+	if _cooldown <= 0.0 and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		var w := weapon
+		if w != null and not w.fishing_rod and w.basic_attack != null and w.basic_attack.kind == Ability.Kind.BEAM and not _ui_blocking():
+			attack()
 
 
 func _unhandled_input(event: InputEvent) -> void:

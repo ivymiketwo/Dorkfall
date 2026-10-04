@@ -9,5 +9,5 @@ kind = 2
 icon_index = 1
 mana_cost = 10.0
 cooldown = 1.0
-damage = 30.0
+damage = 15.0
 beam_length = 150.0
