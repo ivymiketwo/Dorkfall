@@ -11,6 +11,11 @@ var lifetime := 2.0
 ## Blast radius in pixels; damage falls off to half at the edge.
 var aoe_radius := 30.0
 
+const CAST_SOUND := preload("res://audio/fireball_cast.wav")
+const HIT_SOUND := preload("res://audio/fireball_hit.wav")
+var _cast_player: AudioStreamPlayer2D
+var _hit_player: AudioStreamPlayer2D
+
 var _done := false
 var _ring := -1.0   # blast ring animation, 0..1
 
@@ -18,6 +23,11 @@ var _ring := -1.0   # blast ring animation, 0..1
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	_face()
+	# the cast sound rides along with the fireball until it hits something
+	_cast_player = AudioStreamPlayer2D.new()
+	_cast_player.stream = CAST_SOUND
+	add_child(_cast_player)
+	_cast_player.play()
 
 
 ## Picks the sprite frame for the flight direction. Frames run S, SE, E, NE, N, NW, W, SW.
@@ -74,6 +84,12 @@ func _explode(with_damage: bool) -> void:
 	_done = true
 	set_deferred("monitoring", false)
 	if with_damage:
+		# impact: cut the cast sound and play the hit sound. (A fizzle lets the cast sound finish instead.)
+		_cast_player.stop()
+		_hit_player = AudioStreamPlayer2D.new()
+		_hit_player.stream = HIT_SOUND
+		add_child(_hit_player)
+		_hit_player.play()
 		call_deferred("_blast")
 		# blast ring
 		create_tween().tween_method(_set_ring, 0.0, 1.0, 0.25)
@@ -81,6 +97,8 @@ func _explode(with_damage: bool) -> void:
 	$Trail.emitting = false
 	$Burst.emitting = true
 	await get_tree().create_timer(0.6).timeout
+	while _cast_player.playing or (_hit_player != null and _hit_player.playing):
+		await get_tree().create_timer(0.1).timeout   # stay alive until the sounds finish
 	queue_free()
 
 
