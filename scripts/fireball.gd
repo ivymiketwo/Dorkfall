@@ -12,6 +12,7 @@ var lifetime := 2.0
 var aoe_radius := 30.0
 
 const CAST_SOUND := preload("res://audio/fireball_cast.wav")
+const FX_DB := -3.1   # 30% quieter
 const HIT_SOUND := preload("res://audio/fireball_hit.wav")
 ## Cast sound handed over by whoever launched us (it started at the beginning of the wind-up).
 var cast_player: AudioStreamPlayer2D
@@ -31,6 +32,7 @@ func _ready() -> void:
 	else:
 		_cast_player = AudioStreamPlayer2D.new()
 		_cast_player.stream = CAST_SOUND
+		_cast_player.volume_db = FX_DB
 		_cast_player.finished.connect(_cast_player.queue_free)
 		get_parent().add_child.call_deferred(_cast_player)   # outlives us if we fizzle
 		_cast_player.play.call_deferred()
@@ -98,6 +100,7 @@ func _explode(with_damage: bool) -> void:
 			_cast_player.queue_free()
 		_hit_player = AudioStreamPlayer2D.new()
 		_hit_player.stream = HIT_SOUND
+		_hit_player.volume_db = FX_DB
 		add_child(_hit_player)
 		_hit_player.play()
 		call_deferred("_blast")

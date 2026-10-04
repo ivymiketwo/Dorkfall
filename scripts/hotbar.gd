@@ -248,6 +248,7 @@ func _start_cast_sound(ab: Ability) -> void:
 		return
 	_cast_snd = AudioStreamPlayer2D.new()
 	_cast_snd.stream = ab.cast_start_sound
+	_cast_snd.volume_db = -3.1     # 30% quieter
 	_cast_snd.finished.connect(_cast_snd.queue_free)
 	caster.get_parent().add_child(_cast_snd)
 	_cast_snd.global_position = HeldWeapon.beam_origin(caster)
