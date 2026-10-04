@@ -17,12 +17,20 @@ var _ring := -1.0   # blast ring animation, 0..1
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
+	_face()
+
+
+## Picks the sprite frame for the flight direction. Frames run S, SE, E, NE, N, NW, W, SW.
+func _face() -> void:
+	var deg := rad_to_deg(direction.angle())
+	$Sprite2D.frame = posmod(roundi((90.0 - deg) / 45.0), 8)
 
 
 func _physics_process(delta: float) -> void:
 	if _done:
 		return
 	position += direction * speed * delta
+	_face()
 	lifetime -= delta
 	if lifetime <= 0.0:
 		_explode(false)
