@@ -6,7 +6,7 @@ extends Node
 const SETTINGS_PATH := "user://settings.cfg"
 const MUSIC := preload("res://audio/music_our_town.ogg")
 
-var music_volume := 0.14   ## 0..1 (slider position; mapped to decibels)
+var music_volume := 0.05   ## 0..1 (slider position; mapped to decibels)
 var sfx_volume := 0.8
 
 var _music_player: AudioStreamPlayer
