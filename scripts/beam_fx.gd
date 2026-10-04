@@ -9,10 +9,17 @@ var tint := Color(0.35, 0.85, 1.0)
 var lightning := false
 var life := 0.22
 var _t := 0.0
+const SWOOSH := preload("res://audio/ray_swoosh.wav")
+var _sound: AudioStreamPlayer2D
 var _bolts: Array = []      # each: PackedVector2Array, rebuilt a few times a second
 
 
 func _ready() -> void:
+	_sound = AudioStreamPlayer2D.new()      # every ray makes the same swoosh
+	_sound.stream = SWOOSH
+	_sound.pitch_scale = randf_range(0.95, 1.05)
+	add_child(_sound)
+	_sound.play()
 	if lightning:
 		life = 0.32
 		_rebuild()
@@ -21,7 +28,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	if _t >= life:
-		queue_free()
+		if not _sound.playing:
+			queue_free()
+		else:
+			visible = false     # flash is over; stay alive until the swoosh finishes
 		return
 	if lightning and int(_t * 45.0) != int((_t - delta) * 45.0):
 		_rebuild()
