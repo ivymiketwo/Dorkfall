@@ -167,6 +167,9 @@ func _process(_delta: float) -> void:
 	var behind := int(h[2]) == 1
 	_set_behind(behind)
 	_update_hand(facing, col, row, h, behind)
+	var orb := player.get_node_or_null("CastOrb") as Node2D if player else null
+	if orb != null and orb.visible:
+		layer_above_staff(player, orb)   # the weapon just re-stacked itself; keep the orb over its tip
 
 
 ## Facing down or right the weapon is held in front of the body, so re-draw the hand over it:
