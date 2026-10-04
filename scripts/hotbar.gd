@@ -274,7 +274,7 @@ func _spawn_projectile(ab: Ability) -> void:
 	if ab.projectile_scene == null:
 		return
 	var p := ab.projectile_scene.instantiate()
-	var start := caster.global_position + Vector2(0, -10)
+	var start := HeldWeapon.beam_origin(caster)   # leaves from the staff tip, like the beams
 	var aim: Vector2 = caster.aim_world - start
 	p.global_position = start
 	p.direction = aim.normalized() if aim.length() > 1.0 else Vector2.DOWN
@@ -328,7 +328,5 @@ func _update_cast_orb() -> void:
 	cast_orb.visible = showing
 	if showing:
 		# sit on the tip of the staff, which moves sides as the player turns
-		var staff_x: Array[int] = [5, -5, -4, 4]  # down, up, left, right
-		if "facing" in caster:
-			cast_orb.position.x = staff_x[caster.facing]
+		cast_orb.global_position = HeldWeapon.beam_origin(caster)
 		cast_orb.scale = Vector2.ONE * lerpf(0.15, 0.5, cast_progress())   # art is 2x, so 0.5 = full size
