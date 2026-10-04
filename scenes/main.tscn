@@ -168,7 +168,7 @@ position = Vector2(3700, 2600)
 y_sort_enabled = true
 
 [node name="Player" parent="Entities" unique_id=1211365347 instance=ExtResource("3_player")]
-position = Vector2(328, 328)
+position = Vector2(208, 256)
 
 [node name="Tree2" parent="Entities" unique_id=617050202 instance=ExtResource("4_tree")]
 position = Vector2(56, 236)
