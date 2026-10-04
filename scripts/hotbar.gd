@@ -27,6 +27,7 @@ var fail_flash: Array[float] = []
 @onready var caster: Node2D = get_parent()
 @onready var stats: Stats = get_parent().get_node("Stats")
 @onready var inventory: Inventory = get_parent().get_node_or_null("Inventory")
+var _cast_snd: AudioStreamPlayer2D
 @onready var cast_orb: Sprite2D = get_parent().get_node_or_null("CastOrb")
 
 
@@ -197,6 +198,7 @@ func try_cast(i: int) -> void:
 	if ab.cast_time > 0.0:
 		casting_slot = i
 		cast_elapsed = 0.0
+		_start_cast_sound(ab)
 		changed.emit()
 	else:
 		_finish(i)
@@ -240,9 +242,28 @@ func _process(delta: float) -> void:
 		changed.emit()
 
 
+func _start_cast_sound(ab: Ability) -> void:
+	_stop_cast_sound()
+	if ab.cast_start_sound == null:
+		return
+	_cast_snd = AudioStreamPlayer2D.new()
+	_cast_snd.stream = ab.cast_start_sound
+	_cast_snd.finished.connect(_cast_snd.queue_free)
+	caster.get_parent().add_child(_cast_snd)
+	_cast_snd.global_position = HeldWeapon.beam_origin(caster)
+	_cast_snd.play()
+
+
+func _stop_cast_sound() -> void:
+	if _cast_snd != null and is_instance_valid(_cast_snd):
+		_cast_snd.queue_free()
+	_cast_snd = null
+
+
 func _finish(i: int) -> void:
 	var ab := slots[i]
 	if not _can_afford(ab):
+		_stop_cast_sound()
 		if stats.mana < ab.mana_cost:
 			stats.warn_out_of_mana()
 		_fail(i)
@@ -281,6 +302,9 @@ func _spawn_projectile(ab: Ability) -> void:
 	p.speed = ab.projectile_speed
 	p.damage = ab.damage * stats.magic_mult()
 	p.caster = caster
+	if _cast_snd != null and is_instance_valid(_cast_snd) and "cast_player" in p:
+		p.cast_player = _cast_snd      # the projectile carries the sound it was cast with
+		_cast_snd = null
 	caster.get_parent().add_child(p)
 
 
@@ -318,6 +342,7 @@ func _fail(i: int) -> void:
 
 func _cancel_cast() -> void:
 	casting_slot = -1
+	_stop_cast_sound()
 	_update_cast_orb()
 
 
@@ -329,5 +354,7 @@ func _update_cast_orb() -> void:
 	if showing:
 		# sit on the tip of the staff, which moves sides as the player turns
 		cast_orb.global_position = HeldWeapon.beam_origin(caster)
+		if _cast_snd != null and is_instance_valid(_cast_snd):
+			_cast_snd.global_position = cast_orb.global_position
 		HeldWeapon.layer_above_staff(caster, cast_orb)
 		cast_orb.scale = Vector2.ONE * lerpf(0.15, 0.5, cast_progress())   # art is 2x, so 0.5 = full size

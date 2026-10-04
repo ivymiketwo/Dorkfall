@@ -52,3 +52,6 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT }
 @export var hop_health_cost := 50.0
 ## Health each chained hop costs.
 @export var hop_chain_health_cost := 35.0
+
+## Plays from the moment the cast starts (a projectile takes it over once it launches).
+@export var cast_start_sound: AudioStream
