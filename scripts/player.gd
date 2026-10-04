@@ -53,6 +53,8 @@ var _spawn_point: Vector2
 
 # Gust hop (bunnyhop): leap along a ballistic arc; landing opens a quick window to press Space again.
 const HOP_GUST := preload("res://scripts/hop_gust.gd")
+const JUMP_SOUND := preload("res://audio/jump.wav")
+var _jump_snd: AudioStreamPlayer2D
 var _hop_ab: Ability
 var _hop_dir := Vector2.DOWN
 var _hop_t := -1.0          ## seconds into the current leap (-1 = not airborne)
@@ -187,6 +189,11 @@ func _hop_leap() -> void:
 		_hop_ring = null
 	facing = (Facing.RIGHT if _hop_dir.x > 0 else Facing.LEFT) if absf(_hop_dir.x) > absf(_hop_dir.y) \
 			else (Facing.DOWN if _hop_dir.y > 0 else Facing.UP)
+	if _jump_snd == null:
+		_jump_snd = AudioStreamPlayer2D.new()
+		_jump_snd.stream = JUMP_SOUND
+		add_child(_jump_snd)
+	_jump_snd.play()
 	var gust := Node2D.new()
 	gust.set_script(HOP_GUST)
 	gust.direction = _hop_dir
