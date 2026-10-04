@@ -192,6 +192,7 @@ func _hop_leap() -> void:
 	if _jump_snd == null:
 		_jump_snd = AudioStreamPlayer2D.new()
 		_jump_snd.stream = JUMP_SOUND
+		_jump_snd.volume_db = -6.0   # half amplitude
 		add_child(_jump_snd)
 	_jump_snd.play()
 	var gust := Node2D.new()

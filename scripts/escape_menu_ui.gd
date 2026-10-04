@@ -1,5 +1,5 @@
 extends Control
-## Esc menu: Resume, Hotkeys, Quit Game. The game is paused while it is open.
+## Esc menu: Resume, Sound, Hotkeys, Quit Game. The game is paused while it is open.
 ## Hotkeys lists every rebindable action: click one, then press the new key
 ## (Esc cancels, Backspace / Delete clears it).
 
@@ -7,7 +7,8 @@ const BTN_W := 90.0
 const BTN_H := 14.0
 const ROW_H := 11.0
 
-var _mode := "menu"            ## "menu" or "keys"
+var _mode := "menu"            ## "menu", "keys" or "sound"
+var _drag := ""                ## slider being dragged: "music" / "sfx"
 var _hover := ""               ## hovered button id / "row:N"
 var _listening := ""           ## action waiting for a key press
 var _scroll := 0.0
@@ -84,8 +85,9 @@ func _input(event: InputEvent) -> void:
 			Keybinds.bind(_listening, [code, event.shift_pressed, event.ctrl_pressed, event.alt_pressed])
 			_listening = ""
 	elif code == KEY_ESCAPE:
-		if _mode == "keys":
+		if _mode == "keys" or _mode == "sound":
 			_mode = "menu"
+			Sound.save()
 		else:
 			close()
 	queue_redraw()
@@ -93,7 +95,7 @@ func _input(event: InputEvent) -> void:
 
 # ---------------------------------------------------------------- layout
 func _menu_rect() -> Rect2:
-	var s := Vector2(BTN_W + 20, 78)
+	var s := Vector2(BTN_W + 20, 96)
 	return Rect2(((size - s) / 2.0).floor(), s)
 
 
@@ -105,6 +107,26 @@ func _menu_button(i: int) -> Rect2:
 func _keys_rect() -> Rect2:
 	var s := Vector2(236, 156)
 	return Rect2(((size - s) / 2.0).floor(), s)
+
+
+func _sound_rect() -> Rect2:
+	var s := Vector2(176, 92)
+	return Rect2(((size - s) / 2.0).floor(), s)
+
+
+func _slider_rect(i: int) -> Rect2:    # 0 = music, 1 = effects
+	var r := _sound_rect()
+	return Rect2(r.position + Vector2(12, 34 + i * 22), Vector2(r.size.x - 24, 6))
+
+
+func _sound_back() -> Rect2:
+	var r := _sound_rect()
+	return Rect2(r.position + Vector2((r.size.x - 70) / 2.0, r.size.y - 22), Vector2(70, 16))
+
+
+func _slider_value(i: int, x: float) -> float:
+	var s := _slider_rect(i)
+	return clampf((x - s.position.x) / s.size.x, 0.0, 1.0)
 
 
 func _list_rect() -> Rect2:
@@ -130,8 +152,14 @@ func _row_rect(i: int) -> Rect2:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_mouse = event.position
+		if _drag != "":
+			_set_slider(_drag, _mouse.x)
 		_update_hover()
 		queue_redraw()
+	elif event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if _drag != "":
+			_drag = ""
+			Sound.save()
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			if _mode == "keys":
@@ -143,12 +171,25 @@ func _gui_input(event: InputEvent) -> void:
 	accept_event()
 
 
+func _set_slider(which: String, x: float) -> void:
+	if which == "music":
+		Sound.set_music_volume(_slider_value(0, x))
+	else:
+		Sound.set_sfx_volume(_slider_value(1, x))
+
+
 func _update_hover() -> void:
 	_hover = ""
 	if _mode == "menu":
-		for i in 3:
+		for i in 4:
 			if _menu_button(i).has_point(_mouse):
 				_hover = "m%d" % i
+	elif _mode == "sound":
+		if _sound_back().has_point(_mouse):
+			_hover = "sb"
+		for i in 2:
+			if _slider_rect(i).grow(4).has_point(_mouse):
+				_hover = "s%d" % i
 	else:
 		for i in 2:
 			if _key_button(i).has_point(_mouse):
@@ -165,10 +206,21 @@ func _click(p: Vector2) -> void:
 	if _mode == "menu":
 		match _hover:
 			"m0": close()
-			"m1":
+			"m1": _mode = "sound"
+			"m2":
 				_mode = "keys"
 				_scroll = 0.0
-			"m2": get_tree().quit()
+			"m3": get_tree().quit()
+	elif _mode == "sound":
+		if _hover == "sb":
+			_mode = "menu"
+			Sound.save()
+		elif _hover == "s0":
+			_drag = "music"
+			_set_slider("music", p.x)
+		elif _hover == "s1":
+			_drag = "sfx"
+			_set_slider("sfx", p.x)
 	else:
 		if _hover == "k0":
 			Keybinds.reset_all()
@@ -199,9 +251,28 @@ func _draw() -> void:
 		var m := _menu_rect()
 		UiStyle.panel(self, m)
 		HiFont.draw(self, m.position + Vector2(floorf((m.size.x - HiFont.text_width("MENU", px)) / 2.0), 8), "MENU", UiStyle.GOLD, px)
-		var labels := ["Resume", "Hotkeys", "Quit Game"]
-		for i in 3:
+		var labels := ["Resume", "Sound", "Hotkeys", "Quit Game"]
+		for i in 4:
 			_button(_menu_button(i), labels[i], _hover == "m%d" % i)
+		return
+	if _mode == "sound":
+		var sr := _sound_rect()
+		UiStyle.panel(self, sr)
+		HiFont.draw(self, sr.position + Vector2(8, 7), "SOUND", UiStyle.GOLD, px)
+		var names := ["Music", "Sound effects"]
+		var vals := [Sound.music_volume, Sound.sfx_volume]
+		for i in 2:
+			var t := _slider_rect(i)
+			HiFont.draw(self, t.position + Vector2(0, -10), names[i], UiStyle.TEXT, px)
+			var pct := "%d%%" % roundi(vals[i] * 100.0)
+			HiFont.draw(self, t.position + Vector2(t.size.x - HiFont.text_width(pct, px), -10), pct, UiStyle.TEXT_DIM, px)
+			draw_rect(t, Color(0.1, 0.08, 0.14, 1.0))
+			draw_rect(Rect2(t.position, Vector2(t.size.x * float(vals[i]), t.size.y)), Color(0.75, 0.6, 0.3, 0.9))
+			draw_rect(t, Color(0.4, 0.33, 0.2), false, 1.0)
+			var hot := _hover == "s%d" % i or _drag == ("music" if i == 0 else "sfx")
+			var kx: float = t.position.x + t.size.x * float(vals[i])
+			draw_rect(Rect2(kx - 2, t.position.y - 3, 4, t.size.y + 6), UiStyle.GOLD if hot else Color("e8d8b0"))
+		_button(_sound_back(), "Back", _hover == "sb")
 		return
 	var k := _keys_rect()
 	UiStyle.panel(self, k)
