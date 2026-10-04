@@ -35,7 +35,7 @@ shape = SubResource("RectangleShape2D_body")
 
 [node name="Stats" type="Node" parent="."]
 script = ExtResource("3_stats")
-max_health = 500.0
+max_health = 1000.0
 health_regen = 2.0
 
 [node name="Nameplate" type="Node2D" parent="."]
