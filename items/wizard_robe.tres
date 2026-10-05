@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" path="res://art/worn_wizard_robe.png" id="2_worn"]
 
 [ext_resource type="Texture2D" path="res://art/robe_paperdoll.png" id="3_doll"]
+[ext_resource type="Texture2D" path="res://art/player_new_robe.png" id="4_body"]
 
 [resource]
 script = ExtResource("1_item")
@@ -18,5 +19,7 @@ int_bonus = 1
 equip_slot = "chest"
 two_handed = false
 worn_texture = ExtResource("2_worn")
+body_sheet = ExtResource("4_body")
+body_jump_frames = PackedInt32Array(7, 7, 8, 8)
 
 paperdoll_texture = ExtResource("3_doll")

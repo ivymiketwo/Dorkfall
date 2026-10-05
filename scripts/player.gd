@@ -21,9 +21,7 @@ const ANIM_IDLE := 0
 const ANIM_RUN := 1
 const ANIM_JUMP := 2
 const IDLE_FPS := 4.0
-const ROBE_TEX := preload("res://art/player_new_robe.png")   # robed run + jump (idle is still the naked body)
-const NAKED_TEX := preload("res://art/player_new.png")
-const ROBE_JUMP_FRAMES := [7, 7, 8, 8]   # per facing, in the robed jump
+const NAKED_TEX := preload("res://art/player_new.png")   # chest gear can swap in its own body_sheet
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var stats: Stats = $Stats
@@ -273,22 +271,24 @@ func _hop_step(delta: float) -> void:
 			_hop_land()
 
 
-func _wearing_robe() -> bool:
+## The chest item, if it comes with its own body sheet (robe, chestplate...).
+func _body_item() -> Item:
 	var eq := get_node_or_null("Equipment") as Equipment
 	var it: Item = eq.get_item("chest") if eq else null
-	return it != null and it.id == &"wizard_robe"
+	return it if it != null and it.body_sheet != null else null
 
 
 func _use_body_texture() -> void:
-	var tex: Texture2D = ROBE_TEX if _wearing_robe() else NAKED_TEX
+	var it := _body_item()
+	var tex: Texture2D = it.body_sheet if it else NAKED_TEX
 	if sprite.texture != tex:
 		sprite.texture = tex
 
 
 func _set_jump_frame(k: float) -> void:
-	var robe := _wearing_robe()
+	var it := _body_item()
 	_use_body_texture()
-	var n: int = ROBE_JUMP_FRAMES[facing] if robe else 9
+	var n: int = it.body_jump_frames[facing] if it and it.body_jump_frames.size() == 4 else 9
 	sprite.frame = (ANIM_JUMP * 4 + facing) * sprite.hframes + mini(int(k * n), n - 1)
 
 

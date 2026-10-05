@@ -9,9 +9,12 @@ above, export only the gear layer). Optionally also draw art/gear_src/<id>_icon.
 without one, the icon is made from the front view.
 
 It then:
-  1. fits the gear onto every walk / run / jump frame -> art/worn_<id>.png
-     (and a preview to check: art/gear_src/<id>_4dir_preview.png; see gen_worn_layer.py for
-     fixing single frames by hand),
+  1. puts the gear on every walk / run / jump frame:
+       chest   -> the body is DRESSED in it, like the robe: art/player_<id>.png, a whole player
+                  sheet that replaces the body while worn (tools/gen_body_sheet.py)
+       helmet / shield -> drawn on top as a layer: art/worn_<id>.png (tools/gen_worn_layer.py)
+     plus a preview to check: art/gear_src/<id>_4dir_preview.png (both tools explain how to fix
+     a single frame by hand),
   2. makes the paperdoll picture -> art/<id>_paperdoll.png,
   3. adds the icon to art/items.png and art/items_small.png (re-running replaces it in place),
   4. writes items/<id>.tres with the slot and stats given.
@@ -24,6 +27,7 @@ import sys
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import gen_body_sheet   # noqa: E402
 import gen_worn_layer   # noqa: E402
 
 SLOTS = ["helmet", "chest", "shield"]
@@ -75,12 +79,16 @@ def main():
     src = "art/gear_src/%s_4dir.png" % a.id
     if not os.path.exists(src):
         sys.exit("draw %s first (see the top of this file)" % src)
-    worn = "art/worn_%s.png" % a.id
-    gen_worn_layer.main(src, worn)
-
     front = Image.open(src).convert("RGBA").crop((0, 0, 48, 48))
-    doll = Image.open(gen_worn_layer.BASE).convert("RGBA").crop((0, 0, 48, 48))
-    doll.alpha_composite(front)
+    if a.slot == "chest":
+        art_path, field = "art/player_%s.png" % a.id, "body_sheet"
+        gen_body_sheet.main(src, art_path)
+        doll = Image.open(art_path).convert("RGBA").crop((0, 0, 48, 48))   # the dressed standing frame
+    else:
+        art_path, field = "art/worn_%s.png" % a.id, "worn_texture"
+        gen_worn_layer.main(src, art_path)
+        doll = Image.open(gen_worn_layer.BASE).convert("RGBA").crop((0, 0, 48, 48))
+        doll.alpha_composite(front)
     doll_path = "art/%s_paperdoll.png" % a.id
     doll.save(doll_path)
 
@@ -95,7 +103,7 @@ def main():
     with open(tres, "w") as f:
         f.write('[gd_resource type="Resource" script_class="Item" load_steps=4 format=3]\n\n')
         f.write('[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]\n')
-        f.write('[ext_resource type="Texture2D" path="res://%s" id="2_worn"]\n' % worn)
+        f.write('[ext_resource type="Texture2D" path="res://%s" id="2_art"]\n' % art_path)
         f.write('[ext_resource type="Texture2D" path="res://%s" id="3_doll"]\n\n' % doll_path)
         f.write('[resource]\nscript = ExtResource("1_item")\n')
         f.write('id = &"%s"\ndisplay_name = "%s"\n' % (a.id, a.name))
@@ -105,7 +113,7 @@ def main():
         if a.defense:
             f.write('defense = %s\n' % a.defense)
         f.write('equip_slot = "%s"\ntwo_handed = false\n' % a.slot)
-        f.write('worn_texture = ExtResource("2_worn")\npaperdoll_texture = ExtResource("3_doll")\n')
+        f.write('%s = ExtResource("2_art")\npaperdoll_texture = ExtResource("3_doll")\n' % field)
     print("made %s (icon frame %d)" % (tres, frame))
 
 

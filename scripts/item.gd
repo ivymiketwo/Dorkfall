@@ -33,6 +33,11 @@ extends Resource
 @export var two_handed := false
 ## Sprite sheet drawn over the character while worn (same layout as art/player.png).
 @export var worn_texture: Texture2D
+## Chest gear: the whole player sheet with this worn (made with tools/gen_body_sheet.py, or drawn
+## by hand like the robe). Replaces the body texture while equipped, same layout as player_new.png.
+@export var body_sheet: Texture2D
+## Jump frames per facing (down, up, left, right) in body_sheet, if it differs from the usual 9.
+@export var body_jump_frames := PackedInt32Array()
 ## Held weapons: how it sits in the hand (angle, size, grip, jump poses...). Empty = the standard style for its weapon type (res://hold_styles/<type>.tres).
 @export var hold_style: HoldStyle
 ## One-handed weapons already get this automatically. Tick it to force it on a two-handed item gripped at the bottom of its picture (a spear, say): it is then held with

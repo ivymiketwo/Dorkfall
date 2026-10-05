@@ -93,7 +93,8 @@ func _refresh() -> void:
 		else:
 			# worn gear shows when its art is a full frame-by-frame sheet laid out like the
 			# player's (made with tools/gen_worn_layer.py); older single pictures stay hidden
-			s.visible = it != null and it.worn_texture != null and it.worn_texture.get_size() == base.texture.get_size()
+			s.visible = it != null and it.body_sheet == null and it.worn_texture != null \
+					and it.worn_texture.get_size() == base.texture.get_size()
 	_apply_stats()
 	changed.emit()
 
