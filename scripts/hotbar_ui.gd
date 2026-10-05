@@ -147,8 +147,8 @@ func _draw() -> void:
 			draw_texture_rect_region(ICONS, Rect2(r.position + Vector2.ONE, Vector2(ICON, ICON)),
 					Rect2(ab.icon_index * 16, 0, 16, 16))
 			# Cooldown: dark shade that shrinks as it recovers
-			if hotbar.cooldowns[i] > 0.0 and ab.cooldown > 0.0:
-				var frac := hotbar.cooldowns[i] / ab.cooldown
+			if hotbar.cooldown_left(i) > 0.0 and ab.cooldown > 0.0:
+				var frac := hotbar.cooldown_left(i) / ab.cooldown
 				var h := ceili(ICON * frac)
 				draw_rect(Rect2(r.position + Vector2(1, ICON + 1 - h), Vector2(ICON, h)), Color(0, 0, 0, 0.65))
 		var border := BORDER

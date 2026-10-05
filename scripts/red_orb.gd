@@ -20,6 +20,7 @@ const FILL := Color(0.95, 0.12, 0.1)
 
 var _t := 0.0
 var _burst := false
+var _timeline: AttackTimeline   ## when it bursts (rules); drawing reads _t
 var _start := Vector2.ZERO          # blob start, local space
 var _fx: Node2D
 var _trail: Array = []              # [{p, age}]
@@ -33,6 +34,7 @@ func _ready() -> void:
 	_fx.z_index = 5                 # blob and burst draw above characters
 	_fx.draw.connect(_draw_fx)
 	add_child(_fx)
+	_timeline = AttackTimeline.new().at(travel_time, _explode).lasts(travel_time + FADE_TIME)
 
 
 func _progress() -> float:
@@ -44,24 +46,25 @@ func _blob_pos() -> Vector2:
 	return _start.lerp(Vector2.ZERO, p) + Vector2(0, -sin(p * PI) * arc_height - 3.0)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if AttackGuard.owner_dead(self):
 		_cancel()
 		return
-	_t += delta
+	var over := _timeline.tick(delta)
+	_t = _timeline.t
+	if over:
+		queue_free()
+
+
+func _process(delta: float) -> void:
 	if not _burst:
 		_trail_timer -= delta
 		if _trail_timer <= 0.0:
 			_trail_timer = 0.07
 			_trail.append({"p": _blob_pos() + Vector2(randf_range(-2, 2), 2), "age": 0.0})
-		if _t >= travel_time:
-			_explode()
 	for d in _trail:
 		d["age"] += delta
 	_trail = _trail.filter(func(d): return d["age"] < 0.45)
-	if _burst and _t >= travel_time + FADE_TIME:
-		queue_free()
-		return
 	queue_redraw()
 	_fx.queue_redraw()
 
@@ -141,5 +144,6 @@ func _draw_orb(c: Vector2) -> void:
 ## Called if whoever cast this dies: gone instantly, no damage.
 func _cancel() -> void:
 	set_process(false)
+	set_physics_process(false)
 	hide()
 	queue_free()

@@ -28,6 +28,25 @@ static func cone_hits(p: Vector2, front: float, length: float, angle: float, hal
 	return absf(angle_difference(angle, p.angle())) <= half_angle
 
 
+## Bite wedge: within `length` and inside the wedge's opening angle (degrees).
+static func wedge_hits(p: Vector2, length: float, spread_deg: float) -> bool:
+	return p.length() <= length and absf(rad_to_deg(p.angle())) <= spread_deg * 0.5
+
+
+## Splash damage (the fireball): full damage at the centre, down to `edge_mult` at the rim
+## (and beyond it, for big bodies that only overlap the edge). `d` = distance from the centre.
+static func blast_damage(d: float, radius: float, damage: float, edge_mult := 0.5) -> float:
+	return damage * lerpf(1.0, edge_mult, clampf(d / radius, 0.0, 1.0))
+
+
+## Whether an attack from `source` may hurt `target`: players hurt anything, monsters only players.
+static func can_hurt(source: Node, target: Node) -> bool:
+	if target == null or target == source:
+		return false
+	var from_player := source != null and is_instance_valid(source) and source.is_in_group("player")
+	return from_player or target.is_in_group("player")
+
+
 static func circle_hits(p: Vector2, radius: float) -> bool:
 	return p.length() <= radius
 

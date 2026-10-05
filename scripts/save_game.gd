@@ -32,9 +32,42 @@ static func get_value(key: String, default: Variant = null) -> Variant:
 static func put(key: String, value: Variant) -> void:
 	_load()
 	_data[key] = value
-	var f := FileAccess.open(PATH, FileAccess.WRITE)
-	if f:
-		f.store_string(JSON.stringify(_data, "\t"))
+	if _batch_depth > 0:
+		_dirty = true
+		return
+	_write()
+
+
+static var _batch_depth := 0
+static var _dirty := false
+
+
+## Runs `changes` and saves everything it changed in ONE write at the end. Use it whenever
+## something moves between two saved places (bag -> gravestone, pet -> bag): either both
+## sides land in the file or neither does, so a crash in between can never duplicate items.
+static func batch(changes: Callable) -> Variant:
+	_batch_depth += 1
+	var result = changes.call()
+	_batch_depth -= 1
+	if _batch_depth == 0 and _dirty:
+		_dirty = false
+		_write()
+	return result
+
+
+## Writes to a temporary file first and then swaps it in, so a crash mid-write
+## leaves the old save intact instead of a half-written one.
+static func _write() -> void:
+	var tmp := PATH + ".tmp"
+	var f := FileAccess.open(tmp, FileAccess.WRITE)
+	if f == null:
+		return
+	f.store_string(JSON.stringify(_data, "\t"))
+	f.close()
+	if DirAccess.rename_absolute(ProjectSettings.globalize_path(tmp), ProjectSettings.globalize_path(PATH)) != OK:
+		var direct := FileAccess.open(PATH, FileAccess.WRITE)   # couldn't swap: write in place as before
+		if direct:
+			direct.store_string(JSON.stringify(_data, "\t"))
 
 
 ## Items are Resources (.tres files); the save file just stores their paths.

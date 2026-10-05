@@ -32,15 +32,34 @@ changes in one place, and visuals are separate from logic.
 
 - **Chat commands** live in `ChatCommands` (rules, no UI). One switch, `ChatCommands.ENABLED` / `can_use(player)`, turns them all off for multiplayer; later `can_use` checks the account role (admin / GM). `ChatLog` only types and displays.
 
-## Still to split
-1. **Monster AI for `skeleton` and `mangyang`**: same brain/look split as Vorly (they already use
-   `KillCredit`, but their AI still mixes in sprite code and visual tweens). Copy the Vorly pattern.
-2. **Attack timelines**: the hit rules are in `AttackRules`, but each attack node still runs its own
-   warn/sweep timer and is spawned by the monster script. `fireball.gd` still does its own blast test.
-3. **Pickups and gravestones** add to the bag directly and are collected client-side.
-4. **Pets**: follow logic and loot-grab run client-side. Needs pet records with a server-owned
-   "summoned" flag and recall.
-5. **Movement**: input is separated, but the body still moves locally (needs prediction + reconciliation).
-6. **Time**: cooldowns and regen count frames in nodes; a server tick replaces that.
-7. **Random placement inside monster scripts** (e.g. where boulders land in `skeleton.gd`) still uses
-   plain `randf`.
+- **Every monster is brain + look now.** `skeleton.gd` (also Lord Kilset and the Pirate Captain) and
+  `mangyang.gd` draw nothing; `skeleton_look.gd`, `pirate_look.gd` and `mangyang_look.gd` do. Death and
+  respawn are counted in the brain on the game tick (no tweens driving rules). Monsters target the
+  nearest *living* player. Quests read each monster's `quest_kind` instead of its script name.
+- **Attack timelines**: `AttackTimeline` lists when an attack hits ("at 0.7 s", "from 0.9 s to 1.06 s")
+  and every attack ticks it from `_physics_process`; drawing only reads the time. Random timing that
+  matters (when each boulder lands, when each stone stripe erupts) is rolled by the monster through `Rng`
+  and handed to the attack. The fireball's splash damage and "who can hurt whom" are in `AttackRules`.
+- **Ground loot**: `LootClaim.claim` is the only way items leave a pile: the pile must still have items,
+  the taker must be within reach, and monster loot belongs to the top damage dealer for 60 s.
+  Grab pets go through it too. Gravestones: `Gravestone.take_into` (owner only, from up close).
+- **Pets**: `Pet.summon` / `pet.recall` are the rules; pets remember their owner. The pet list and the
+  bag change in ONE save, so a pet can never be both out and in the bag.
+- **Saving**: `SaveGame.batch` groups changes into one write (bag + gravestone, pet + bag, death), and
+  every write goes to a temp file that is then swapped in, so a crash can't leave half a save.
+- **Time**: `GameClock` (autoload) counts fixed physics ticks. Hotbar, melee and item cooldowns are
+  "ready at" times on it; regen, poison, guard/parry, home teleport, casting and fishing bites run on
+  the fixed tick. Vorly's cast timers count in physics ticks.
+- **Movement**: every movement tick is numbered (`move_seq`) and remembered (velocity + end spot);
+  `player.reconcile(seq, server_pos)` snaps to the server's answer and replays the later ticks.
+- **Randomness**: monster wandering, skeleton boss attack layouts, fish rolls and bite timing go through `Rng`.
+
+## Still to do (needs the actual server)
+1. **Networking itself**: sending player commands up and state down. The pieces above are the
+   hooks for it (commands, numbered movement ticks, rule functions that return results).
+2. **Accounts**: pickups, pets and gravestones use the player's node / name as the owner for now;
+   swap those for an account id.
+3. **Fishing minigame**: the catch bar is pure skill and runs on the client; a server would only
+   trust a "caught" result within sensible timing.
+4. **Save file per player**: SaveGame is one file for one player; a server needs a database row per account.
+

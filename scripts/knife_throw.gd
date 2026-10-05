@@ -13,6 +13,7 @@ var direction := Vector2.RIGHT
 var caster: Node
 var _t := 0.0
 var _hit := false
+var _timeline: AttackTimeline   ## when the knife flies (rules); drawing reads _t
 var _fx: Node2D
 
 
@@ -22,22 +23,31 @@ func _ready() -> void:
 	_fx.z_index = 5
 	_fx.draw.connect(_draw_knife)
 	add_child(_fx)
+	_timeline = AttackTimeline.new().during(warn_time, warn_time + fly_time, _fly)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if AttackGuard.owner_dead(self):
 		_cancel()
 		return
-	_t += delta
-	if _t >= warn_time + fly_time:
+	var over := _timeline.tick(delta)
+	_t = _timeline.t
+	if over:
 		queue_free()
+
+
+## Every tick while the knife is in the air: hits the first player its blade passes.
+func _fly(progress: float) -> void:
+	if _hit:
 		return
-	if _t >= warn_time and not _hit:
-		for player in Players.all(get_tree()):
-			var p := to_local(player.global_position + AttackRules.CHEST)
-			if AttackRules.knife_hits(p, length, width, (_t - warn_time) / fly_time):
-				AttackRules.deal(player, damage, caster, global_position)
-				_hit = true
+	for player in Players.all(get_tree()):
+		var p := to_local(player.global_position + AttackRules.CHEST)
+		if AttackRules.knife_hits(p, length, width, progress):
+			AttackRules.deal(player, damage, caster, global_position)
+			_hit = true
+
+
+func _process(_delta: float) -> void:
 	queue_redraw()
 	_fx.queue_redraw()
 
@@ -67,5 +77,6 @@ func _draw_knife() -> void:
 ## Called if whoever cast this dies: gone instantly, no damage.
 func _cancel() -> void:
 	set_process(false)
+	set_physics_process(false)
 	hide()
 	queue_free()

@@ -15,11 +15,16 @@ extends CharacterBody2D
 @export var loot_range := 260.0   ## (unused: loot must be on screen now)
 @export var leash_range := 150.0   ## a grab pet never runs further than this from its owner
 
+## How close the owner must be to put the pet back in the bag.
+const RECALL_RANGE := 200.0
+
 var _t := 0.0
 var _row := 0            ## sprite row: 0 = side, 1 = facing the camera (south), 2 = facing away (north)
 var _rest := 0.0
 var _target: Pickup
 var _skip := {}     ## pickups it gave up on (inventory full) -> ignore until
+## Instance id of the player it belongs to (0 = the local player, for older saves).
+var owner_id := 0
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -45,6 +50,60 @@ static func _save_all(tree: SceneTree) -> void:
 	SaveGame.put("pets", out)
 
 
+## The rules of letting a pet out of the bag (no visuals). The pet record is written and the
+## bag slot cleared in ONE save, so the pet is never both in the bag and out. Returns the pet or null.
+static func summon(player: Node2D, slot: int) -> Pet:
+	var inv := player.get_node_or_null("Inventory") as Inventory
+	if inv == null or inv.prepare_drop(slot) != "pet":
+		return null
+	var item := inv.items[slot]
+	return SaveGame.batch(func() -> Pet:
+		var pet := item.pet_scene.instantiate() as Pet
+		if pet == null:
+			return null
+		pet.item = item
+		pet.owner_id = player.get_instance_id()
+		pet.position = player.position + Vector2(10, 2)
+		player.get_parent().add_child(pet)
+		Pet._save_all(player.get_tree())
+		inv.clear_slot(slot)
+		return pet)
+
+
+## Why `player` can't put this pet back in their bag; "" if they can.
+func recall_refusal(player: Node2D) -> String:
+	var inv: Inventory = player.get_node_or_null("Inventory") as Inventory if player else null
+	if inv == null or item == null or is_queued_for_deletion():
+		return "gone"
+	if _owner() != player:
+		return "not_yours"
+	if global_position.distance_to(player.global_position) > RECALL_RANGE:
+		return "too_far"
+	if not inv.has_room_for(item):
+		return "full"
+	return ""
+
+
+## The rules of putting the pet back in the bag (no visuals). The pet leaves the saved pet
+## list and enters the bag in ONE save. Returns "" on success, or why not.
+func recall(player: Node2D) -> String:
+	var why := recall_refusal(player)
+	if why != "":
+		return why
+	SaveGame.batch(func() -> void:
+		var inv := player.get_node("Inventory") as Inventory
+		queue_free()
+		Pet._save_all(get_tree())   # already skips this pet (queued for deletion)
+		inv.add(item, 1))
+	return ""
+
+
+## The player this pet follows.
+func _owner() -> Node2D:
+	var o := instance_from_id(owner_id) as Node2D if owner_id != 0 else null
+	return o if o != null and is_instance_valid(o) else Players.local(get_tree())
+
+
 ## Brings saved pets back next to the player when the game starts.
 static func restore(player: Node2D) -> void:
 	var saved = SaveGame.get_value("pets", [])
@@ -57,13 +116,14 @@ static func restore(player: Node2D) -> void:
 			continue
 		var pet: Node2D = it.pet_scene.instantiate()
 		pet.item = it
+		pet.owner_id = player.get_instance_id()
 		pet.position = player.position + Vector2(10 + n * 8, 2 + n * 3)
 		player.get_parent().add_child(pet)
 		n += 1
 
 
 func _physics_process(delta: float) -> void:
-	var player := Players.local(get_tree())
+	var player := _owner()
 	if player == null:
 		return
 	var to := player.global_position - global_position
@@ -103,9 +163,11 @@ func _fetch_loot(player: Node2D, delta: float) -> bool:
 		var best := INF
 		for n in get_tree().get_nodes_in_group("pickups"):
 			var pk := n as Pickup
-			if pk == null or not pk.monster_loot or pk.age < loot_delay:
+			if pk == null or not pk.monster_loot or pk.age() < loot_delay:
 				continue
-			if _skip.get(pk, 0.0) > Time.get_ticks_msec() / 1000.0:
+			if LootClaim.refusal(pk, player, pk.global_position) != "":
+				continue   # someone else's pile (or already gone)
+			if _skip.get(pk, 0.0) > GameClock.now:
 				continue
 			if not _on_screen(pk.global_position, player):
 				continue
@@ -121,9 +183,9 @@ func _fetch_loot(player: Node2D, delta: float) -> bool:
 	if to.length() < 8.0:
 		var pk := _target
 		_target = null
-		var gone := pk.grab_for(player)
+		var gone := pk.grab_for(player, global_position)
 		if not gone:
-			_skip[pk] = Time.get_ticks_msec() / 1000.0 + 8.0   # bag full: leave it
+			_skip[pk] = GameClock.now + 8.0   # bag full: leave it
 		_rest = loot_cooldown
 		return false
 	velocity = to.normalized() * speed * 1.5
@@ -176,13 +238,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _pick_up() -> void:
-	var player := Players.local(get_tree())
-	var inv: Inventory = player.get_node_or_null("Inventory") if player else null
-	if inv == null or item == null:
+	var player := _owner()
+	if player == null:
 		return
-	if not inv.has_room_for(item):
+	var why := recall(player)
+	if why == "full":
 		FloatingText.spawn(get_parent(), player.position + Vector2(0, -26), "INVENTORY FULL", Color("e03c3c"))
-		return
-	inv.add(item, 1)
-	queue_free()
-	_save_all.call_deferred(get_tree())
+	elif why == "too_far":
+		FloatingText.spawn(get_parent(), player.position + Vector2(0, -26), "TOO FAR AWAY", Color("e0e0e0"))

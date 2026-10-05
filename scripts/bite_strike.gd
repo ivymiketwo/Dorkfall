@@ -11,27 +11,32 @@ extends Node2D
 var direction := Vector2.RIGHT
 var caster: Node
 var _t := 0.0
-var _struck := false
+var _timeline: AttackTimeline   ## when it snaps shut (rules); drawing reads _t
 
 
 func _ready() -> void:
 	rotation = direction.angle()
+	_timeline = AttackTimeline.new().at(warn_time, _snap).lasts(warn_time + 0.12)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if AttackGuard.owner_dead(self):
 		_cancel()
 		return
-	_t += delta
-	if not _struck and _t >= warn_time:
-		_struck = true
-		for player in Players.all(get_tree()):
-			var p := to_local(player.global_position + AttackRules.CHEST)
-			if p.length() <= length and absf(rad_to_deg(p.angle())) <= spread_deg * 0.5:
-				AttackRules.deal(player, damage, caster, global_position)
-	if _t >= warn_time + 0.12:
+	var over := _timeline.tick(delta)
+	_t = _timeline.t
+	if over:
 		queue_free()
-		return
+
+
+func _snap() -> void:
+	for player in Players.all(get_tree()):
+		var p := to_local(player.global_position + AttackRules.CHEST)
+		if AttackRules.wedge_hits(p, length, spread_deg):
+			AttackRules.deal(player, damage, caster, global_position)
+
+
+func _process(_delta: float) -> void:
 	queue_redraw()
 
 
@@ -58,5 +63,6 @@ func _draw() -> void:
 
 func _cancel() -> void:
 	set_process(false)
+	set_physics_process(false)
 	hide()
 	queue_free()

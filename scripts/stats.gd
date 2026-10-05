@@ -63,7 +63,8 @@ func refill() -> void:
 	changed.emit()
 
 
-func _process(delta: float) -> void:
+## Regen and poison run on the fixed game tick (the same tick a server runs).
+func _physics_process(delta: float) -> void:
 	_poison_step(delta)
 	var dirty := false
 	if health > 0.0 and health < max_health:
@@ -172,7 +173,7 @@ var _mana_warn_at := -10.0
 ## Says the owner just tried to spend mana it doesn't have (at most once a second).
 ## The red "OUT OF MANA" text is drawn by StatsFx listening to `out_of_mana`.
 func warn_out_of_mana() -> void:
-	var now := Time.get_ticks_msec() / 1000.0
+	var now := GameClock.now
 	if now - _mana_warn_at < 1.0:
 		return
 	_mana_warn_at = now

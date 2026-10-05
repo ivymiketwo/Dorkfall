@@ -87,7 +87,8 @@ func in_parry_window() -> bool:
 	return guarding and _parry_armed and _t < PARRY_WINDOW
 
 
-func _process(delta: float) -> void:
+## Parry window, stun and stamina drain run on the fixed game tick (a server runs the same).
+func _physics_process(delta: float) -> void:
 	_clock += delta
 	_stun = maxf(_stun - delta, 0.0)
 	_flash = maxf(_flash - delta, 0.0)

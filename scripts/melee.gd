@@ -7,7 +7,8 @@ extends Node
 ## Used when nothing is equipped in the weapon slot.
 @export var unarmed: Item
 
-var _cooldown := 0.0
+## GameClock time the next attack is allowed (see game_clock.gd).
+var _ready_at := 0.0
 
 @onready var caster: Node2D = get_parent()
 @onready var stats: Stats = get_parent().get_node("Stats")
@@ -20,10 +21,9 @@ var weapon: Item:
 		return w if w else unarmed
 
 
-func _process(delta: float) -> void:
-	_cooldown = maxf(_cooldown - delta, 0.0)
+func _process(_delta: float) -> void:
 	# Holding left click keeps firing a staff's beam (swings still need a click each).
-	if _cooldown <= 0.0 and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	if GameClock.passed(_ready_at) and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		var w := weapon
 		if w != null and not w.fishing_rod and w.basic_attack != null and w.basic_attack.kind == Ability.Kind.BEAM and not _ui_blocking():
 			attack()
@@ -53,7 +53,7 @@ func attack() -> void:
 	var guard := caster.get_node_or_null("Guard") as Guard
 	if guard != null and guard.guarding:
 		return
-	if weapon == null or not weapon.is_weapon() or _cooldown > 0.0 or stats.health <= 0.0:
+	if weapon == null or not weapon.is_weapon() or not GameClock.passed(_ready_at) or stats.health <= 0.0:
 		return
 	var ab := weapon.basic_attack
 	if ab != null and ab.kind == Ability.Kind.BEAM and stats.mana >= ab.mana_cost:
@@ -64,7 +64,7 @@ func attack() -> void:
 	if stats.stamina < weapon.melee_stamina:
 		return
 	stats.spend_stamina(weapon.melee_stamina)
-	_cooldown = weapon.melee_cooldown
+	_ready_at = GameClock.now + weapon.melee_cooldown
 
 	var origin := caster.global_position + Vector2(0, -8)
 	var aim: Vector2 = caster.aim_world - origin
@@ -108,7 +108,7 @@ func attack() -> void:
 ## Left-click ranged attack: same beam as the ability, fired from the weapon.
 func _basic_beam(ab: Ability) -> void:
 	stats.spend_mana(ab.mana_cost)
-	_cooldown = ab.cooldown
+	_ready_at = GameClock.now + ab.cooldown
 	var start := caster.global_position + Vector2(0, -10)
 	var aim: Vector2 = caster.aim_world - start
 	var dir := aim.normalized() if aim.length() > 1.0 else Vector2.DOWN

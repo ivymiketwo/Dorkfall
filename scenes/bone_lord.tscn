@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/skeleton.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://art/bone_lord.png" id="2_tex"]
 [ext_resource type="Script" path="res://scripts/stats.gd" id="3_stats"]
 [ext_resource type="Script" path="res://scripts/nameplate.gd" id="4_nameplate"]
 [ext_resource type="Resource" path="res://items/coins.tres" id="5_coins"]
+[ext_resource type="Script" path="res://scripts/skeleton_look.gd" id="9_look"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 8.0
@@ -56,3 +57,6 @@ z_index = 10
 position = Vector2(0, -56)
 script = ExtResource("4_nameplate")
 bar_width = 34
+
+[node name="Look" type="Node" parent="."]
+script = ExtResource("9_look")

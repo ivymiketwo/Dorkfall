@@ -17,6 +17,7 @@ const RED := Color(0.95, 0.08, 0.08, 0.60)
 
 var _t := 0.0
 var _burst := false
+var _timeline: AttackTimeline   ## when it detonates (rules); drawing reads _t
 var _cracks: Array = []     # [{pts: PackedVector2Array}]
 var _vents: Array = []      # [{p, d, str}]   d = delay, str = strength
 var _gas: Array = []        # thrown gas puffs
@@ -29,18 +30,20 @@ func _ready() -> void:
 	_smoke.z_index = 5
 	_smoke.draw.connect(_draw_smoke)
 	add_child(_smoke)
+	_timeline = AttackTimeline.new().at(warn_time, _detonate).lasts(warn_time + smoke_time)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if AttackGuard.owner_dead(self):
 		_cancel()
 		return
-	_t += delta
-	if not _burst and _t >= warn_time:
-		_detonate()
-	if _burst and _t >= warn_time + smoke_time:
+	var over := _timeline.tick(delta)
+	_t = _timeline.t
+	if over:
 		queue_free()
-		return
+
+
+func _process(_delta: float) -> void:
 	queue_redraw()
 	_smoke.queue_redraw()
 
@@ -171,5 +174,6 @@ func _draw_smoke() -> void:
 ## Called if whoever cast this dies: gone instantly, no damage.
 func _cancel() -> void:
 	set_process(false)
+	set_physics_process(false)
 	hide()
 	queue_free()

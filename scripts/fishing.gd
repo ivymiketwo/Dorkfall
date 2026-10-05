@@ -144,7 +144,9 @@ func _is_water(p: Vector2) -> bool:
 	return false
 
 
-func _process(delta: float) -> void:
+## The cast, the wait for a bite and the bite itself run on the fixed game tick. (The catch
+## minigame below is pure player skill and stays on the frame clock for smooth input.)
+func _physics_process(delta: float) -> void:
 	if state == S.IDLE and _splash < 0.0 and _dust < 0.0:
 		return
 	if _splash >= 0.0:
@@ -182,7 +184,7 @@ func _landed() -> void:
 	_t = 0.0
 	if _water:
 		_splash = 0.0
-		_bite_at = randf_range(BITE_MIN, BITE_MAX)
+		_bite_at = Rng.randf_range(BITE_MIN, BITE_MAX)
 		state = S.WAIT
 	else:
 		_dust = 0.0            # dry land: a puff of dust and the line resets at once
@@ -202,7 +204,7 @@ func _roll_fish(power: int) -> Item:
 	var total := 0
 	for x: int in w:
 		total += x
-	var r := randi() % total
+	var r := Rng.randi_range(0, total - 1)   # which fish: a rule, so it goes through Rng
 	var idx := 0
 	for i in w.size():
 		r -= int(w[i])

@@ -13,7 +13,7 @@ extends Node2D
 var direction := Vector2.RIGHT
 var caster: Node
 var _t := 0.0
-var _struck := false
+var _timeline: AttackTimeline   ## when it strikes (rules); drawing reads _t
 var _fx: Node2D
 
 
@@ -23,24 +23,25 @@ func _ready() -> void:
 	_fx.z_index = 5
 	_fx.draw.connect(_draw_slash)
 	add_child(_fx)
+	_timeline = AttackTimeline.new().at(warn_time, _strike).lasts(warn_time + 0.22)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if AttackGuard.owner_dead(self):
 		_cancel()
 		return
-	_t += delta
-	if not _struck and _t >= warn_time:
-		_strike()
-	if _t >= warn_time + 0.22:
+	var over := _timeline.tick(delta)
+	_t = _timeline.t
+	if over:
 		queue_free()
-		return
+
+
+func _process(_delta: float) -> void:
 	queue_redraw()
 	_fx.queue_redraw()
 
 
 func _strike() -> void:
-	_struck = true
 	if caster and is_instance_valid(caster) and caster.has_method("begin_lunge"):
 		caster.begin_lunge(direction)
 	for player in Players.all(get_tree()):
@@ -75,5 +76,6 @@ func _draw_slash() -> void:
 ## Called if whoever cast this dies: gone instantly, no damage.
 func _cancel() -> void:
 	set_process(false)
+	set_physics_process(false)
 	hide()
 	queue_free()

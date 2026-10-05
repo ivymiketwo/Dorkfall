@@ -73,20 +73,16 @@ func _blast() -> void:
 	q.collision_mask = 1
 	if caster is CollisionObject2D:
 		q.exclude = [caster.get_rid()]
-	var from_player := caster != null and caster.is_in_group("player")
 	var seen := {}
 	for hit in space.intersect_shape(q, 32):
-		var body := hit["collider"] as Node
+		var body := hit["collider"] as Node2D
 		if body == null or seen.has(body):
 			continue
 		seen[body] = true
-		if from_player == false and not body.is_in_group("player"):
-			continue   # monsters' fireballs only hurt the player
-		var target_stats := body.get_node_or_null("Stats") as Stats
-		if target_stats:
-			var d := global_position.distance_to((body as Node2D).global_position + Vector2(0, -8))
-			var falloff := lerpf(1.0, 0.5, clampf(d / aoe_radius, 0.0, 1.0))
-			target_stats.take_damage(damage * falloff, caster, false, global_position)
+		if not AttackRules.can_hurt(caster, body):
+			continue   # monsters' fireballs only hurt players
+		var d := global_position.distance_to(body.global_position + Vector2(0, -8))
+		AttackRules.deal(body, AttackRules.blast_damage(d, aoe_radius, damage), caster, global_position)
 
 
 func _explode(with_damage: bool) -> void:

@@ -9,7 +9,7 @@ const SLOT_COUNT := 28
 
 var items: Array[Item] = []
 var counts: Array[int] = []
-## Per-item use cooldowns (Item -> seconds left).
+## Per-item use cooldowns: Item -> GameClock time it can be used again.
 var item_cd := {}
 
 
@@ -20,15 +20,12 @@ func _ready() -> void:
 	changed.connect(_save)
 
 
-func _process(delta: float) -> void:
-	for it in item_cd.keys():
-		item_cd[it] -= delta
-		if item_cd[it] <= 0.0:
-			item_cd.erase(it)
-
-
+## Seconds until `item` can be used again (0 = ready).
 func cooldown_of(item: Item) -> float:
-	return item_cd.get(item, 0.0)
+	var left := GameClock.left(float(item_cd.get(item, 0.0)))
+	if left <= 0.0:
+		item_cd.erase(item)
+	return left
 
 
 func _save() -> void:
@@ -221,16 +218,7 @@ func drop_slot(i: int) -> void:
 		"bound":
 			FloatingText.spawn(world, player.position + Vector2(0, -26), "ACCOUNT BOUND", Color("e03c3c"))
 		"pet":
-			# Pets are precious: bring the pet out and write it to the save FIRST, and only
-			# then take it out of the bag. If anything fails, the pet stays in the bag.
-			var pet: Node2D = item.pet_scene.instantiate()
-			if pet == null:
-				return
-			pet.item = item
-			pet.position = player.position + Vector2(10, 2)
-			world.add_child(pet)
-			Pet._save_all(get_tree())
-			clear_slot(i)
+			Pet.summon(player, i)   # pet record + bag slot change in one save
 		"item":
 			clear_slot(i)
 			var pickup: Node2D = load("res://scenes/pickup.tscn").instantiate()
@@ -282,7 +270,7 @@ func try_use(i: int) -> Dictionary:
 			used = true
 	if used:
 		if item.use_cooldown > 0.0:
-			item_cd[item] = item.use_cooldown
+			item_cd[item] = GameClock.now + item.use_cooldown
 		remove(item, 1)
 	return {"ok": used, "messages": msgs}
 

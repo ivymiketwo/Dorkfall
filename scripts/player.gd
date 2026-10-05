@@ -63,6 +63,14 @@ var _jump_buffer := 0.0     ## Space pressed just before landing still counts
 var _hop_ring: Node2D
 var _hop_cooldown := 0.0
 
+# Movement history for server corrections (client-side prediction). Every physics tick that
+# moves the body is numbered and remembered: the velocity used and where it ended up.
+# A server will answer "after tick N you were at P"; `reconcile` then puts the body at P and
+# replays the ticks after N, so the player never sees a jump unless they really were off.
+const MOVE_HISTORY := 120          ## ticks kept (2 seconds at 60 ticks/s)
+var move_seq := 0                  ## number of the last movement tick
+var _moves: Array[Dictionary] = [] ## [{seq, vel, pos}]
+
 
 func _ready() -> void:
 	add_to_group("player")
@@ -121,8 +129,44 @@ func _physics_process(delta: float) -> void:
 			move_speed *= sprint_multiplier
 	velocity = dir * move_speed
 	_corner_nudge(dir, move_speed, delta)
-	move_and_slide()
+	_move_tick()
 	_update_animation(dir, delta * (sprint_multiplier if sprinting else 1.0))
+
+
+## Moves the body one tick with the current velocity and remembers it (see MOVE_HISTORY).
+func _move_tick() -> void:
+	var v := velocity
+	move_and_slide()
+	move_seq += 1
+	_moves.append({"seq": move_seq, "vel": v, "pos": global_position})
+	if _moves.size() > MOVE_HISTORY:
+		_moves.pop_front()
+
+
+## Server correction: "after movement tick `seq` you were at `server_pos`". If we agree
+## (within half a pixel) nothing happens; otherwise the body goes to `server_pos` and the
+## ticks after `seq` are replayed with the same velocities. Returns how far off we were.
+func reconcile(seq: int, server_pos: Vector2) -> float:
+	var i := -1
+	for k in _moves.size():
+		if _moves[k]["seq"] == seq:
+			i = k
+			break
+	if i == -1:
+		return 0.0                     # too old (or not ours): nothing to correct against
+	var off: float = _moves[i]["pos"].distance_to(server_pos)
+	_moves = _moves.slice(i)           # the server has confirmed everything up to here
+	if off < 0.5:
+		return off
+	var keep := velocity
+	global_position = server_pos
+	_moves[0]["pos"] = server_pos
+	for k in range(1, _moves.size()):
+		velocity = _moves[k]["vel"]
+		move_and_slide()
+		_moves[k]["pos"] = global_position
+	velocity = keep
+	return off
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -212,7 +256,7 @@ func _hop_step(delta: float) -> void:
 		_set_jump_frame(k)
 		sprite.position.y = -4.0 * _hop_ab.hop_height * k * (1.0 - k)      # parabola, apex at k = 0.5
 		velocity = _hop_dir * _hop_ab.hop_speed
-		move_and_slide()
+		_move_tick()
 		if k >= 1.0:
 			_hop_land()
 
@@ -304,6 +348,10 @@ func _on_died() -> void:
 
 ## Everything carried and worn goes onto a gravestone where you fell.
 func _leave_gravestone() -> void:
+	SaveGame.batch(_fill_gravestone)   # bag, gear and stone are saved together
+
+
+func _fill_gravestone() -> void:
 	var stone := Gravestone.new()
 	stone.name = "Gravestone"
 	stone.owner_name = display_name

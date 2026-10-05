@@ -1,11 +1,18 @@
 extends CharacterBody2D
 ## Skeleton: a graveyard warrior. Shambles near its spot, chases when you get
 ## close, then telegraphs a red lane on the ground and lunges forward down it
-## with its rusty sword.
+## with its rusty sword. Also the brain of Lord Kilset (boss version) and the Pirate Captain.
+##
+## This script is the BRAIN: state, targeting, attacks, loot, respawn. It draws nothing and
+## never touches its sprite, so a server can run it headless (same pattern as vordy.gd).
+## Everything visible lives in the Look node (skeleton_look.gd / pirate_look.gd), which only
+## reads the public state below and listens to the signals.
 
 enum State { WANDER, CHASE, RETURN, DEAD }
 
 @export var display_name := "Skeleton"
+## Which quests count this kill ("skeleton", "pirate", ...). See Quests.kind_of.
+@export var quest_kind := "skeleton"
 @export var level := 3
 ## XP at level 3; higher-level skeletons are worth proportionally more.
 @export var xp_reward := 30
@@ -65,12 +72,21 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 @export var drop_min := 3
 @export var drop_max := 14
 
+## One-shot events for the look script (and, later, for network clients).
+signal respawned
+
 const STRIKE := preload("res://scripts/lunge_strike.gd")
 const RAIN := preload("res://scripts/boulder_rain.gd")
 const WALLS := preload("res://scripts/stone_walls.gd")
-const PICKUP := preload("res://scenes/pickup.tscn")
+## How long the collapse-and-fade plays before the respawn countdown starts (seconds).
+const DEATH_ANIM := 1.6
+const RECOVER_TIME := 0.3
 
 var state := State.WANDER
+## Last direction it moved or attacked in (the look picks its art from this).
+var facing := Vector2.LEFT
+## Direction of the current / last lunge.
+var lunge_dir := Vector2.LEFT
 var _home: Vector2
 var _wander_target: Vector2
 var _wander_timer := 0.0
@@ -78,12 +94,10 @@ var _lunge_timer := 0.0
 var _winding := 0.0        # seconds left in the wind-up (0 = not winding up)
 var _lunging := 0.0        # seconds left in the dash
 var _recover := 0.0        # brief pause after the dash
-var _lunge_dir := Vector2.LEFT
-var _t := 0.0
 var _rain_timer := 6.0
 var _walls_timer := 10.0
+var _respawn_timer := 0.0
 
-@onready var sprite: Sprite2D = $Sprite2D
 @onready var shape: CollisionShape2D = $CollisionShape2D
 @onready var stats: Stats = $Stats
 
@@ -92,18 +106,13 @@ func _ready() -> void:
 	add_to_group("monsters")
 	_home = position
 	_wander_target = position
-	_t = randf() * 10.0
-	_lunge_timer = randf_range(1.0, 3.0)
+	_lunge_timer = Rng.randf_range(1.0, 3.0)
 	# stronger and worth more at higher levels
 	var lv := maxi(level - 3, 0)
 	stats.max_health *= (1.0 + 0.25 * float(lv)) * health_mult
 	lunge_damage *= 1.0 + 0.15 * float(maxi(level - 4, 0))
 	if boss_scale != 1.0:
-		sprite.scale *= boss_scale
 		shape.scale = Vector2(boss_scale, boss_scale)
-		var np_ := get_node_or_null("Nameplate") as Node2D
-		if np_:
-			np_.position.y *= boss_scale
 		lunge_distance *= boss_scale
 	stats.refill()
 	xp_reward = int(round(float(xp_reward) * (1.0 + 0.33 * float(lv))))
@@ -111,10 +120,24 @@ func _ready() -> void:
 	stats.damaged.connect(_on_damaged)
 
 
+func is_winding() -> bool:
+	return _winding > 0.0
+
+
+func is_lunging() -> bool:
+	return _lunging > 0.0
+
+
+func is_recovering() -> bool:
+	return _recover > 0.0
+
+
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
+		_respawn_timer -= delta
+		if _respawn_timer <= 0.0:
+			_respawn()
 		return
-	_t += delta
 	_lunge_timer -= delta
 	_rain_timer -= delta
 	_walls_timer -= delta
@@ -123,18 +146,17 @@ func _physics_process(delta: float) -> void:
 	if _recover > 0.0:
 		_recover -= delta
 
-	var player := Players.nearest(get_tree(), global_position)
+	var player := Players.nearest(get_tree(), global_position, true)
 	var to_player := player.global_position - global_position if player else Vector2.INF
 	var dist := to_player.length()
 	var from_home := position.distance_to(_home)
 
 	if _lunging > 0.0:
 		_lunging -= delta
-		velocity = _lunge_dir * (lunge_distance / lunge_time)
+		velocity = lunge_dir * (lunge_distance / lunge_time)
 		move_and_slide()
-		_animate(Vector2.ZERO)
 		if _lunging <= 0.0:
-			_recover = 0.3
+			_recover = RECOVER_TIME
 		return
 
 	match state:
@@ -154,9 +176,9 @@ func _physics_process(delta: float) -> void:
 		State.WANDER:
 			_wander_timer -= delta
 			if _wander_timer <= 0.0:
-				_wander_target = position if randf() < 0.5 else \
-						_home + Vector2.from_angle(randf() * TAU) * randf_range(6.0, wander_radius)
-				_wander_timer = randf_range(1.5, 4.0)
+				_wander_target = position if Rng.chance(0.5) else \
+						_home + Vector2.from_angle(Rng.randf() * TAU) * Rng.randf_range(6.0, wander_radius)
+				_wander_timer = Rng.randf_range(1.5, 4.0)
 			if position.distance_to(_wander_target) > 3.0:
 				move = position.direction_to(_wander_target)
 		State.CHASE:
@@ -177,9 +199,10 @@ func _physics_process(delta: float) -> void:
 
 	if _winding > 0.0 or _recover > 0.0:
 		move = Vector2.ZERO
+	if move.x != 0.0:
+		facing = move
 	velocity = move * speed
 	move_and_slide()
-	_animate(move)
 
 
 ## True when one of the boss's telegraphed attacks is off cooldown. Those always
@@ -188,23 +211,40 @@ func _special_ready() -> bool:
 	return (rain_enabled and _rain_timer <= 0.0) or (walls_enabled and _walls_timer <= 0.0)
 
 
+## Adds an attack to the scene root, just above the ground art (painted on the ground).
+func _add_ground_attack(node: Node2D) -> void:
+	var root := get_parent().get_parent()
+	root.add_child(node)
+	var ground := root.get_node_or_null("GroundArt")
+	if ground == null:
+		ground = root.get_node_or_null("Ground")
+	if ground:
+		root.move_child(node, ground.get_index() + 1)
+
+
+func _cave_ring(cave: Node2D) -> PackedVector2Array:
+	var ring: PackedVector2Array = cave.get("ring")
+	var global_ring := PackedVector2Array()
+	for p in ring:
+		global_ring.append(cave.to_global(p))
+	return global_ring
+
+
 func _start_rain() -> void:
 	var cave := get_tree().get_first_node_in_group("cave") as Node2D
 	if cave == null:
 		_rain_timer = rain_cooldown
 		return
 	# random boulders all over the chamber, each 5-25% bigger or smaller than the base size
-	var ring: PackedVector2Array = cave.get("ring")
-	var global_ring := PackedVector2Array()
-	for p in ring:
-		global_ring.append(cave.to_global(p))
+	var global_ring := _cave_ring(cave)
 	var spots: Array[Vector2] = []
 	var radii: Array[float] = []
+	var land: Array[float] = []
 	var tries := 0
 	while spots.size() < rain_count and tries < 4000:
 		tries += 1
-		var rad := rain_radius * (1.0 + randf_range(0.05, 0.25) * (1.0 if randf() < 0.5 else -1.0))
-		var g := cave.to_global(rain_rect.position + Vector2(randf() * rain_rect.size.x, randf() * rain_rect.size.y))
+		var rad := rain_radius * (1.0 + Rng.randf_range(0.05, 0.25) * (1.0 if Rng.chance(0.5) else -1.0))
+		var g := cave.to_global(rain_rect.position + Vector2(Rng.randf() * rain_rect.size.x, Rng.randf() * rain_rect.size.y))
 		var ok := true
 		for off in [Vector2.ZERO, Vector2(rad + 3, 0), Vector2(-rad - 3, 0), Vector2(0, rad + 3), Vector2(0, -rad - 3)]:
 			if not Geometry2D.is_point_in_polygon(g + off, global_ring):
@@ -218,20 +258,18 @@ func _start_rain() -> void:
 		if ok:
 			spots.append(g)
 			radii.append(rad)
+			land.append(rain_warn + Rng.randf() * rain_spread)   # when this boulder lands
 	var r: BoulderRain = RAIN.new()
 	r.spots = spots
 	r.radii = radii
+	r.land_times = land
 	r.radius = rain_radius
 	r.warn_time = rain_warn
 	r.spread = rain_spread
 	r.damage = rain_damage
 	r.caster = self
 	AttackGuard.bind(r, self)
-	var root := get_parent().get_parent()
-	root.add_child(r)
-	var ground := root.get_node_or_null("GroundArt")
-	if ground:
-		root.move_child(r, ground.get_index() + 1)
+	_add_ground_attack(r)
 	_rain_timer = rain_cooldown
 	_walls_timer = maxf(_walls_timer, 6.0)
 	_winding = rain_warn + rain_spread + 0.3     # arms raised while the rocks fall
@@ -243,15 +281,12 @@ func _start_walls() -> void:
 	if cave == null:
 		_walls_timer = walls_cooldown
 		return
-	var ring: PackedVector2Array = cave.get("ring")
-	var global_ring := PackedVector2Array()
-	for p in ring:
-		global_ring.append(cave.to_global(p))
+	var global_ring := _cave_ring(cave)
 	# horizontal stripes, each as thick as the gap between them
 	var t := walls_thickness
 	var cell_w := 24.0       # three 8-unit stretches per chunk: one third the objects
 	var cells: Array[Rect2] = []
-	var y := cave.to_global(rain_rect.position).y + randf() * t
+	var y := cave.to_global(rain_rect.position).y + Rng.randf() * t
 	var y_end := cave.to_global(rain_rect.end).y
 	var x0 := cave.to_global(rain_rect.position).x
 	var x1 := cave.to_global(rain_rect.end).x
@@ -268,18 +303,22 @@ func _start_walls() -> void:
 				cells.append(r)
 			x += cell_w
 		y += t * 2.0
+	# when each stripe erupts: a wave from right to left, with a tiny random stagger
+	var x_max := x0
+	for c in cells:
+		x_max = maxf(x_max, c.end.x)
+	var triggers: Array[float] = []
+	for c in cells:
+		triggers.append(walls_warn + (x_max - c.get_center().x) / walls_speed + Rng.randf() * 0.04)
 	var w: StoneWalls = WALLS.new()
 	w.cells = cells
+	w.trigger_times = triggers
 	w.warn_time = walls_warn
 	w.wave_speed = walls_speed
 	w.damage = walls_damage
 	w.caster = self
 	AttackGuard.bind(w, self)
-	var root := get_parent().get_parent()
-	root.add_child(w)
-	var ground := root.get_node_or_null("GroundArt")
-	if ground:
-		root.move_child(w, ground.get_index() + 1)
+	_add_ground_attack(w)
 	_walls_timer = walls_cooldown
 	_rain_timer = maxf(_rain_timer, 6.0)
 	_winding = walls_warn + (x1 - x0) / walls_speed + 0.3
@@ -289,7 +328,8 @@ func _start_walls() -> void:
 func _start_lunge(dir: Vector2) -> void:
 	_lunge_timer = lunge_cooldown
 	_winding = lunge_warn
-	_lunge_dir = dir
+	lunge_dir = dir
+	facing = dir
 	var s: LungeStrike = STRIKE.new()
 	s.direction = dir
 	s.damage = lunge_damage
@@ -299,14 +339,7 @@ func _start_lunge(dir: Vector2) -> void:
 	s.caster = self
 	s.global_position = global_position + Vector2(0, -8)
 	AttackGuard.bind(s, self)
-	var root := get_parent().get_parent()
-	root.add_child(s)
-	var ground := root.get_node_or_null("GroundArt")
-	if ground == null:
-		ground = root.get_node_or_null("Ground")
-	if ground:
-		root.move_child(s, ground.get_index() + 1)   # painted on the ground, under everyone
-	sprite.flip_h = dir.x > 0.0   # art faces left
+	_add_ground_attack(s)
 
 
 ## Called by the telegraph when it's full: the dash forward.
@@ -315,38 +348,13 @@ func begin_lunge(dir: Vector2) -> void:
 		return
 	_winding = 0.0
 	_lunging = lunge_time
-	_lunge_dir = dir
-	sprite.flip_h = dir.x > 0.0
-
-
-func _animate(move: Vector2) -> void:
-	if _lunging > 0.0:
-		sprite.frame = 3                 # sword thrust
-		sprite.rotation = 0.0
-		return
-	if _winding > 0.0:
-		sprite.frame = 2                 # sword cocked back
-		sprite.rotation = 0.0
-		return
-	if _recover > 0.0:
-		sprite.frame = 3
-		sprite.rotation = 0.0
-		return
-	if move.x != 0.0:
-		sprite.flip_h = move.x > 0.0
-	if move != Vector2.ZERO:
-		sprite.frame = int(_t * 6.0) % 2
-		sprite.rotation = sin(_t * 12.0) * 0.06
-	else:
-		sprite.frame = 0
-		sprite.rotation = 0.0
+	lunge_dir = dir
+	facing = dir
 
 
 func _on_damaged(_amount: float) -> void:
 	if state == State.WANDER:
 		state = State.CHASE
-	sprite.modulate = Color(1.0, 0.45, 0.45)
-	create_tween().tween_property(sprite, "modulate", Color.WHITE, 0.2)
 
 
 func _on_died() -> void:
@@ -354,26 +362,17 @@ func _on_died() -> void:
 	KillCredit.award(stats, level, xp_reward, self, unique_drop, unique_drop_chance)
 	_winding = 0.0
 	_lunging = 0.0
+	_recover = 0.0
 	velocity = Vector2.ZERO
 	shape.set_deferred("disabled", true)
-	Loot.spawn(get_parent(), position, Loot.roll([Loot.entry(drop_item, drop_min, drop_max)]))
-	# collapses into a heap of bones
-	sprite.rotation = 0.0
-	sprite.frame = 0
-	var tw := create_tween()
-	tw.tween_property(sprite, "scale", Vector2(0.5, 0.2), 0.18)
-	tw.tween_interval(0.8)
-	tw.tween_property(self, "modulate:a", 0.0, 0.6)
-	tw.tween_interval(respawn_time)
-	tw.tween_callback(_respawn)
+	Loot.spawn(get_parent(), position, Loot.roll([Loot.entry(drop_item, drop_min, drop_max)]), stats)
+	_respawn_timer = DEATH_ANIM + respawn_time
 
 
 func _respawn() -> void:
 	position = _home
-	sprite.rotation = 0.0
-	sprite.scale = Vector2(0.5, 0.5)
 	stats.refill()
 	shape.disabled = false
 	state = State.WANDER
-	_lunge_timer = randf_range(1.0, 3.0)
-	create_tween().tween_property(self, "modulate:a", 1.0, 0.6)
+	_lunge_timer = Rng.randf_range(1.0, 3.0)
+	respawned.emit()

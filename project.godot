@@ -20,6 +20,7 @@ config/features=PackedStringArray("4.7")
 
 [autoload]
 
+GameClock="*res://scripts/game_clock.gd"
 Sound="*res://scripts/sound.gd"
 
 [display]

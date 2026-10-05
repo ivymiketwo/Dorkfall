@@ -21,12 +21,14 @@ static func roll(killer: Node, item: Item, chance: float) -> void:
 	var world := killer.get_parent()
 	if item.pet_scene and (inv == null or not inv.has_room_for(item)):
 		# Bag full: the pet just comes out and follows you, so it can never be lost.
-		item.mark_account()
-		var pet: Node2D = item.pet_scene.instantiate()
-		pet.item = item
-		pet.position = killer.position + Vector2(10, 2)
-		world.add_child(pet)
-		Pet._save_all(tree)
+		SaveGame.batch(func() -> void:
+			item.mark_account()
+			var pet: Node2D = item.pet_scene.instantiate()
+			pet.item = item
+			pet.set("owner_id", killer.get_instance_id())
+			pet.position = killer.position + Vector2(10, 2)
+			world.add_child(pet)
+			Pet._save_all(tree))
 	elif inv != null and inv.has_room_for(item):
 		inv.add(item, 1)
 	else:

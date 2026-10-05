@@ -17,7 +17,7 @@ var _bar: Node2D         ## the progress bar, drawn above everything
 
 
 func _ready() -> void:
-	set_process(false)
+	set_physics_process(false)
 	_fx = Node2D.new()
 	_fx.draw.connect(_draw_circle)
 	player.add_child.call_deferred(_fx)
@@ -59,19 +59,20 @@ func start() -> void:
 	_t = 0.0
 	_fx.show()
 	_bar.show()
-	set_process(true)
+	set_physics_process(true)
 
 
 func cancel() -> void:
 	if not _active:
 		return
 	_active = false
-	set_process(false)
+	set_physics_process(false)
 	_fx.hide()
 	_bar.hide()
 
 
-func _process(delta: float) -> void:
+## The cast counts on the fixed game tick (a server runs the same).
+func _physics_process(delta: float) -> void:
 	if not player.is_physics_processing():     # a door / fade took over
 		cancel()
 		return

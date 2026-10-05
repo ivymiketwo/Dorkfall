@@ -25,11 +25,11 @@ static func alive(tree: SceneTree) -> Array[Node2D]:
 static func local(tree: SceneTree) -> Node2D:
 	return tree.get_first_node_in_group("player") as Node2D
 
-## Closest player to a point (enemy targeting).
-static func nearest(tree: SceneTree, pos: Vector2) -> Node2D:
+## Closest player to a point (enemy targeting). `alive_only` skips dead players.
+static func nearest(tree: SceneTree, pos: Vector2, alive_only := false) -> Node2D:
 	var best: Node2D = null
 	var best_d := INF
-	for p in all(tree):
+	for p in (alive(tree) if alive_only else all(tree)):
 		var d := p.global_position.distance_squared_to(pos)
 		if d < best_d:
 			best_d = d

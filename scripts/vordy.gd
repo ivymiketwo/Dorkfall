@@ -13,6 +13,8 @@ extends CharacterBody2D
 enum State { WANDER, CHASE, RETURN, DEAD }
 
 @export var display_name := "Vorly"
+## Which quests count this kill. See Quests.kind_of.
+@export var quest_kind := "vordy"
 @export var level := 8
 @export var xp_reward := 400
 
@@ -280,7 +282,7 @@ func _add_ground_attack(node: Node2D) -> void:
 ## Runs `action` after the animation lead-in, unless he died in the meantime.
 func _after_lead(action: Callable, lead := ANIM_LEAD) -> void:
 	if lead > 0.0:
-		await get_tree().create_timer(lead).timeout
+		await get_tree().create_timer(lead, false, true).timeout   # counted in game ticks
 	if state != State.DEAD and is_inside_tree():
 		action.call()
 
@@ -322,7 +324,7 @@ func _start_barrage() -> void:
 
 
 func _barrage_loop() -> void:
-	await get_tree().create_timer(BARRAGE_SIT).timeout
+	await get_tree().create_timer(BARRAGE_SIT, false, true).timeout
 	var shots := int((barrage_time - BARRAGE_SIT - 0.2) / barrage_interval)
 	var turn := 0
 	for i in shots:
@@ -336,7 +338,7 @@ func _barrage_loop() -> void:
 			var target := who[turn % who.size()]
 			turn += 1
 			_fire_small_orb(target)
-		await get_tree().create_timer(barrage_interval).timeout
+		await get_tree().create_timer(barrage_interval, false, true).timeout
 
 
 func _fire_small_orb(target: Node2D) -> void:
@@ -444,7 +446,7 @@ func _drop_loot() -> void:
 		Loot.entry(bonus_drop, bonus_min, bonus_max, bonus_drop_chance, Vector2(-14, -6), 10.0),
 		Loot.entry(drop_item, drop_min, drop_max, 1.0, Vector2(-8, 8), 6.0),
 	])
-	Loot.spawn(get_parent(), position, drops)
+	Loot.spawn(get_parent(), position, drops, stats)
 
 
 func _respawn() -> void:

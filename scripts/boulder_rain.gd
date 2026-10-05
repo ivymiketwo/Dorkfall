@@ -12,12 +12,16 @@ const FALL_TIME := 0.42
 const FALL_HEIGHT := 120.0
 
 var spots: Array[Vector2] = []   ## global positions
+## When each boulder lands (seconds). Rolled by the caster through Rng (the rules); if left
+## empty they are rolled here.
+var land_times: Array[float] = []
 var radii: Array[float] = []     ## per-spot radius (falls back to `radius`)
 var caster: Node
 var _t := 0.0
 var _land: Array[float] = []
 var _shape: Array[PackedVector2Array] = []
 var _done: Array[bool] = []
+var _timeline: AttackTimeline   ## when each boulder lands (rules); drawing reads _t
 var _debris: Array = []          ## [pos, age, seed]
 var _fx: Node2D
 
@@ -31,11 +35,13 @@ func _ready() -> void:
 	_fx.z_index = 6
 	_fx.draw.connect(_draw_fx)
 	add_child(_fx)
-	var rng := RandomNumberGenerator.new()
+	var rng := RandomNumberGenerator.new()   # only for the rock shapes (looks)
 	rng.randomize()
+	_timeline = AttackTimeline.new()
 	for i in spots.size():
-		_land.append(warn_time + rng.randf() * spread)
+		_land.append(land_times[i] if i < land_times.size() else warn_time + Rng.randf() * spread)
 		_done.append(false)
+		_timeline.at(_land[i], _impact.bind(i)).lasts(_land[i] + 0.45)   # debris settles
 		var pts := PackedVector2Array()
 		var n := 9
 		for k in n:
@@ -44,29 +50,26 @@ func _ready() -> void:
 		_shape.append(pts)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if AttackGuard.owner_dead(self):
 		_cancel()
 		return
-	_t += delta
-	var alive := false
-	for i in spots.size():
-		if not _done[i]:
-			alive = true
-			if _t >= _land[i]:
-				_done[i] = true
-				_impact(i)
+	var over := _timeline.tick(delta)
+	_t = _timeline.t
+	if over:
+		queue_free()
+
+
+func _process(delta: float) -> void:
 	for d in _debris:
 		d[1] += delta
 	_debris = _debris.filter(func(d): return d[1] < 0.45)
-	if not alive and _debris.is_empty():
-		queue_free()
-		return
 	queue_redraw()
 	_fx.queue_redraw()
 
 
 func _impact(i: int) -> void:
+	_done[i] = true
 	_debris.append([spots[i], 0.0, i])
 	for player in Players.all(get_tree()):
 		var p: Vector2 = player.global_position + AttackRules.CHEST - spots[i]
@@ -129,5 +132,6 @@ func _draw_fx() -> void:
 ## Called if the caster dies: everything vanishes, no damage.
 func _cancel() -> void:
 	set_process(false)
+	set_physics_process(false)
 	hide()
 	queue_free()

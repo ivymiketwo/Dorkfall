@@ -32,10 +32,14 @@ static func roll(entries: Array) -> Array:
 	return out
 
 
-static func spawn(parent: Node, at: Vector2, drops: Array) -> void:
+## `killed` (the dead monster's Stats) decides who owns the piles for a while (see LootClaim).
+static func spawn(parent: Node, at: Vector2, drops: Array, killed: Stats = null) -> void:
+	var owner := LootClaim.owner_for(killed)
 	for d: Dictionary in drops:
 		var p: Pickup = PICKUP.instantiate()
 		p.monster_loot = true
+		p.owner_id = owner
+		p.public_at = GameClock.now + LootClaim.OWNER_LOCK
 		p.item = d["item"]
 		p.count = d["count"]
 		p.position = at + d["offset"]

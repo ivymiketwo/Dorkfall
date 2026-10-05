@@ -79,28 +79,41 @@ func _process(_delta: float) -> void:
 		queue_redraw()
 
 
-func interact(player: Node2D) -> void:
+## The rules of looting, with no visuals (a server runs this per request): only the owner,
+## only from up close. Moves what fits into their bag and saves bag and stone in ONE write,
+## so a crash can never leave an item in both. Returns {"taken_any": bool, "empty": bool, "reason": String}.
+func take_into(player: Node2D) -> Dictionary:
 	var inv := player.get_node_or_null("Inventory") as Inventory
-	if inv == null:
-		return
-	var taken_any := false
-	for e: Dictionary in loot:
-		var left := inv.add(e.item, e.count)
-		if left != e.count:
-			taken_any = true
-		e.count = left
-	loot = loot.filter(func(e: Dictionary) -> bool: return e.count > 0)
+	if inv == null or is_queued_for_deletion():
+		return {"taken_any": false, "empty": false, "reason": "gone"}
+	if global_position.distance_to(player.global_position) > interact_range + 4.0:
+		return {"taken_any": false, "empty": false, "reason": "too_far"}
+	if str(player.get("display_name")) != owner_name:
+		return {"taken_any": false, "empty": false, "reason": "not_yours"}
+	return SaveGame.batch(func() -> Dictionary:
+		var taken_any := false
+		for e: Dictionary in loot:
+			var left := inv.add(e.item, e.count)
+			if left != e.count:
+				taken_any = true
+			e.count = left
+		loot = loot.filter(func(e: Dictionary) -> bool: return e.count > 0)
+		Gravestone.save_all(get_tree(), self if loot.is_empty() else null)
+		return {"taken_any": taken_any, "empty": loot.is_empty(), "reason": "" if loot.is_empty() else "full"})
+
+
+func interact(player: Node2D) -> void:
+	var r := take_into(player)
 	var at := player.position + Vector2(0, -26)
-	if loot.is_empty():
+	if r["empty"]:
 		FloatingText.spawn(get_parent(), at, "LOOTED", Color("f0d040"))
-		Gravestone.save_all(get_tree(), self)
 		queue_free()
-	elif taken_any:
+	elif r["reason"] == "not_yours":
+		FloatingText.spawn(get_parent(), at, "NOT YOUR GRAVE", Color("e03c3c"))
+	elif r["reason"] == "full":
 		FloatingText.spawn(get_parent(), at, "INVENTORY FULL", Color("e03c3c"))
-		Gravestone.save_all(get_tree())
-		queue_redraw()
-	else:
-		FloatingText.spawn(get_parent(), at, "INVENTORY FULL", Color("e03c3c"))
+		if r["taken_any"]:
+			queue_redraw()
 
 
 func _draw() -> void:

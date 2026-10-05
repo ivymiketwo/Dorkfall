@@ -109,6 +109,9 @@ static func find(id: String) -> Dictionary:
 
 
 static func kind_of(mob: Node) -> String:
+	var kind = mob.get("quest_kind")
+	if kind is String:
+		return kind
 	var path: String = mob.get_script().resource_path if mob.get_script() else ""
 	if path.ends_with("mangyang.gd"):
 		return "mangyang"

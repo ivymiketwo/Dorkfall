@@ -18,6 +18,7 @@ const FILL := Color(0.35, 0.85, 0.20)
 
 var _t := 0.0
 var _gust := false
+var _timeline: AttackTimeline   ## when the gust sweeps (rules); drawing reads _t
 var _hit := {}
 var _fx: Node2D
 var _streaks: Array = []
@@ -41,6 +42,7 @@ func _ready() -> void:
 	for i in 70:
 		_bits.append({"a": randf_range(-half, half), "d": randf_range(0.0, 0.3),
 				"s": randf_range(1.0, 2.2), "w": randf_range(0.0, TAU), "spd": randf_range(0.7, 1.2)})
+	_timeline = AttackTimeline.new().during(warn_time, warn_time + sweep_time + linger_time, _sweep)
 
 
 func _half() -> float:
@@ -51,24 +53,31 @@ func _front() -> float:
 	return length * clampf((_t - warn_time) / sweep_time, 0.0, 1.0)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if AttackGuard.owner_dead(self):
 		_cancel()
 		return
-	_t += delta
-	if _t >= warn_time:
-		_gust = true
-		var front := _front()
-		for player in Players.all(get_tree()):
-			if _hit.has(player):
-				continue
-			var lp := to_local(player.global_position)
-			if AttackRules.cone_hits(lp, front, length, angle, _half()):
-				_hit[player] = true
-				AttackRules.deal(player, damage, AttackGuard.caster_of(self), global_position)
-	if _t >= warn_time + sweep_time + linger_time:
+	var over := _timeline.tick(delta)
+	_t = _timeline.t
+	if over:
 		queue_free()
-		return
+
+
+## Every tick from the gust until it dies out: the leading edge sweeps outwards and hits
+## each player once.
+func _sweep(_progress: float) -> void:
+	_gust = true
+	var front := length * clampf((_timeline.t - warn_time) / sweep_time, 0.0, 1.0)
+	for player in Players.all(get_tree()):
+		if _hit.has(player):
+			continue
+		var lp := to_local(player.global_position)
+		if AttackRules.cone_hits(lp, front, length, angle, _half()):
+			_hit[player] = true
+			AttackRules.deal(player, damage, AttackGuard.caster_of(self), global_position)
+
+
+func _process(_delta: float) -> void:
 	queue_redraw()
 	_fx.queue_redraw()
 
@@ -177,5 +186,6 @@ func _draw_fx() -> void:
 ## Called if whoever cast this dies: gone instantly, no damage.
 func _cancel() -> void:
 	set_process(false)
+	set_physics_process(false)
 	hide()
 	queue_free()

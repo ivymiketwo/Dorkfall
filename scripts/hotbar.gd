@@ -21,7 +21,8 @@ var selected := 0
 var active_bar := 0
 var casting_slot := -1
 var cast_elapsed := 0.0
-var cooldowns: Array[float] = []
+## Per slot: GameClock time the slot can be cast again (see cooldown_left).
+var ready_at: Array[float] = []
 var fail_flash: Array[float] = []
 
 @onready var caster: Node2D = get_parent()
@@ -35,7 +36,7 @@ func _ready() -> void:
 	slots.resize(SLOT_COUNT)
 	item_slots.resize(SLOT_COUNT)
 	for i in SLOT_COUNT:
-		cooldowns.append(0.0)
+		ready_at.append(0.0)
 		fail_flash.append(0.0)
 	for ab in slots:
 		if ab != null and not known.has(ab):
@@ -54,7 +55,7 @@ func assign_ability(i: int, ab: Ability) -> void:
 	_cancel_cast()
 	slots[i] = ab
 	item_slots[i] = null
-	cooldowns[i] = 0.0
+	ready_at[i] = 0.0
 	_layout_changed()
 
 
@@ -62,7 +63,7 @@ func assign_item(i: int, item: Item) -> void:
 	_cancel_cast()
 	slots[i] = null
 	item_slots[i] = item
-	cooldowns[i] = 0.0
+	ready_at[i] = 0.0
 	_layout_changed()
 
 
@@ -70,7 +71,7 @@ func clear_slot(i: int) -> void:
 	_cancel_cast()
 	slots[i] = null
 	item_slots[i] = null
-	cooldowns[i] = 0.0
+	ready_at[i] = 0.0
 	_layout_changed()
 
 
@@ -80,7 +81,7 @@ func swap_slots(a: int, b: int) -> void:
 	_cancel_cast()
 	var t_ab := slots[a]; slots[a] = slots[b]; slots[b] = t_ab
 	var t_it := item_slots[a]; item_slots[a] = item_slots[b]; item_slots[b] = t_it
-	var t_cd := cooldowns[a]; cooldowns[a] = cooldowns[b]; cooldowns[b] = t_cd
+	var t_cd := ready_at[a]; ready_at[a] = ready_at[b]; ready_at[b] = t_cd
 	_layout_changed()
 
 
@@ -190,8 +191,8 @@ func try_cast(i: int) -> void:
 	var ab := slots[i]
 	if ab == null or casting_slot != -1:
 		return
-	if cooldowns[i] > 0.0 or not _can_afford(ab):
-		if cooldowns[i] <= 0.0 and stats.mana < ab.mana_cost:
+	if cooldown_left(i) > 0.0 or not _can_afford(ab):
+		if cooldown_left(i) <= 0.0 and stats.mana < ab.mana_cost:
 			stats.warn_out_of_mana()
 		_fail(i)
 		return
@@ -219,24 +220,32 @@ func cast_progress() -> float:
 	return clampf(cast_elapsed / slots[casting_slot].cast_time, 0.0, 1.0)
 
 
-func _process(delta: float) -> void:
-	var dirty := false
-	if inventory and not inventory.item_cd.is_empty():
-		dirty = true
-	for i in SLOT_COUNT:
-		if cooldowns[i] > 0.0:
-			cooldowns[i] = maxf(cooldowns[i] - delta, 0.0)
-			dirty = true
-		if fail_flash[i] > 0.0:
-			fail_flash[i] = maxf(fail_flash[i] - delta, 0.0)
-			dirty = true
+## Seconds until slot `i` can be cast again (0 = ready).
+func cooldown_left(i: int) -> float:
+	return GameClock.left(ready_at[i])
+
+
+## The cast itself runs on the fixed game tick (a server would run the same).
+func _physics_process(delta: float) -> void:
 	if casting_slot != -1:
 		cast_elapsed += delta
-		dirty = true
 		if cast_elapsed >= slots[casting_slot].cast_time:
 			var i := casting_slot
 			casting_slot = -1
 			_finish(i)
+
+
+## Only visuals here: the cast orb, the red "can't" flash, and redrawing the bar.
+func _process(delta: float) -> void:
+	var dirty := casting_slot != -1
+	if inventory and not inventory.item_cd.is_empty():
+		dirty = true
+	for i in SLOT_COUNT:
+		if ready_at[i] > GameClock.now:
+			dirty = true
+		if fail_flash[i] > 0.0:
+			fail_flash[i] = maxf(fail_flash[i] - delta, 0.0)
+			dirty = true
 	_update_cast_orb()
 	if dirty:
 		changed.emit()
@@ -288,7 +297,7 @@ func _finish(i: int) -> void:
 		stats.spend_mana(ab.mana_cost)
 	if ab.stamina_cost > 0.0:
 		stats.spend_stamina(ab.stamina_cost)
-	cooldowns[i] = ab.cooldown
+	ready_at[i] = GameClock.now + ab.cooldown
 	changed.emit()
 
 

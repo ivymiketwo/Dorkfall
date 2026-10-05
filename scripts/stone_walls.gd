@@ -13,6 +13,9 @@ const RISE := 0.14
 const SINK := 0.35
 
 var cells: Array[Rect2] = []          ## global rectangles, one per stretch of stripe
+## When each stretch erupts (seconds). Worked out by the caster through Rng (the rules); if
+## left empty they are worked out here.
+var trigger_times: Array[float] = []
 var caster: Node
 var _t := 0.0
 var _trigger: Array[float] = []
@@ -21,6 +24,7 @@ var _done: Array[bool] = []
 var _x_max := -INF
 var _end := 0.0
 var _fx: Node2D
+var _timeline: AttackTimeline   ## when each stretch erupts (rules); drawing reads _t
 
 
 func _ready() -> void:
@@ -28,12 +32,15 @@ func _ready() -> void:
 	_fx.z_index = 5
 	_fx.draw.connect(_draw_fx)
 	add_child(_fx)
-	var rng := RandomNumberGenerator.new()
+	var rng := RandomNumberGenerator.new()   # only for the spike shapes (looks)
 	rng.randomize()
 	for c in cells:
 		_x_max = maxf(_x_max, c.end.x)
+	_timeline = AttackTimeline.new()
 	for c in cells:
-		_trigger.append(warn_time + (_x_max - c.get_center().x) / wave_speed + rng.randf() * 0.04)
+		var i := _trigger.size()
+		_trigger.append(trigger_times[i] if i < trigger_times.size() else warn_time + (_x_max - c.get_center().x) / wave_speed + Rng.randf() * 0.04)
+		_timeline.at(_trigger[i], _erupt.bind(i))
 		_done.append(false)
 		var sp := []
 		var w := c.size.x
@@ -43,22 +50,27 @@ func _ready() -> void:
 			sp.append([w * (float(k) + 0.5) / float(n) + rng.randf_range(-1.0, 1.0), rng.randf_range(12.0, 20.0) + 10.0 * mid, rng.randf_range(2.8, 4.0)])
 		_spikes.append(sp)
 		_end = maxf(_end, _trigger[-1] + hold_time + SINK)
+	_timeline.lasts(_end)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if AttackGuard.owner_dead(self):
 		_cancel()
 		return
-	_t += delta
-	for i in cells.size():
-		if not _done[i] and _t >= _trigger[i]:
-			_done[i] = true
-			_hit(cells[i])
-	if _t >= _end:
+	var over := _timeline.tick(delta)
+	_t = _timeline.t
+	if over:
 		queue_free()
-		return
+
+
+func _process(_delta: float) -> void:
 	queue_redraw()
 	_fx.queue_redraw()
+
+
+func _erupt(i: int) -> void:
+	_done[i] = true
+	_hit(cells[i])
 
 
 func _hit(c: Rect2) -> void:
@@ -121,5 +133,6 @@ func _tri(a: Vector2, b: Vector2, c: Vector2, col: Color) -> void:
 ## Called if the caster dies: everything vanishes, no damage.
 func _cancel() -> void:
 	set_process(false)
+	set_physics_process(false)
 	hide()
 	queue_free()
