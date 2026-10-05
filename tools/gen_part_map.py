@@ -13,6 +13,9 @@ piece (top-left, top-right, bottom-left, bottom-right, as seen on screen in that
     legs     80, 120, 255   150, 100, 255    40,  60, 170    90,  50, 170
     feet    255, 230,  60   255, 255, 170   190, 170,  30   190, 190, 110
 
+Outlines are left unpainted (they stay outlines in every outfit): the gap between an arm and the
+torso, and the edge of the body. Only a dark line INSIDE one piece gets that piece's colour.
+
 The draft is automatic and imperfect. Fix it by hand (any paint program, pencil tool, no
 smoothing): paint each pixel with the colour of the piece and quarter it should get. Gear is then
 copied quarter by quarter: whatever is in the chest's top-left quarter of the standing frame
@@ -114,6 +117,35 @@ def label_frame(target, stand, stand_lab, dx, dy, s, anchor, facing):
     return lab
 
 
+def drop_outlines(lab, img):
+    """Outline pixels between pieces (the gap between an arm and the torso) and along the body's
+    edge are left out of the map, so they stay outlines. A dark line INSIDE one piece (a muscle
+    line across the chest) keeps that piece, so gear paints over it."""
+    dark = (img[..., 3] > 0) & (lum(img) < DARK)
+    out = lab.copy()
+    out[dark] = -1
+    for y in range(CELL):
+        for x in range(CELL):
+            if not dark[y, x]:
+                continue
+            for d1, d2 in (((0, -1), (0, 1)), ((-1, 0), (1, 0))):
+                found = []
+                for dy, dx in (d1, d2):
+                    hit = -1
+                    for step in range(1, 4):
+                        ny, nx = y + dy * step, x + dx * step
+                        if not (0 <= ny < CELL and 0 <= nx < CELL) or img[ny, nx, 3] == 0:
+                            break                       # reached the outside: an edge outline
+                        if not dark[ny, nx]:
+                            hit = lab[ny, nx]
+                            break
+                    found.append(hit)
+                if found[0] >= 0 and found[0] == found[1]:
+                    out[y, x] = found[0]
+                    break
+    return out
+
+
 def paint(lab):
     out = np.zeros((CELL, CELL, 4), dtype=np.uint8)
     for pi, p in enumerate(PARTS):
@@ -163,7 +195,7 @@ def main():
                 else:
                     _, dx, dy, s = fit(stand, fit_mask, target, anchor)
                     lab = label_frame(target, stand, slab, dx, dy, s, anchor, facing)
-                out.paste(Image.fromarray(paint(lab)), (col * CELL, row * CELL))
+                out.paste(Image.fromarray(paint(drop_outlines(lab, target))), (col * CELL, row * CELL))
     out.save(OUT)
     legend()
     print("wrote", OUT)
