@@ -88,7 +88,12 @@ func _refresh() -> void:
 			s.item_scale = it.hold_scale if it != null else 1.0
 			s.grip_extra = it.hold_grip_offset if it != null else 0.0
 			s._crop = null                # re-crop with this style's grip
-		s.visible = slot == "weapon" and it != null and it.worn_texture != null   # only held weapons for now; armour needs 48x48 art
+		if slot == "weapon":
+			s.visible = it != null and it.worn_texture != null
+		else:
+			# worn gear shows when its art is a full frame-by-frame sheet laid out like the
+			# player's (made with tools/gen_worn_layer.py); older single pictures stay hidden
+			s.visible = it != null and it.worn_texture != null and it.worn_texture.get_size() == base.texture.get_size()
 	_apply_stats()
 	changed.emit()
 

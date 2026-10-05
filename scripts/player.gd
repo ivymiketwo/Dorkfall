@@ -32,7 +32,7 @@ const ROBE_JUMP_FRAMES := [7, 7, 8, 8]   # per facing, in the robed jump
 const COINS := preload("res://items/coins.tres")
 const TEST_GEAR := [preload("res://items/iron_sword.tres"), preload("res://items/wooden_shield.tres"),
 		preload("res://items/iron_helm.tres"), preload("res://items/wizard_hat.tres"),
-		preload("res://items/leather_armor.tres")]
+		preload("res://items/leather_armor.tres"), preload("res://items/iron_chestplate.tres")]
 
 ## What the player is asking for right now. Only `_gather_input` reads the keyboard and mouse;
 ## everything else (movement, casting, melee, guarding) uses these values, so a server can
