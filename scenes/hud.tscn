@@ -16,7 +16,7 @@
 [ext_resource type="Script" path="res://scripts/chat_log_ui.gd" id="10_chat"]
 [ext_resource type="Script" path="res://scripts/stats_ui.gd" id="11_stats"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" groups=["ui_layer"]]
 layer = 2
 scale = Vector2(2, 2)
 

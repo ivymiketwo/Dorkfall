@@ -43,6 +43,10 @@ var control_locked := false
 var input_sprint := false
 var input_guard := false
 var aim_world := Vector2.ZERO      ## where in the world the player is aiming
+## Left / right mouse held down, counting only presses that started in the world (not on a
+## menu, the bag or the hotbar): holding to fire the beam or raise the shield.
+var input_fire_held := false
+var _rmb_world := false
 
 var facing := Facing.DOWN
 var _anim_time := 0.0
@@ -86,7 +90,7 @@ func _ready() -> void:
 func _gather_input() -> void:
 	input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	input_sprint = Input.is_action_pressed("sprint")
-	input_guard = Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) or Input.is_physical_key_pressed(KEY_Q)
+	input_guard = _rmb_world or Input.is_physical_key_pressed(KEY_Q)
 	if ChatLog.typing:          # typing a message: the keys are for the chat
 		input_dir = Vector2.ZERO
 		input_sprint = false
@@ -104,6 +108,14 @@ func _process(_delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		aim_world = get_global_mouse_position()
+	# Holding a mouse button only counts if the press started in the world, not on a menu,
+	# the bag or the hotbar (those mark their clicks handled before this runs, or sit under the mouse).
+	if event is InputEventMouseButton and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
+		var in_world: bool = event.pressed and get_viewport().gui_get_hovered_control() == null
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			input_fire_held = in_world
+		else:
+			_rmb_world = in_world
 
 
 func _physics_process(delta: float) -> void:

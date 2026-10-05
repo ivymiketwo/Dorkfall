@@ -5,11 +5,14 @@ extends Control
 const COLS := 4
 const ROWS := 7
 const SLOT := 10
-const ICON := 8     # icons come from items_small.png (8x8 frames)
+const ICON := 8     # icon box in UI units: 32 real pixels at 1280x720 (the HUD is drawn at window resolution)
 const GAP := 0
 const PAD := 3
 const TOP := 10          ## top margin: room for the close button above the slots
-const ITEM_ICONS := preload("res://art/items_small.png")
+const ITEM_ICONS := preload("res://art/items_small.png")   # classic 8x8 icons
+const ITEM_SPRITES := preload("res://art/items.png")        # full 32x32 sprites
+## true: full 32px item sprites. false: the old tiny 8px icons (flip back if the new ones look off).
+const DETAILED_ICONS := true
 
 const PANEL_BG := Color("3b3226")
 const PANEL_BORDER := Color("1a140e")
@@ -166,8 +169,7 @@ func _draw() -> void:
 		var item := inventory.items[i]
 		if item == null or (_dragging and i == _drag_from):
 			continue
-		draw_texture_rect_region(ITEM_ICONS, Rect2(p + Vector2.ONE, Vector2(ICON, ICON)),
-				Rect2(item.frame_for(inventory.counts[i]) * ICON, 0, ICON, ICON))
+		_draw_icon(item, inventory.counts[i], Rect2(p + Vector2.ONE, Vector2(ICON, ICON)))
 	# quantities drawn last so they can spill over neighbouring slots
 	for i in Inventory.SLOT_COUNT:
 		if inventory.items[i] != null and not (_dragging and i == _drag_from):
@@ -176,8 +178,7 @@ func _draw() -> void:
 	if _drag_from != -1 and _dragging:
 		var item := inventory.items[_drag_from]
 		if item:
-			draw_texture_rect_region(ITEM_ICONS, Rect2(_mouse - Vector2(4, 4), Vector2(ICON, ICON)),
-					Rect2(item.frame_for(inventory.counts[_drag_from]) * ICON, 0, ICON, ICON))
+			_draw_icon(item, inventory.counts[_drag_from], Rect2(_mouse - Vector2(4, 4), Vector2(ICON, ICON)))
 	# tooltip
 	elif _hover != -1 and inventory.items[_hover] != null:
 		var item := inventory.items[_hover]
@@ -212,3 +213,12 @@ func _draw_count(p: Vector2, item: Item, count: int) -> void:
 
 func close_ui() -> void:
 	visible = false
+
+
+## One item icon: the full sprite, or the old tiny icon (see DETAILED_ICONS).
+func _draw_icon(item: Item, count: int, r: Rect2) -> void:
+	var f := item.frame_for(count)
+	if DETAILED_ICONS:
+		draw_texture_rect_region(ITEM_SPRITES, r, Rect2(f * 32, 0, 32, 32))
+	else:
+		draw_texture_rect_region(ITEM_ICONS, r, Rect2(f * 8, 0, 8, 8))

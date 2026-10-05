@@ -23,7 +23,7 @@ var weapon: Item:
 
 func _process(_delta: float) -> void:
 	# Holding left click keeps firing a staff's beam (swings still need a click each).
-	if GameClock.passed(_ready_at) and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	if GameClock.passed(_ready_at) and caster.get("input_fire_held"):
 		var w := weapon
 		if w != null and not w.fishing_rod and w.basic_attack != null and w.basic_attack.kind == Ability.Kind.BEAM and not _ui_blocking():
 			attack()

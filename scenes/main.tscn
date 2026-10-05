@@ -5452,7 +5452,7 @@ kind = "fence_pillar"
 [node name="HUD" parent="." unique_id=1493711357 instance=ExtResource("5_hud")]
 transform = Transform2D(2, 0, 0, 2, 0, 0)
 
-[node name="MapUI" type="CanvasLayer" parent="." unique_id=1322515819]
+[node name="MapUI" type="CanvasLayer" parent="." unique_id=1322515819 groups=["ui_layer"]]
 script = ExtResource("300_map")
 
 [node name="ColorGrade" type="CanvasLayer" parent="." unique_id=718034972]

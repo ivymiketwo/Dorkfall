@@ -105,6 +105,7 @@ func _set_camera_limits(r: Rect2i) -> void:
 func _make_fade_layer() -> void:
 	var layer := CanvasLayer.new()
 	layer.layer = 100
+	layer.add_to_group("ui_layer")   # drawn at full window resolution (see game.gd)
 	add_child(layer)
 	_fade.color = Color(0, 0, 0, 0)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE

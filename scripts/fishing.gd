@@ -51,6 +51,7 @@ func _ready() -> void:
 	global_position = Vector2.ZERO
 	z_index = 4
 	var layer := CanvasLayer.new()
+	layer.add_to_group("ui_layer")   # drawn at full window resolution (see game.gd)
 	layer.layer = 60
 	add_child(layer)
 	_bar = FishingBar.new()
