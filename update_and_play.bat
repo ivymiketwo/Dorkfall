@@ -26,6 +26,9 @@ if errorlevel 1 (
   git checkout -- project.godot
   echo Godot had changed project.godot - saved a copy as project.godot.local-backup
 )
+rem Godot also rewrites its .import files (notes about each picture/sound) on its own.
+rem They are generated, never edited by hand, so take the shared versions.
+git checkout -- "*.import" 2>nul
 git pull --ff-only
 if errorlevel 1 (
   echo.
