@@ -15,7 +15,7 @@ const MIN_CAST := 22.0
 const BITE_MIN := 1.0
 const BITE_MAX := 4.0
 const SNAP_AWAY := 190.0         ## walk this far from the bobber and the line comes in
-const WATER_TILE := Vector2i(3, 0)
+const WATER_TAG := "water"       ## TileSet custom data layer that marks fishable tiles
 const LINE_COL := Color(0.93, 0.95, 1.0, 0.85)
 const ROD_COLS := [Color("c49650"), Color("96aabe"), Color("ffc83c")]
 const ROD_DARK := Color("3a2410")
@@ -126,15 +126,22 @@ func _cast() -> void:
 	state = S.FLYING
 
 
+## True if any tile layer in the world has a tile tagged "water" (TileSet custom data) at p.
+## Tag a tile in the TileSet editor (Custom Data > water) and fishing works on it, on any map.
+## The tag is separate from collision, so walkable shallow water can be fishable too.
 func _is_water(p: Vector2) -> bool:
 	var world := get_tree().get_first_node_in_group("world")
 	if world == null:
 		return false
-	var ground := world.get("ground") as TileMapLayer
-	if ground == null:
-		return false
-	var cell := ground.local_to_map(ground.to_local(p))
-	return ground.get_cell_atlas_coords(cell) == WATER_TILE
+	for layer: TileMapLayer in world.find_children("*", "TileMapLayer", true, false):
+		if not layer.is_visible_in_tree() or layer.tile_set == null:
+			continue
+		if layer.tile_set.get_custom_data_layer_by_name(WATER_TAG) < 0:
+			continue
+		var data := layer.get_cell_tile_data(layer.local_to_map(layer.to_local(p)))
+		if data != null and data.get_custom_data(WATER_TAG) == true:
+			return true
+	return false
 
 
 func _process(delta: float) -> void:
