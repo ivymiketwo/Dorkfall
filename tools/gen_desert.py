@@ -1,15 +1,19 @@
 """Paints the eastern desert onto the ground art, updates the minimap, and draws the cactus art.
 
 Run from the project root:   python3 tools/gen_desert.py
-Needs Pillow and numpy. Only GRASS pixels inside the desert are repainted (roads, the border
-wall and anything else stay as they are), so running it again changes nothing.
+Needs Pillow and numpy. Grass and the flower speckles in it are repainted inside the desert;
+roads and the stone border wall keep their own colours.
 
-World layout (see scenes/main.tscn, GroundArt): the two east chunks ground_1_0.png (top) and
-ground_1_1.png (bottom) cover world x 720..3120, y -992..1696, at 2 art pixels per world pixel.
+The ground is stored as squares (see tools/ground_tiles.py). This works on the east half of the
+painting: world x 720..3120, y -992..1696, at 2 art pixels per world pixel.
 """
 import math
+import sys
 import numpy as np
 from PIL import Image, ImageDraw
+
+sys.path.insert(0, "tools")
+from ground_tiles import assemble, split   # noqa: E402
 
 SEED = 7
 CHUNK_X = 720          # world x of the east chunks' left edge
@@ -54,10 +58,10 @@ def replaceable(px, world_y):
 
 
 def paint():
-    top = Image.open("art/ground_1_0.png").convert("RGB")
-    bot = Image.open("art/ground_1_1.png").convert("RGB")
-    w, h = top.width, top.height + bot.height
-    art = np.concatenate([np.asarray(top), np.asarray(bot)], axis=0).copy()
+    whole = assemble()
+    east_x = (CHUNK_X - (-1680)) * 2               # art x where the east half starts
+    art = np.asarray(whole)[:, east_x:].copy()
+    h, w = art.shape[:2]
 
     ys = np.arange(h)[:, None]
     xs = np.arange(w)[None, :]
@@ -101,8 +105,8 @@ def paint():
         acc += p
 
     art[mask] = sand[mask]
-    Image.fromarray(art[: top.height]).save("art/ground_1_0.png")
-    Image.fromarray(art[top.height:]).save("art/ground_1_1.png")
+    whole.paste(Image.fromarray(art), (east_x, 0))
+    split(whole)
     return edge
 
 

@@ -54,6 +54,20 @@ changes in one place, and visuals are separate from logic.
   `player.reconcile(seq, server_pos)` snaps to the server's answer and replays the later ticks.
 - **Randomness**: monster wandering, skeleton boss attack layouts, fish rolls and bite timing go through `Rng`.
 
+- **Ground streaming**: the painted ground is cut into 512 px squares (`art/ground/`, made with
+  `tools/ground_tiles.py`); `GroundStream` keeps the 3x3 around the camera loaded (unloads past 5x5)
+  and loads on-screen squares at once, so there are never holes. Ground memory no longer grows with
+  the map. To repaint: `assemble()` the squares, edit, `split()` (see `tools/gen_desert.py`).
+- **Sleeping regions**: `SleepRegions` splits the world into 512 px regions; monsters more than one
+  region from every player are paused (brain, regen, look). `slept(seconds)` lets respawn timers
+  catch up when they wake.
+
+## Network numbers to use (decided, for when we build it)
+- Send monsters / players / loot within ~400 px of a player; remove them past ~500 px.
+- The client predicts its own movement for at most ~1 s without hearing from the server, then
+  stops and shows "Connection lost...". Grow the 400 px if anything faster than the gust hop
+  (150 px/s) is added.
+
 ## Still to do (needs the actual server)
 1. **Networking itself**: sending player commands up and state down. The pieces above are the
    hooks for it (commands, numbered movement ticks, rule functions that return results).

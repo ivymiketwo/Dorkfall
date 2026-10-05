@@ -376,3 +376,9 @@ func _respawn() -> void:
 	state = State.WANDER
 	_lunge_timer = Rng.randf_range(1.0, 3.0)
 	respawned.emit()
+
+## Called by SleepRegions when this monster's region wakes up after `seconds` asleep:
+## time still passed, so a respawn countdown catches up.
+func slept(seconds: float) -> void:
+	if state == State.DEAD:
+		_respawn_timer -= seconds

@@ -37,10 +37,8 @@
 [ext_resource type="PackedScene" path="res://scenes/bulletin_board.tscn" id="302_board"]
 [ext_resource type="PackedScene" path="res://scenes/luck.tscn" id="303_luck"]
 [ext_resource type="Texture2D" path="res://art/dock.png" id="dock_tex"]
-[ext_resource type="Texture2D" uid="uid://cmp5huvtgspo1" path="res://art/ground_0_0.png" id="gnd_00"]
-[ext_resource type="Texture2D" uid="uid://mba80rlwcnv8" path="res://art/ground_0_1.png" id="gnd_01"]
-[ext_resource type="Texture2D" uid="uid://c7ai5wc78634m" path="res://art/ground_1_0.png" id="gnd_10"]
-[ext_resource type="Texture2D" uid="uid://df0m2h3m66vux" path="res://art/ground_1_1.png" id="gnd_11"]
+[ext_resource type="Script" path="res://scripts/ground_stream.gd" id="gstream"]
+[ext_resource type="Script" path="res://scripts/sleep_regions.gd" id="sleepreg"]
 [ext_resource type="Shader" uid="uid://8fuw25th78wd" path="res://shaders/water_foam.gdshader" id="water_shd"]
 [ext_resource type="Shader" uid="uid://dvk0flnldv084" path="res://shaders/wheat_wind.gdshader" id="wheat_shd"]
 [ext_resource type="Texture2D" uid="uid://dntgaj6rccrmh" path="res://art/wheat_field.png" id="wheat_tex"]
@@ -76,32 +74,8 @@ tile_set = ExtResource("2_tiles")
 
 [node name="GroundArt" type="Node2D" parent="." unique_id=1531297528]
 
-[node name="Chunk00" type="Sprite2D" parent="GroundArt" unique_id=917515928]
-position = Vector2(-1680, -992)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("gnd_00")
-centered = false
-metadata/_edit_lock_ = true
-
-[node name="Chunk10" type="Sprite2D" parent="GroundArt" unique_id=384064992]
-position = Vector2(720, -992)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("gnd_10")
-centered = false
-metadata/_edit_lock_ = true
-
-[node name="Chunk01" type="Sprite2D" parent="GroundArt" unique_id=1673740331]
-position = Vector2(-1680, 352)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("gnd_01")
-centered = false
-metadata/_edit_lock_ = true
-
-[node name="Chunk11" type="Sprite2D" parent="GroundArt" unique_id=1814454665]
-position = Vector2(720, 352)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("gnd_11")
-centered = false
+[node name="Ground" type="Node2D" parent="GroundArt"]
+script = ExtResource("gstream")
 metadata/_edit_lock_ = true
 
 [node name="Ocean" type="Sprite2D" parent="GroundArt"]
@@ -5469,3 +5443,6 @@ metadata/_edit_lock_ = true
 
 [node name="Ambient" type="Node2D" parent="." unique_id=1325497940]
 script = ExtResource("51_amb")
+
+[node name="SleepRegions" type="Node" parent="."]
+script = ExtResource("sleepreg")
