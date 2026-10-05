@@ -18,6 +18,14 @@ if not defined FOUND (
 )
 
 echo Getting the latest changes...
+rem The Godot editor rewrites project.godot by itself, which would block the update.
+rem Keep a copy of the local version (project.godot.local-backup), then use the shared one.
+git diff --quiet -- project.godot
+if errorlevel 1 (
+  copy /y project.godot project.godot.local-backup >nul
+  git checkout -- project.godot
+  echo Godot had changed project.godot - saved a copy as project.godot.local-backup
+)
 git pull --ff-only
 if errorlevel 1 (
   echo.

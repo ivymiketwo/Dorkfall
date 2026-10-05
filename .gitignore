@@ -1,3 +1,4 @@
 .godot/
 build/
 *.tmp
+project.godot.local-backup
