@@ -63,3 +63,19 @@ changes in one place, and visuals are separate from logic.
    trust a "caught" result within sensible timing.
 4. **Save file per player**: SaveGame is one file for one player; a server needs a database row per account.
 
+5. **Debug keys**: F1-F4 in `player.gd` (damage, spend mana, +100 coins, test gear) skip the
+   `ChatCommands.can_use` switch. Kept on purpose for testing; gate them behind it (or an admin
+   role) before players join, or anyone can make coins and gear.
+6. **Owners by name / node**: gravestones belong to `display_name`, ground loot and pets to the
+   player node. Switch to account ids (two players named Rex could loot each other's graves).
+7. **Save writes**: SaveGame writes the whole file on every bag change. Fine locally; a server
+   should batch or use a database.
+
+## Loose ends (not server-related)
+- `project.godot` gets rewritten by the editor on Rex's PC, which blocks `git pull` in the
+  launchers. See what the editor changes and either commit it or make the launchers handle it.
+- `main.tscn` has stale UIDs for `wheat_field.png`, `water_info_1.png`, `water_info_2.png`
+  (warnings at startup, harmless).
+- Attack telegraphs now redraw on the 60/s game tick; smooth them if they look choppy on
+  high-refresh screens.
+- `tools/gen_desert.py` docstring says only grass is repainted; it also repaints flower speckles.
