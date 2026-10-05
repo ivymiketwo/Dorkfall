@@ -36,6 +36,7 @@
 [ext_resource type="Script" uid="uid://b40ngpex8r5ry" path="res://scripts/ducks.gd" id="301_ducks"]
 [ext_resource type="PackedScene" path="res://scenes/bulletin_board.tscn" id="302_board"]
 [ext_resource type="PackedScene" path="res://scenes/luck.tscn" id="303_luck"]
+[ext_resource type="Texture2D" path="res://art/dock.png" id="dock_tex"]
 [ext_resource type="Texture2D" uid="uid://cmp5huvtgspo1" path="res://art/ground_0_0.png" id="gnd_00"]
 [ext_resource type="Texture2D" uid="uid://mba80rlwcnv8" path="res://art/ground_0_1.png" id="gnd_01"]
 [ext_resource type="Texture2D" uid="uid://c7ai5wc78634m" path="res://art/ground_1_0.png" id="gnd_10"]
@@ -110,6 +111,12 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("winfo_ocean")
 centered = false
 metadata/_edit_lock_ = true
+
+[node name="Dock" type="Sprite2D" parent="GroundArt"]
+position = Vector2(-1216, 238)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("dock_tex")
+centered = false
 
 [node name="WaterPond1" type="Sprite2D" parent="GroundArt" unique_id=1196589986]
 material = SubResource("water_mat")

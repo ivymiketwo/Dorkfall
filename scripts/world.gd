@@ -14,6 +14,7 @@ const GRASS_FLOWERS := Vector2i(1, 0)
 const PATH := Vector2i(2, 0)
 const WATER := Vector2i(3, 0)   # has collision
 const WALL := Vector2i(4, 0)    # has collision
+const DOCK_WEST := -76          # westmost tile column of the dock (art/dock.png)
 
 @onready var ground: TileMapLayer = $Ground
 @onready var camera: Camera2D = $Entities/Player/Camera2D
@@ -63,6 +64,9 @@ func _pick_tile(x: int, y: int, rng: RandomNumberGenerator) -> Vector2i:
 	# Border wall
 	if x == MAP_ORIGIN.x or y == MAP_ORIGIN.y or x == MAP_ORIGIN.x + MAP_SIZE.x - 1 or y == MAP_ORIGIN.y + MAP_SIZE.y - 1:
 		return WALL
+	# Dock at the west end of the road: walkable planks over the sea
+	if (y == 15 or y == 16) and x >= DOCK_WEST and x - MAP_ORIGIN.x < OCEAN_SHORE[y - MAP_ORIGIN.y]:
+		return PATH
 	# West ocean
 	if x - MAP_ORIGIN.x < OCEAN_SHORE[y - MAP_ORIGIN.y]:
 		return WATER
