@@ -11,7 +11,9 @@ without one, the icon is made from the front view.
 It then:
   1. puts the gear on every walk / run / jump frame:
        chest   -> the body is DRESSED in it, like the robe: art/player_<id>.png, a whole player
-                  sheet that replaces the body while worn (tools/gen_body_sheet.py)
+                  sheet that replaces the body while worn. Each quarter of the chest in the
+                  drawing is mapped onto the matching quarter of the chest in every frame, using
+                  the body-part map art/gear_src/body_parts.png (tools/gen_body_sheet.py)
        helmet / shield -> drawn on top as a layer: art/worn_<id>.png (tools/gen_worn_layer.py)
      plus a preview to check: art/gear_src/<id>_4dir_preview.png (both tools explain how to fix
      a single frame by hand),
