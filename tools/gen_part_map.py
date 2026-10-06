@@ -40,6 +40,17 @@ COLORS = {
     "feet":  [(255, 230, 60), (255, 255, 170), (190, 170, 30), (190, 190, 110)],
 }
 
+# One colour per piece (no quarters): the gear tool splits these into quarters by itself, at the
+# middle of the piece in each frame. Quarter colours (above) can be painted in later where a pose
+# needs steering.
+PLAIN = {
+    "head":  (230, 60, 60),
+    "chest": (60, 190, 60),
+    "arms":  (240, 110, 200),
+    "legs":  (70, 100, 240),
+    "feet":  (240, 220, 50),
+}
+
 # Standing pose of each facing (first idle frame), read off the art:
 #   neck = last head row, waist = last chest row, ankle = last leg row,
 #   chest columns below the shoulders; anything else at chest height is arm.
@@ -161,7 +172,7 @@ def paint(lab):
 
 
 def legend():
-    img = Image.new("RGB", (5 * 70 + 10, 90), (30, 30, 36))
+    img = Image.new("RGB", (5 * 70 + 10, 130), (30, 30, 36))
     d = ImageDraw.Draw(img)
     for i, p in enumerate(PARTS):
         x = 10 + i * 70
@@ -170,7 +181,21 @@ def legend():
             qx, qy = x + (q % 2) * 28, 22 + (q // 2) * 28
             d.rectangle((qx, qy, qx + 24, qy + 24), fill=COLORS[p][q])
         d.text((x, 78), "TL TR / BL BR", fill=(160, 160, 160))
+        d.rectangle((x, 96, x + 52, 124), fill=PLAIN[p])
+    d.text((10, 108 - 20), "", fill=(160, 160, 160))
     img.save("art/gear_src/body_parts_legend.png")
+
+
+def plain_version(src, dst):
+    """The same map with one colour per piece (quarters merged)."""
+    m = Image.open(src).convert("RGBA")
+    a = np.array(m)
+    out = np.zeros_like(a)
+    for p in PARTS:
+        for c in COLORS[p] + [PLAIN[p]]:
+            hit = (a[..., 3] > 0) & (np.abs(a[..., :3].astype(int) - np.array(c)).sum(axis=2) <= 6)
+            out[hit] = (*PLAIN[p], 255)
+    Image.fromarray(out).save(dst)
 
 
 def main():

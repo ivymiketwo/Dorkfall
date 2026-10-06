@@ -9,8 +9,10 @@ a shirt with sleeves, "head" for a hood). Pieces: head, chest, arms, legs, feet.
 INPUT: 192x48 PNG, four 48x48 frames: down (front), up (back), left, right, each drawn over the
 first idle frame of that facing in art/player_new.png (the standing pose).
 MAP: art/gear_src/body_parts.png (see tools/gen_part_map.py) says, for every pixel of every frame,
-which piece of the body it is and which quarter of that piece (top-left, top-right, bottom-left,
-bottom-right as seen on screen).
+which piece of the body it is, either with one plain colour per piece (then each piece is split
+into quarters at its middle automatically) or with quarter colours painted by hand where a pose
+needs steering (top-left, top-right, bottom-left, bottom-right as seen on screen). Both can be
+mixed in the same file, even in the same frame for different pieces.
 
 How each pixel is painted: a covered pixel is in some quarter of a piece; its position inside that
 quarter (how far across, how far down) is looked up at the same position inside the same quarter
@@ -110,7 +112,7 @@ PARTS = ["head", "chest", "arms", "legs", "feet"]
 def read_map(map_img, row, col):
     """Per pixel (part index, quarter) from the map's colours; -1 where empty or unknown."""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from gen_part_map import COLORS
+    from gen_part_map import COLORS, PLAIN
     m = frame(map_img, row, col)
     part = np.full((CELL, CELL), -1, dtype=np.int32)
     quarter = np.full((CELL, CELL), -1, dtype=np.int32)
@@ -119,6 +121,14 @@ def read_map(map_img, row, col):
             hit = (m[..., 3] > 0) & (np.abs(m[..., :3] - np.array(c)).sum(axis=2) <= 6)
             part[hit] = pi
             quarter[hit] = q
+        # one plain colour for the piece: split it into quarters at its middle in this frame
+        plain = (m[..., 3] > 0) & (np.abs(m[..., :3] - np.array(PLAIN[p])).sum(axis=2) <= 6)
+        if plain.any():
+            part[plain] = pi
+            ys, xs = np.where(part == pi)
+            my, mx = np.median(ys), np.median(xs)
+            py, px = np.where(plain)
+            quarter[py, px] = (py >= my).astype(int) * 2 + (px >= mx).astype(int)
     return part, quarter
 
 
