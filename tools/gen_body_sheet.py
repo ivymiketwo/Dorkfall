@@ -121,36 +121,58 @@ def read_map(map_img, row, col):
             hit = (m[..., 3] > 0) & (np.abs(m[..., :3] - np.array(c)).sum(axis=2) <= 6)
             part[hit] = pi
             quarter[hit] = q
-        # one plain colour for the piece: split it into quarters at its middle in this frame
+        # one plain colour for the piece: mapped as a whole (quarter -1)
         plain = (m[..., 3] > 0) & (np.abs(m[..., :3] - np.array(PLAIN[p])).sum(axis=2) <= 6)
-        if plain.any():
-            part[plain] = pi
-            ys, xs = np.where(part == pi)
-            my, mx = np.median(ys), np.median(xs)
-            py, px = np.where(plain)
-            quarter[py, px] = (py >= my).astype(int) * 2 + (px >= mx).astype(int)
+        part[plain] = pi
     return part, quarter
+
+
+def body_axes(part):
+    """The body's tilt in a frame: 'up' runs from the middle of the legs to the middle of the
+    head (straight up if either is missing); 'across' is at right angles to it."""
+    head = np.argwhere(part == PARTS.index("head"))
+    legs = np.argwhere((part == PARTS.index("legs")) | (part == PARTS.index("feet")))
+    up = np.array([-1.0, 0.0])                        # (dy, dx): screen up
+    if len(head) and len(legs):
+        v = head.mean(axis=0) - legs.mean(axis=0)
+        if np.hypot(*v) > 2.0:
+            up = v / np.hypot(*v)
+    across = np.array([up[1], -up[0]])                # screen right when standing upright
+    return up, across
+
+
+def local(points, up, across):
+    """Positions in the tilted grid, scaled 0..1 across and 0..1 up, plus the region's size."""
+    c = points.mean(axis=0)
+    a = (points - c) @ across
+    u = (points - c) @ up
+    w, h = max(a.max() - a.min(), 1.0), max(u.max() - u.min(), 1.0)
+    return np.stack([(a - a.min()) / w, (u - u.min()) / h], axis=1), (w, h)
 
 
 def dress(target, gear, tpart, tq, spart, sq, parts):
     out = target.copy()
+    t_up, t_across = body_axes(tpart)
+    s_up, s_across = body_axes(spart)
     for pi in parts:
-        for q in range(4):
+        # regions: each hand-painted quarter on its own, plain-coloured pixels as one piece
+        for q in (-1, 0, 1, 2, 3):
             here = (tpart == pi) & (tq == q)
-            there = (spart == pi) & (sq == q)
-            if not here.any() or not there.any():
+            if not here.any():
                 continue
-            hy, hx = np.where(here)
-            ty, tx = np.where(there)
-            h0, h1, w0, w1 = hy.min(), hy.max(), hx.min(), hx.max()
-            t0, t1, u0, u1 = ty.min(), ty.max(), tx.min(), tx.max()
-            for y, x in zip(hy, hx):
-                fy = (y - h0) / max(h1 - h0, 1)
-                fx = (x - w0) / max(w1 - w0, 1)
-                sy = t0 + fy * (t1 - t0)
-                sx = u0 + fx * (u1 - u0)
-                k = ((ty - sy) ** 2 + (tx - sx) ** 2).argmin()     # nearest pixel of that quarter
-                g = gear[ty[k], tx[k]]
+            there = (spart == pi) & (sq == q)
+            if not there.any():
+                there = spart == pi                   # nothing matching in the standing frame: use the whole piece
+            if not there.any():
+                continue
+            hp = np.argwhere(here).astype(float)
+            sp = np.argwhere(there)
+            hl, _ = local(hp, t_up, t_across)
+            sl, (sw, sh) = local(sp.astype(float), s_up, s_across)
+            for (y, x), (fa, fu) in zip(hp.astype(int), hl):
+                d = ((sl[:, 0] - fa) * sw) ** 2 + ((sl[:, 1] - fu) * sh) ** 2
+                k = d.argmin()                        # same spot on the standing piece
+                g = gear[sp[k][0], sp[k][1]]
                 if g[3] > 0:
                     out[y, x] = g
     return out
