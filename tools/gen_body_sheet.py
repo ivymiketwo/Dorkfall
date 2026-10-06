@@ -127,11 +127,39 @@ def read_map(map_img, row, col):
     return part, quarter
 
 
+def without_specks(mask):
+    """Drops 1-2 pixel bits that sit apart from the rest (a stray pixel shouldn't stretch a piece)."""
+    lab = np.zeros(mask.shape, dtype=np.int32)
+    n = 0
+    sizes = []
+    for y, x in np.argwhere(mask):
+        if lab[y, x]:
+            continue
+        n += 1
+        stack = [(y, x)]
+        lab[y, x] = n
+        size = 0
+        while stack:
+            cy, cx = stack.pop()
+            size += 1
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    ny, nx = cy + dy, cx + dx
+                    if 0 <= ny < CELL and 0 <= nx < CELL and mask[ny, nx] and not lab[ny, nx]:
+                        lab[ny, nx] = n
+                        stack.append((ny, nx))
+        sizes.append(size)
+    if not sizes or max(sizes) <= 2:
+        return mask
+    keep = [k + 1 for k, s in enumerate(sizes) if s > 2]
+    return np.isin(lab, keep)
+
+
 def body_axes(part):
     """The body's tilt in a frame: 'up' runs from the middle of the legs to the middle of the
     head (straight up if either is missing); 'across' is at right angles to it."""
-    head = np.argwhere(part == PARTS.index("head"))
-    legs = np.argwhere((part == PARTS.index("legs")) | (part == PARTS.index("feet")))
+    head = np.argwhere(without_specks(part == PARTS.index("head")))
+    legs = np.argwhere(without_specks((part == PARTS.index("legs")) | (part == PARTS.index("feet"))))
     up = np.array([-1.0, 0.0])                        # (dy, dx): screen up
     if len(head) and len(legs):
         v = head.mean(axis=0) - legs.mean(axis=0)
@@ -166,8 +194,14 @@ def dress(target, gear, tpart, tq, spart, sq, parts):
             if not there.any():
                 continue
             hp = np.argwhere(here).astype(float)
-            sp = np.argwhere(there)
-            hl, _ = local(hp, t_up, t_across)
+            sp = np.argwhere(without_specks(there))
+            # measure the piece without stray bits, then place every pixel (bits included) in it
+            core = np.argwhere(without_specks(here)).astype(float)
+            c = core.mean(axis=0)
+            ca, cu = (core - c) @ t_across, (core - c) @ t_up
+            a, u = (hp - c) @ t_across, (hp - c) @ t_up
+            hl = np.stack([np.clip((a - ca.min()) / max(ca.max() - ca.min(), 1.0), 0, 1),
+                           np.clip((u - cu.min()) / max(cu.max() - cu.min(), 1.0), 0, 1)], axis=1)
             sl, (sw, sh) = local(sp.astype(float), s_up, s_across)
             for (y, x), (fa, fu) in zip(hp.astype(int), hl):
                 d = ((sl[:, 0] - fa) * sw) ** 2 + ((sl[:, 1] - fu) * sh) ** 2
