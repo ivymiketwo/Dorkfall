@@ -185,7 +185,7 @@ def dress(target, gear, tpart, tq, spart, sq, parts):
     for pi in parts:
         # regions: each hand-painted quarter on its own, plain-coloured pixels as one piece
         for q in (-1, 0, 1, 2, 3):
-            here = (tpart == pi) & (tq == q)
+            here = (tpart == pi) & (tq == q) & (target[..., 3] > 0)   # never paint where there's no body
             if not here.any():
                 continue
             there = (spart == pi) & (sq == q)
