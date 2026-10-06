@@ -35,16 +35,31 @@ SPEC = {
 }
 
 
-def paint(frame, facing):
+MAP = "art/gear_src/body_parts.png"
+
+
+def chest_area(i):
+    """Chest pixels of standing frame i in the body-part map (plain or quarter colours)."""
+    import sys, os
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from gen_part_map import COLORS, PLAIN
+    m = np.array(Image.open(MAP).convert("RGBA").crop((0, i * 48, 48, i * 48 + 48))).astype(int)
+    hit = np.zeros((48, 48), bool)
+    for c in COLORS["chest"] + [PLAIN["chest"]]:
+        hit |= (m[..., 3] > 0) & (np.abs(m[..., :3] - np.array(c)).sum(axis=2) <= 6)
+    return hit
+
+
+def paint(frame, facing, area):
     a = np.array(frame)
     out = np.zeros_like(a)
-    sp = SPEC[facing]
+    ys, xs = np.where(area)
+    lower = xs[ys >= ys.min() + (ys.max() - ys.min()) // 2]
+    sp = {"top": int(ys.min()), "bottom": int(ys.max()), "torso": (int(lower.min()), int(lower.max()))}
     body = a[..., 3] > 0
     for y in range(sp["top"], sp["bottom"] + 1):
         for x in range(48):
-            if not body[y, x]:
-                continue
-            if y >= sp["arms_from"] and not (sp["torso"][0] <= x <= sp["torso"][1]):
+            if not body[y, x] or not area[y, x]:
                 continue
             p = a[y, x]
             L = lum(p)
@@ -72,7 +87,8 @@ def paint(frame, facing):
                     edge.append((x, y))
                     break
     for x, y in edge:
-        out[y, x] = (*OUTLINE, 255)
+        if plate[y].sum() >= 5:          # narrow strips (side views) keep their metal, no outline
+            out[y, x] = (*OUTLINE, 255)
     # bottom edge: an outline under the plate, then a leather belt with a buckle
     by = sp["bottom"]
     for x in range(48):
@@ -106,9 +122,10 @@ def paint(frame, facing):
                 if tuple(out[y, x, :3]) != OUTLINE:
                     out[y, x] = (*TRIM, 255)
                 break
-    rivets = {"down": [(18, 20), (30, 20)], "up": [(19, 19), (30, 19)], "left": [(24, 19)], "right": [(23, 19)]}[facing]
-    for x, y in rivets:
-        if out[y, x, 3]:
+    # a rivet near each top corner of the plate
+    for x in (sp["torso"][0] + 1, sp["torso"][1] - 1):
+        y = sp["top"] + 2
+        if 0 <= x < 48 and out[y, x, 3] and tuple(out[y, x, :3]) != OUTLINE:
             out[y, x] = (*RIVET, 255)
     return Image.fromarray(out)
 
@@ -117,6 +134,6 @@ if __name__ == "__main__":
     sheet = Image.open(SRC).convert("RGBA")
     out = Image.new("RGBA", (48 * 4, 48))
     for i, facing in enumerate(["down", "up", "left", "right"]):
-        out.paste(paint(sheet.crop((0, i * 48, 48, i * 48 + 48)), facing), (i * 48, 0))
+        out.paste(paint(sheet.crop((0, i * 48, 48, i * 48 + 48)), facing, chest_area(i)), (i * 48, 0))
     out.save(OUT)
     print("wrote", OUT)
