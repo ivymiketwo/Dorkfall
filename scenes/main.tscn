@@ -405,22 +405,6 @@ kind = "cave_bones"
 position = Vector2(2372, 226)
 kind = "warn_sign_skull"
 
-[node name="LairSkeleton1" parent="Entities" instance=ExtResource("70_skel")]
-position = Vector2(1345, -79)
-level = 6
-
-[node name="LairSkeleton2" parent="Entities" instance=ExtResource("70_skel")]
-position = Vector2(1202, -24)
-level = 6
-
-[node name="LairSkeleton3" parent="Entities" instance=ExtResource("70_skel")]
-position = Vector2(1135, -141)
-level = 6
-
-[node name="LairSkeleton4" parent="Entities" instance=ExtResource("70_skel")]
-position = Vector2(1278, -196)
-level = 6
-
 [node name="Blacksmith" parent="Entities" unique_id=1982115937 instance=ExtResource("7_smith")]
 position = Vector2(121, 143)
 
