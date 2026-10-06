@@ -13,4 +13,3 @@ value = 70
 equip_slot = "helmet"
 two_handed = false
 worn_texture = ExtResource("2_worn")
-

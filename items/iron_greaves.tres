@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Item" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://art/worn_iron_greaves.png" id="2_worn"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"iron_greaves"
+display_name = "Iron Greaves"
+description = "Riveted iron plates for the legs."
+icon_frame = 30
+value = 150
+defense = 6.0
+equip_slot = "legs"
+two_handed = false
+worn_texture = ExtResource("2_worn")

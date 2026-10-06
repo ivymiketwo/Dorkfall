@@ -1,25 +1,23 @@
 """Turns a 4-direction gear drawing into a finished, wearable item in one go.
 
-    python3 tools/new_gear.py iron_chestplate "Iron Chestplate" chest --defense 10 --value 250
+    python3 tools/new_gear.py iron_helm "Iron Helm" helmet --defense 4 --value 70
+
+Slots and the body pieces they dress (see art/gear_src/body_parts.png):
+    helmet -> head      chest -> chest      legs -> legs
 
 Before running it, draw art/gear_src/<id>_4dir.png: 192x48, four 48x48 frames in the order
 down (front), up (back), left, right, each drawn over the standing frame of that facing in
-art/player_new.png (open that sheet, copy the first column's frames, draw the gear on a layer
-above, export only the gear layer). Optionally also draw art/gear_src/<id>_icon.png (32x32);
-without one, the icon is made from the front view.
+art/player_new.png. Optionally also draw art/gear_src/<id>_icon.png (32x32).
 
 It then:
-  1. puts the gear on every walk / run / jump frame:
-       chest   -> the body is DRESSED in it, like the robe: art/player_<id>.png, a whole player
-                  sheet that replaces the body while worn. Each quarter of the chest in the
-                  drawing is mapped onto the matching quarter of the chest in every frame, using
-                  the body-part map art/gear_src/body_parts.png (tools/gen_body_sheet.py)
-       helmet / shield -> drawn on top as a layer: art/worn_<id>.png (tools/gen_worn_layer.py)
-     plus a preview to check: art/gear_src/<id>_4dir_preview.png (both tools explain how to fix
-     a single frame by hand),
-  2. makes the paperdoll picture -> art/<id>_paperdoll.png,
-  3. adds the icon to art/items.png and art/items_small.png (re-running replaces it in place),
-  4. writes items/<id>.tres with the slot and stats given.
+  1. dresses every walk / run / jump frame with it, piece by piece using the body-part map, and
+     saves just the repainted pixels as a layer: art/worn_<id>.png (the game draws it over the
+     body, so a helm, a chestplate and greaves can all be worn at once). A preview of every frame:
+     art/gear_src/<id>_4dir_preview.png
+  2. puts the icon in art/items.png and art/items_small.png. A NEW item gets one made from the
+     front view (or <id>_icon.png); an EXISTING item keeps its icon unless <id>_icon.png exists,
+  3. writes items/<id>.tres. If the item already exists only its worn art is updated; its name,
+     stats and price are left alone (the options below are for new items).
 Restart Godot (or use a launcher) afterwards so it imports the new pictures.
 """
 import argparse
@@ -30,9 +28,9 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_body_sheet   # noqa: E402
-import gen_worn_layer   # noqa: E402
 
-SLOTS = ["helmet", "chest", "shield"]
+SLOTS = ["helmet", "chest", "legs"]
+PIECES = {"helmet": ("head",), "chest": ("chest",), "legs": ("legs",)}
 
 
 def icon_from_front(front):
@@ -82,31 +80,26 @@ def main():
     if not os.path.exists(src):
         sys.exit("draw %s first (see the top of this file)" % src)
     front = Image.open(src).convert("RGBA").crop((0, 0, 48, 48))
-    if a.slot == "chest":
-        art_path, field = "art/player_%s.png" % a.id, "body_sheet"
-        gen_body_sheet.main(src, art_path)
-        doll = Image.open(art_path).convert("RGBA").crop((0, 0, 48, 48))   # the dressed standing frame
-    else:
-        art_path, field = "art/worn_%s.png" % a.id, "worn_texture"
-        gen_worn_layer.main(src, art_path)
-        doll = Image.open(gen_worn_layer.BASE).convert("RGBA").crop((0, 0, 48, 48))
-        doll.alpha_composite(front)
-    doll_path = "art/%s_paperdoll.png" % a.id
-    doll.save(doll_path)
+    worn = "art/worn_%s.png" % a.id
+    gen_body_sheet.main(src, worn, PIECES[a.slot], overlay=True)
 
-    icon_src = "art/gear_src/%s_icon.png" % a.id
-    icon = Image.open(icon_src).convert("RGBA") if os.path.exists(icon_src) else icon_from_front(front)
     tres = "items/%s.tres" % a.id
+    icon_src = "art/gear_src/%s_icon.png" % a.id
     frame = existing_icon_frame(tres)
-    if frame is None:
-        frame = Image.open("art/items.png").width // 32
-    put_icon(icon, frame)
+    if frame is None or os.path.exists(icon_src):
+        if frame is None:
+            frame = Image.open("art/items.png").width // 32
+        icon = Image.open(icon_src).convert("RGBA") if os.path.exists(icon_src) else icon_from_front(front)
+        put_icon(icon, frame)
 
+    if os.path.exists(tres):
+        update_item(tres, worn)
+        print("updated %s (worn art only; icon frame %d)" % (tres, frame))
+        return
     with open(tres, "w") as f:
-        f.write('[gd_resource type="Resource" script_class="Item" load_steps=4 format=3]\n\n')
+        f.write('[gd_resource type="Resource" script_class="Item" load_steps=3 format=3]\n\n')
         f.write('[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]\n')
-        f.write('[ext_resource type="Texture2D" path="res://%s" id="2_art"]\n' % art_path)
-        f.write('[ext_resource type="Texture2D" path="res://%s" id="3_doll"]\n\n' % doll_path)
+        f.write('[ext_resource type="Texture2D" path="res://%s" id="2_worn"]\n\n' % worn)
         f.write('[resource]\nscript = ExtResource("1_item")\n')
         f.write('id = &"%s"\ndisplay_name = "%s"\n' % (a.id, a.name))
         if a.description:
@@ -115,8 +108,21 @@ def main():
         if a.defense:
             f.write('defense = %s\n' % a.defense)
         f.write('equip_slot = "%s"\ntwo_handed = false\n' % a.slot)
-        f.write('%s = ExtResource("2_art")\npaperdoll_texture = ExtResource("3_doll")\n' % field)
+        f.write('worn_texture = ExtResource("2_worn")\n')
     print("made %s (icon frame %d)" % (tres, frame))
+
+
+def update_item(tres, worn):
+    """Points an existing item at the new worn layer, leaving everything else as it was."""
+    s = open(tres).read()
+    s = re.sub(r'\[ext_resource type="Texture2D"[^\n]*id="(2_worn|2_art|3_doll|4_body)"\]\n', "", s)
+    s = re.sub(r'\n(worn_texture|paperdoll_texture|body_sheet) = [^\n]*', "", s)
+    s = re.sub(r'\nbody_jump_frames = [^\n]*', "", s)
+    s = s.replace('[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]\n',
+                  '[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]\n'
+                  '[ext_resource type="Texture2D" path="res://%s" id="2_worn"]\n' % worn, 1)
+    s = s.rstrip("\n") + '\nworn_texture = ExtResource("2_worn")\n'
+    open(tres, "w").write(s)
 
 
 if __name__ == "__main__":

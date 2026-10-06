@@ -28,7 +28,7 @@ extends Resource
 ## Seconds before this same item can be eaten / drunk again.
 @export var use_cooldown := 0.0
 ## Where this goes on the paperdoll (right-click > EQUIP in the inventory).
-@export_enum("none", "weapon", "helmet", "chest", "shield") var equip_slot := "none"
+@export_enum("none", "weapon", "helmet", "chest", "legs", "shield") var equip_slot := "none"
 ## Two-handed weapons block the shield slot.
 @export var two_handed := false
 ## Sprite sheet drawn over the character while worn (same layout as art/player.png).

@@ -1,8 +1,7 @@
 [gd_resource type="Resource" script_class="Item" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
-[ext_resource type="Texture2D" path="res://art/player_iron_chestplate.png" id="2_art"]
-[ext_resource type="Texture2D" path="res://art/iron_chestplate_paperdoll.png" id="3_doll"]
+[ext_resource type="Texture2D" path="res://art/worn_iron_chestplate.png" id="2_worn"]
 
 [resource]
 script = ExtResource("1_item")
@@ -14,5 +13,4 @@ value = 250
 defense = 10.0
 equip_slot = "chest"
 two_handed = false
-body_sheet = ExtResource("2_art")
-paperdoll_texture = ExtResource("3_doll")
+worn_texture = ExtResource("2_worn")

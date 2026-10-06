@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://r12s2rvqkp6f"
-path="res://.godot/imported/iron_chestplate_paperdoll.png-a40d5303efc7bda40c2ba0f324176a3c.ctex"
+uid="uid://c4gvsg8ooeo4g"
+path="res://.godot/imported/worn_iron_greaves.png-f99406bdea48309a00e6fdd7eaf90573.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/iron_chestplate_paperdoll.png"
-dest_files=["res://.godot/imported/iron_chestplate_paperdoll.png-a40d5303efc7bda40c2ba0f324176a3c.ctex"]
+source_file="res://art/worn_iron_greaves.png"
+dest_files=["res://.godot/imported/worn_iron_greaves.png-f99406bdea48309a00e6fdd7eaf90573.ctex"]
 
 [params]
 

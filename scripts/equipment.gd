@@ -1,14 +1,16 @@
 class_name Equipment
 extends Node
-## What the player is wearing: weapon, helmet, chest, shield. Draws the worn
+## What the player is wearing: weapon, helmet, chest, legs, shield. Draws the worn
 ## gear as sprite layers over the player. Two-handed weapons block the shield slot.
 
 signal changed
 
-const SLOTS := ["helmet", "weapon", "chest", "shield"]
-const SLOT_NAMES := {"helmet": "Helmet", "weapon": "Weapon", "chest": "Chest", "shield": "Shield"}
+const SLOTS := ["helmet", "weapon", "chest", "legs", "shield"]
+const SLOT_NAMES := {"helmet": "Helmet", "weapon": "Weapon", "chest": "Chest", "legs": "Legs", "shield": "Shield"}
 ## Draw order (bottom to top).
-const LAYER_ORDER := ["chest", "helmet", "shield", "weapon"]
+const LAYER_ORDER := ["legs", "chest", "helmet", "shield", "weapon"]
+## Worn layers are made for this body; a hand-drawn body sheet (the robe) has its own poses.
+const NAKED := preload("res://art/player_new.png")
 
 @export var starting: Array[Item] = []
 
@@ -61,11 +63,20 @@ func _process(_delta: float) -> void:
 		var s: Sprite2D = _layers[slot]
 		if slot == "weapon":
 			continue                      # HeldWeapon places itself at the hand
+		if slot != "weapon":
+			s.visible = _shows_layer(get_item(slot))
 		if s.visible:
 			s.frame = base.frame
 		if s.material != base.material:
 			s.material = base.material      # shares the idle-bob shader
 		s.position = base.position
+
+
+## Gear drawn as a layer over the body: its worn art is a full player-layout sheet (made with
+## tools/new_gear.py) and the body is the normal one (not a hand-drawn sheet like the robe).
+func _shows_layer(it: Item) -> bool:
+	return it != null and it.body_sheet == null and it.worn_texture != null \
+			and it.worn_texture.get_size() == NAKED.get_size() and base.texture == NAKED
 
 
 func get_item(slot: String) -> Item:
@@ -93,8 +104,7 @@ func _refresh() -> void:
 		else:
 			# worn gear shows when its art is a full frame-by-frame sheet laid out like the
 			# player's (made with tools/gen_worn_layer.py); older single pictures stay hidden
-			s.visible = it != null and it.body_sheet == null and it.worn_texture != null \
-					and it.worn_texture.get_size() == base.texture.get_size()
+			s.visible = _shows_layer(it)
 	_apply_stats()
 	changed.emit()
 

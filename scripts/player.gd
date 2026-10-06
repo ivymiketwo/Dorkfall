@@ -30,7 +30,7 @@ const NAKED_TEX := preload("res://art/player_new.png")   # chest gear can swap i
 const COINS := preload("res://items/coins.tres")
 const TEST_GEAR := [preload("res://items/iron_sword.tres"), preload("res://items/wooden_shield.tres"),
 		preload("res://items/iron_helm.tres"), preload("res://items/wizard_hat.tres"),
-		preload("res://items/leather_armor.tres"), preload("res://items/iron_chestplate.tres")]
+		preload("res://items/leather_armor.tres"), preload("res://items/iron_chestplate.tres"), preload("res://items/iron_greaves.tres")]
 
 ## What the player is asking for right now. Only `_gather_input` reads the keyboard and mouse;
 ## everything else (movement, casting, melee, guarding) uses these values, so a server can

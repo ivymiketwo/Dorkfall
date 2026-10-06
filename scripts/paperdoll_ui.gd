@@ -1,7 +1,7 @@
 class_name PaperdollUI
 extends Control
 ## Equipment panel (press P). Shows Rex wearing his gear with slots for helmet,
-## weapon, chest and shield. The shield slot greys out while a two-handed weapon
+## weapon, chest, legs and shield. The shield slot greys out while a two-handed weapon
 ## is equipped. Right-click a slot to take the item off.
 
 const SLOT := 20
@@ -13,12 +13,12 @@ const PANEL_LIGHT := Color("5c4d3a")
 const SLOT_BG := Color("1a150f")
 const SLOT_EDGE := Color("4d4130")
 const SLOT_HOVER := Color("3d3324")
-const HINT := {"helmet": "head", "weapon": "weapon", "chest": "body", "shield": "shield"}
+const HINT := {"helmet": "head", "weapon": "weapon", "chest": "body", "legs": "legs", "shield": "shield"}
 
 # slot rectangles inside the panel
 const SLOT_POS := {
 	"helmet": Vector2(34, 14), "weapon": Vector2(6, 40),
-	"shield": Vector2(62, 40), "chest": Vector2(34, 74),
+	"shield": Vector2(62, 40), "chest": Vector2(34, 74), "legs": Vector2(62, 74),
 }
 
 var equipment: Equipment:
@@ -93,15 +93,17 @@ func _draw() -> void:
 
 	# the paperdoll itself: base body + worn layers, facing the camera
 	var fig := Rect2(Vector2(20, 32), Vector2(48, 48))
-	var worn: Texture2D = null
-	for slot: String in Equipment.LAYER_ORDER:
-		var it := equipment.get_item(slot)
-		if it and it.paperdoll_texture:
-			worn = it.paperdoll_texture
-	if worn:
-		draw_texture_rect(worn, fig, false)
+	# a hand-drawn outfit (the robe) has its own picture; otherwise the body with every worn
+	# layer on top, standing frame facing the camera
+	var outfit := equipment.get_item("chest")
+	if outfit and outfit.body_sheet and outfit.paperdoll_texture:
+		draw_texture_rect(outfit.paperdoll_texture, fig, false)
 	else:
 		draw_texture_rect_region(BASE, fig, Rect2(0, 0, 48, 48))
+		for slot: String in Equipment.LAYER_ORDER:
+			var it := equipment.get_item(slot)
+			if it and it.worn_texture and it.worn_texture.get_size() == BASE.get_size():
+				draw_texture_rect_region(it.worn_texture, fig, Rect2(0, 0, 48, 48))
 
 	for slot: String in SLOT_POS:
 		var p: Vector2 = SLOT_POS[slot]

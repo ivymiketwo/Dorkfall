@@ -212,7 +212,9 @@ def dress(target, gear, tpart, tq, spart, sq, parts):
     return out
 
 
-def main(src, dst, parts=("chest",)):
+def main(src, dst, parts=("chest",), overlay=False):
+    """overlay=True writes only the repainted pixels (a layer drawn over the body in game),
+    so several pieces of gear can be worn at once."""
     sheet = Image.open(BASE).convert("RGBA")
     map_img = Image.open(MAP).convert("RGBA")
     gear_img = Image.open(src).convert("RGBA")
@@ -233,6 +235,10 @@ def main(src, dst, parts=("chest",)):
                 tile = Image.fromarray(dressed.astype(np.uint8))
                 out.paste(tile, (col * CELL, row * CELL))
                 preview.alpha_composite(tile, (col * CELL, row * CELL))
+    if overlay:
+        a, b = np.array(out), np.array(sheet)
+        a[(a == b).all(axis=2)] = 0                      # keep only what the gear changed
+        out = Image.fromarray(a)
     out.save(dst)
     prev = os.path.splitext(src)[0] + "_preview.png"
     preview.resize((preview.width * 2, preview.height * 2), Image.NEAREST).save(prev)
