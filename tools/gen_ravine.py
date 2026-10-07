@@ -52,10 +52,12 @@ ROCK = {
     "top": (152, 139, 121),       # flat mountain top
     "top2": (160, 149, 132),
     "top_shadow": (128, 115, 99),
+    "top_crack": (112, 99, 85),
     "rim": (170, 160, 144),
 }
 CLAY = np.array([(96, 44, 34), (112, 54, 41), (128, 64, 47), (146, 78, 56)], np.uint8)
 CRACK = (78, 36, 29)
+CLAY_FROM = 2560             # world x where the sand turns to clay (the funnel into the ravine)
 
 rng = np.random.default_rng(SEED)
 W, H = (X1 - X0) * 2, (Y1 - Y0) * 2          # art size of the part
@@ -273,7 +275,7 @@ def main():
     clay[(edge < 1.6) & crack_on] = CRACK
     clay[(grain > 0.994)] = CLAY[0]
     clay[(grain < 0.004)] = CLAY[3]
-    clay_edge = 3010 + wave(wy, [(22, 37, 0.3), (9, 13, 1.1)])
+    clay_edge = CLAY_FROM + wave(wy, [(30, 160, 2.0), (12, 71, 0.4)]) + 70 * (Q - 0.5)
     clay_t = (wx - clay_edge) / 36.0 + 0.5 + 0.45 * (grain - 0.5) + 0.4 * (R - 0.5)
     is_clay = walk & ((clay_t > 0.5) | (wx >= OLD_EDGE - 16))
     out[is_clay] = clay[is_clay]
@@ -293,6 +295,11 @@ def main():
     ty, tx = np.nonzero(m_top)
     gyy = g[ty, tx]
     col = np.where((tone[ty, tx] > 0.6)[:, None], ROCK["top2"], ROCK["top"]).astype(np.uint8)
+    # the same dried-mud cracks as the ravine floor, in the rock's own colours
+    ce, _, _ = voronoi(tx.astype(np.float32), gyy.astype(np.float32), 34, 25)
+    cracked = (ce < 1.6) & (crack_on[gyy, tx])
+    col[cracked] = ROCK["top_crack"]
+    del ce, cracked
     e2, bx, by = voronoi(tx.astype(np.float32), gyy.astype(np.float32), 34, 26)
     sx = np.clip(voronoi.seeds[:, 0].astype(np.int64), 0, W - 1)
     sy = np.clip(voronoi.seeds[:, 1].astype(np.int64), 0, H - 1)
@@ -381,7 +388,7 @@ def minimap(out, lv, walk, unseen):
                 if (tx + ty) % 2 and l >= 1.5 and l < 2.5:
                     c = (132, 118, 102)
                 a[ty, X] = (*c, 255)
-            elif X0 + tx * 16 >= 3000 or a[ty, X, 3] == 0:
+            elif X0 + tx * 16 >= CLAY_FROM - 60 or a[ty, X, 3] == 0:
                 r, gg, b = clay_c[ty, tx]
                 a[ty, X] = (int(r), int(gg), int(b), 255)
     # the old east border wall column (now open ground or rock)
