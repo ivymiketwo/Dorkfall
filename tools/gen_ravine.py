@@ -38,7 +38,9 @@ FUNNEL_BOTTOM_X = 2520       # where the south mountain line leaves the bottom o
 RAVINE_X = 3060              # where the funnel has narrowed into the ravine
 RAVINE_END = 4470            # the ravine ends in a rounded dead end here
 BEFORE = "art/ground_src/east_before_ravine.png"   # the desert as it was (each run starts from it)
-STEP = 64                    # art px of cliff per terrace step (32 world px)
+STEP = 64                    # (old fixed step; heights are now LEVEL_Z)
+# how high each terrace is drawn, in art px: one tall cliff first, then smaller steps behind it
+LEVEL_Z = np.array([0, 120, 196, 256, 316, 372, 428, 484, 540, 596, 652], np.int64)
 WIGGLE = 110                 # world px the funnel's mountain lines wander (random bends)
 VIEW_HALF = (180, 110)       # world px the camera can see around the player (plus a margin)
 
@@ -91,7 +93,7 @@ def walls_y(wx):
     end = np.clip((wx - RAVINE_END) / 110.0, 0.0, 1.0)
     half = half * np.sqrt(np.clip(1.0 - end ** 2, 0.0, 1.0))             # rounded dead end
     top = mid - half
-    bottom = mid + half + 64           # the south wall's rim leans north over its foot
+    bottom = mid + half + 88           # the south wall's rim leans north over its foot
     top = np.where(wx > RAVINE_END + 110, 1e5, top)
     bottom = np.where(wx > RAVINE_END + 110, -1e5, bottom)
     # the funnel: the lines come down from the top / up from the bottom of the map
@@ -179,58 +181,64 @@ def boulder_colours(bx, by, edge):
     return c
 
 
-def cliff_blocks(x, f, lvl):
-    """Colours for cliff-face pixels, after the reference cliffs: rock columns of very different
-    widths with rounded tops at different heights, some standing out and some set back, vertical
-    cracks, and now and then a break across a column.
-    x: screen column, f: px below the top of the face, lvl: terrace."""
-    v = (f - 1) % STEP
-    band = (f - 1) // STEP + lvl * 16
-    cw = 40
-    c0 = x // cw
-    jit = lambda c: c * cw + ((h01(c, band, 2) - 0.5) * 0.76 * cw).astype(np.int64)
-    col = np.where(x < jit(c0), c0 - 1, c0)
-    col = np.where(x >= jit(col + 1), col + 1, col)
-    left, right = jit(col), jit(col + 1)
-    u, w = x - left, right - left
-    a, b, d = h01(col, band, 3), h01(col, band, 8), h01(col, band, 9)
-    # where the column's own top is (some start lower down, showing the rock behind them)
-    o = np.where(a < 0.3, 0, (b * 38).astype(np.int64))
-    tt = v - o
-    r = 6
+def cliff_blocks(x, v, hh, key):
+    """Colours for cliff-face pixels, after the reference cliffs: tall rock pillars of very
+    different widths that run the height of the cliff, shaded round (lit left, dark right, darker
+    low down), with rounded tops at different heights, deep gaps between them, and the odd
+    crack down or across a pillar.
+    x: screen column, v: px below the top of this tier of cliff, hh: the tier's height,
+    key: which tier (so each tier gets its own pillars)."""
+    # pillar edges wobble a little so they aren't ruler-straight
+    xw = x + np.round(1.2 * np.sin(v / 13.0 + h01(x // 64, key, 12) * 6.3)).astype(np.int64)
+    cw = 30
+    c0 = xw // cw
+    jit = lambda c: c * cw + ((h01(c, key, 2) - 0.5) * 0.8 * cw).astype(np.int64)
+    col = np.where(xw < jit(c0), c0 - 1, c0)
+    col = np.where(xw >= jit(col + 1), col + 1, col)
+    # now and then two neighbours are one wide pillar
+    merge = h01(col, key, 13) < 0.3
+    left = np.where(h01(col - 1, key, 13) < 0.3, jit(col - 1), jit(col))
+    right = np.where(merge, jit(col + 2), jit(col + 1))
+    u, w = xw - left, np.maximum(right - left, 4)
+    pid = left                                               # one id per pillar
+    a, b, d = h01(pid, key, 3), h01(pid, key, 8), h01(pid, key, 9)
+    # the pillar's own top: some reach the rim, others stop lower down
+    o = np.where(a < 0.35, 0, (b * hh * 0.45).astype(np.int64))
+    t = v - o
+    r = np.minimum(np.maximum(w // 3, 3), 9)
     cx = np.where(u < r, r - u, np.where(u > w - 1 - r, u - (w - 1 - r), 0))
-    cy = np.where(tt < r, r - tt, 0)
-    behind = (tt < 0) | ((cx * cx + cy * cy) > r * r)
-    # a break across the column, sometimes
-    s1 = o + 22 + (h01(col, band, 4) * 30).astype(np.int64)
-    s1 = np.where((h01(col, band, 7) < 0.7) | (s1 > STEP - 10), STEP, s1)
-    top_ = np.where(v < s1, o, s1)
-    bot_ = np.where(v < s1, s1, STEP)
-    t, h = v - top_, bot_ - top_
-    piece = col * 4 + (v >= s1)
-    protrude, recess = d > 0.68, d < 0.25
-    c = np.empty(x.shape + (3,), np.uint8)
-    c[:] = ROCK["body"]
-    c[recess] = ROCK["body2"]
-    c[protrude] = ROCK["body_hi"]
-    c[(u >= 1) & (u <= 2) & (protrude | (a > 0.5))] = ROCK["light"]          # lit left edge
-    c[u >= w - 4 - (d * 5).astype(np.int64)] = ROCK["dark"]                   # shaded right side
-    # vertical cracks down the wider columns
-    sx = 5 + (h01(col, band, 10) * np.maximum(w - 12, 1)).astype(np.int64)
-    st = (h01(col, band, 11) * h * 0.6).astype(np.int64)
-    streak = (w > 20) & (u == sx) & (t > st) & (t < h - 3)
-    c[streak] = ROCK["dark"]
-    c[(w > 20) & (u == sx + 1) & (t > st) & (t < h - 3)] = ROCK["light"]
-    c[t <= 2] = ROCK["light"]
-    c[(t == 0) & (protrude | (a > 0.55))] = ROCK["shine"]
-    c[t >= h - 3] = ROCK["dark"]
-    c[(v >= STEP - 10) & (c == np.array(ROCK["body_hi"], np.uint8)).all(-1)] = ROCK["body"]   # darker near the foot
-    c[(v >= STEP - 10) & (c == np.array(ROCK["body"], np.uint8)).all(-1)] = ROCK["body2"]
-    corner = ((u <= 1) | (u >= w - 2)) & ((t <= 1) | (t >= h - 2))
-    crack = (u == 0) | (t == h - 1) | corner | ((u == w - 1) & (h01(piece, band, 6) > 0.5))
-    c[crack] = ROCK["crack"]
+    cy = np.where(t < r, r - t, 0)
+    behind = (t < 0) | ((cx * cx + cy * cy) > r * r)
+    # round shading across the pillar: 0 dark .. 5 shine
+    fr = u / w
+    tone = np.select([fr < 0.16, fr < 0.42, fr < 0.7, fr < 0.88], [4, 3, 2, 1], 0)
+    tone = tone + np.where(d > 0.7, 1, 0) - np.where(d < 0.25, 1, 0)         # standing out / set back
+    tone = tone - (v > hh * 0.62) - (v > hh * 0.85)                          # darker low down
+    # a crack across some pillars: the part below starts again with a lit top
+    s1 = o + 16 + (h01(pid, key, 4) * (hh - o) * 0.6).astype(np.int64)
+    across = (h01(pid, key, 7) < 0.35) & (v >= s1) & (s1 < hh - 12)
+    tb = np.where(across, v - s1, t)
+    tone = np.where(tb <= 2, np.maximum(tone, 4), tone)
+    tone = np.where((tb == 0) & (fr < 0.6), 5, tone)
+    tone = np.clip(tone, 0, 5)
+    pal = np.array([ROCK["dark"], ROCK["body2"], ROCK["body"], ROCK["body_hi"], ROCK["light"], ROCK["shine"]], np.uint8)
+    c = pal[tone]
+    # a crack down some of the wider pillars (dark, with a lit edge on its right)
+    sx = 4 + (h01(pid, key, 10) * np.maximum(w - 10, 1)).astype(np.int64)
+    st = (h01(pid, key, 11) * hh * 0.5).astype(np.int64)
+    down = (w > 18) & (h01(pid, key, 14) < 0.6) & (t > st) & (v < hh - 2)
+    c[down & (u == sx)] = ROCK["crack"]
+    c[down & (u == sx + 1)] = ROCK["body_hi"]
+    c[across & (tb == 0) & (fr >= 0.6)] = ROCK["crack"]
+    c[across & (v == s1 - 1)] = ROCK["crack"]
+    # gaps between pillars: dark, wider where a pillar is set back
+    gw = (h01(pid, key, 15) * 3.2).astype(np.int64)                      # 0..3 extra px of gap
+    gap = (u == 0) | (u <= gw) & (d < 0.5) | ((u >= w - 1) & (a > 0.5))
+    c[(u == gw + 1) & (gw > 0) & (d < 0.5) & ~behind] = ROCK["dark"]      # shadow inside a deep gap
+    c[gap & ~behind] = ROCK["crack"]
     c[behind] = ROCK["dark"]
-    c[behind & ((cx * cx + cy * cy) <= (r + 1) ** 2) & (tt >= -1)] = ROCK["crack"]          # outline of a rounded top
+    c[behind & ((cx * cx + cy * cy) <= (r + 1.5) ** 2) & (t >= -1)] = ROCK["crack"]    # outline of the rounded top
+    c[v >= hh - 1] = ROCK["crack"]                                                       # foot of the tier
     return c
 
 
@@ -271,7 +279,7 @@ def main():
     for flt in (ImageFilter.MaxFilter(11), ImageFilter.MinFilter(11), ImageFilter.MinFilter(11), ImageFilter.MaxFilter(11)):
         im = im.filter(flt)
     level = np.where(sd > 0, np.maximum(np.asarray(im), 1), 0).astype(np.int32)
-    z = level * STEP
+    z = LEVEL_Z[level]
 
     # ---- 3/4 view: for each screen pixel, which ground point shows there
     rows = np.arange(H)[:, None]
@@ -330,7 +338,12 @@ def main():
     sy = np.clip(voronoi.seeds[:, 1].astype(np.int64), 0, H - 1)
     clump = smooth_noise(W, H, 110, 2)
     # a whole rock where its middle is near an edge or inside a clump (so rocks are never cut)
-    boulder = (sd[sy, sx] < 30) | (clump[sy, sx] > 0.62)
+    # rocks piled on the edge only where the edge faces the ravine from the south (seen from
+    # above); on top of a cliff face the pillars' own rounded tops are the edge
+    floor_above = np.zeros(len(ty), bool)
+    for k in range(4, 200, 6):
+        floor_above |= walk[np.maximum(ty - k, 0), tx]
+    boulder = ((sd[sy, sx] < 30) & floor_above) | (clump[sy, sx] > 0.68)
     col[boulder] = boulder_colours(bx[boulder], by[boulder], e2[boulder])
     out[ty, tx] = col
     del ty, tx, gyy, col, e2, bx, by, sx, sy, clump, boulder
@@ -338,7 +351,11 @@ def main():
     # ---- cliff faces: stacked blocks in columns, like the reference cliff
     m_face = (~walk) & (f > 0)
     fy, fx = np.nonzero(m_face)
-    out[fy, fx] = cliff_blocks(fx, f[fy, fx], lv[fy, fx])
+    L = lv[fy, fx]
+    zat = LEVEL_Z[L] - f[fy, fx]                           # height on the cliff of this pixel
+    m = np.clip(np.searchsorted(LEVEL_Z, zat, side="left"), 1, len(LEVEL_Z) - 1)   # which tier
+    out[fy, fx] = cliff_blocks(fx, LEVEL_Z[m] - zat, LEVEL_Z[m] - LEVEL_Z[m - 1], m + L * 16)
+    del L, zat, m
     del fy, fx
 
     # ---- dark cracks where a higher terrace meets lower ground (sides, back edges, cliff feet)

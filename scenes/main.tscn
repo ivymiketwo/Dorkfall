@@ -277,10 +277,6 @@ kind = "cave_bones"
 position = Vector2(2509, 1527)
 kind = "cave_bones"
 
-[node name="Desert55" parent="Entities" instance=ExtResource("50_decor")]
-position = Vector2(2759, 714)
-kind = "cave_bones"
-
 [node name="Desert57" parent="Entities" instance=ExtResource("50_decor")]
 position = Vector2(2372, 226)
 kind = "warn_sign_skull"
@@ -3862,10 +3858,6 @@ kind = "pine"
 position = Vector2(574, -611)
 kind = "pine"
 
-[node name="TreeN493" parent="Entities" unique_id=1145293258 instance=ExtResource("4_tree")]
-position = Vector2(2726, 756)
-kind = "dead3"
-
 [node name="TreeN500" parent="Entities" unique_id=1316360562 instance=ExtResource("4_tree")]
 position = Vector2(2758, 631)
 kind = "dead"
@@ -5332,17 +5324,17 @@ position = Vector2(3178, 207)
 kind = "dead2"
 
 [node name="Ravine15" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(3155, 377)
+position = Vector2(4245, 174)
 kind = "dead"
 
 [node name="Ravine16" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(4245, 174)
+position = Vector2(3510, 187)
 kind = "dead3"
 
 [node name="Ravine17" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(3510, 187)
+position = Vector2(3154, 318)
 kind = "dead2"
 
 [node name="Ravine18" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(3833, 306)
+position = Vector2(4004, 320)
 kind = "dead"
