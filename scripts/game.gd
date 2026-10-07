@@ -1,6 +1,8 @@
 extends Node
 ## The window. The game world renders pixel-perfect on its own 640x360 screen (a SubViewport,
-## blown up to the window without smoothing, exactly as before), and every interface layer
+## blown up to the window without smoothing, exactly as before; it snaps everything to whole
+## pixels, otherwise fine pixel patterns shimmer when the camera stops between two pixels),
+## and every interface layer
 ## (HUD, map, menus, fades) is lifted out of it to draw at the window's full resolution on top.
 ## That is what lets item icons and text show all their pixels.
 ##
