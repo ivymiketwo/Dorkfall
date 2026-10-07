@@ -5276,7 +5276,7 @@ script = ExtResource("51_amb")
 script = ExtResource("sleepreg")
 
 [node name="Ravine1" parent="Entities" instance=ExtResource("50_decor")]
-position = Vector2(2960, 300)
+position = Vector2(2985, 214)
 kind = "warn_sign_skull"
 
 [node name="Ravine2" parent="Entities" instance=ExtResource("50_decor")]
@@ -5296,23 +5296,23 @@ position = Vector2(3431, 355)
 kind = "cave_bones"
 
 [node name="Ravine6" parent="Entities" instance=ExtResource("50_decor")]
-position = Vector2(3918, 231)
+position = Vector2(4186, 280)
 kind = "cave_bones"
 
 [node name="Ravine7" parent="Entities" instance=ExtResource("50_decor")]
-position = Vector2(4375, 328)
+position = Vector2(3918, 231)
 kind = "cave_bones"
 
 [node name="Ravine8" parent="Entities" instance=ExtResource("50_decor")]
-position = Vector2(3691, 294)
+position = Vector2(4375, 328)
 kind = "cave_bones"
 
 [node name="Ravine9" parent="Entities" instance=ExtResource("50_decor")]
-position = Vector2(3393, 198)
+position = Vector2(3691, 294)
 kind = "cave_bones"
 
 [node name="Ravine10" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(4215, 191)
+position = Vector2(3393, 198)
 kind = "dead3"
 
 [node name="Ravine11" parent="Entities" instance=ExtResource("4_tree")]
@@ -5332,13 +5332,17 @@ position = Vector2(3178, 207)
 kind = "dead2"
 
 [node name="Ravine15" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(3510, 187)
+position = Vector2(3816, 322)
 kind = "dead"
 
 [node name="Ravine16" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(3154, 318)
+position = Vector2(4245, 174)
 kind = "dead3"
 
 [node name="Ravine17" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(4269, 291)
+position = Vector2(3510, 187)
 kind = "dead2"
+
+[node name="Ravine18" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(3154, 318)
+kind = "dead"

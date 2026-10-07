@@ -38,14 +38,22 @@ FUNNEL_BOTTOM_X = 2520       # where the south mountain line leaves the bottom o
 RAVINE_X = 3060              # where the funnel has narrowed into the ravine
 RAVINE_END = 4470            # the ravine ends in a rounded dead end here
 BEFORE = "art/ground_src/east_before_ravine.png"   # the desert as it was (each run starts from it)
-STEP = 36                    # art px of cliff per terrace step (18 world px)
+STEP = 64                    # art px of cliff per terrace step (32 world px)
 VIEW_HALF = (180, 110)       # world px the camera can see around the player (plus a margin)
 
-# colours
-OUT = (50, 30, 27)
-FACE = np.array([(50, 30, 27), (82, 50, 40), (108, 68, 50), (136, 90, 64), (162, 114, 80), (190, 144, 104)], np.uint8)
-TOP = np.array([(98, 66, 50), (126, 88, 64), (148, 106, 76), (170, 128, 92), (194, 154, 112)], np.uint8)
-GRASS = np.array([(92, 92, 48), (112, 112, 58), (134, 132, 72)], np.uint8)
+# colours, picked from Rex's reference pictures (flat shading, no speckle)
+ROCK = {
+    "crack": (52, 45, 40),        # gaps between blocks, outlines
+    "dark": (84, 69, 57),         # shaded sides (right / underneath)
+    "body": (108, 92, 78),        # front of a block
+    "body2": (98, 83, 69),        # a slightly darker block, for variety
+    "light": (141, 127, 113),     # upward-facing planes
+    "shine": (164, 150, 135),     # the brightest edge
+    "top": (152, 139, 121),       # flat mountain top
+    "top2": (160, 149, 132),
+    "top_shadow": (128, 115, 99),
+    "rim": (170, 160, 144),
+}
 CLAY = np.array([(96, 44, 34), (112, 54, 41), (128, 64, 47), (146, 78, 56)], np.uint8)
 CRACK = (78, 36, 29)
 
@@ -79,7 +87,7 @@ def walls_y(wx):
     end = np.clip((wx - RAVINE_END) / 110.0, 0.0, 1.0)
     half = half * np.sqrt(np.clip(1.0 - end ** 2, 0.0, 1.0))             # rounded dead end
     top = mid - half
-    bottom = mid + half + 40           # the south wall's rim leans north over its foot
+    bottom = mid + half + 64           # the south wall's rim leans north over its foot
     top = np.where(wx > RAVINE_END + 110, 1e5, top)
     bottom = np.where(wx > RAVINE_END + 110, -1e5, bottom)
     # the funnel: the lines come down from the top / up from the bottom of the map
@@ -128,6 +136,7 @@ def voronoi(x, y, cw, ch):
     second = np.full(x.shape, 1e9, np.float32)
     bx = np.zeros(x.shape, np.float32)
     by = np.zeros(x.shape, np.float32)
+    seeds = np.zeros(x.shape + (2,), np.float32)
     for dy in (-1, 0, 1):
         for dx in (-1, 0, 1):
             cx, cy = ix + dx, iy + dy
@@ -138,10 +147,69 @@ def voronoi(x, y, cw, ch):
             dist = np.sqrt(ddx * ddx + ddy * ddy) * min(cw, ch)
             closer = dist < best
             second = np.where(closer, best, np.minimum(second, dist))
+            seeds = np.where(closer[..., None], np.stack([sx, sy], axis=-1), seeds)
             bx = np.where(closer, ddx, bx)
             by = np.where(closer, ddy, by)
             best = np.where(closer, dist, best)
+    voronoi.seeds = seeds
     return second - best, bx * 2.0, by * 2.0
+
+
+def h01(a, b, salt):
+    """Repeatable random number 0..1 for integer arrays a, b."""
+    n = (a.astype(np.int64) * 73856093) ^ (b.astype(np.int64) * 19349663) ^ (salt * 83492791 + SEED)
+    n = (n ^ (n >> 13)) * 1274126177
+    return ((n >> 8) & 0xffff) / 65535.0
+
+
+def boulder_colours(bx, by, edge):
+    """Chunky boulder like the reference: light top plane, mid front, dark right side, dark rim.
+    bx, by: position inside the boulder (-1..1); edge: distance to the next boulder (px)."""
+    c = np.empty(bx.shape + (3,), np.uint8)
+    c[:] = ROCK["body"]
+    c[by < -0.1 + 0.15 * bx] = ROCK["light"]
+    c[(by < -0.45) & (bx < -0.1)] = ROCK["shine"]
+    c[(bx > 0.35) & (by >= -0.2)] = ROCK["dark"]
+    c[(by > 0.6)] = ROCK["dark"]
+    c[edge < 2.0] = ROCK["crack"]
+    return c
+
+
+def cliff_blocks(x, f, lvl):
+    """Colours for cliff-face pixels, like the reference cliff: tall columns of big blocks.
+    Each terrace step's face is split into columns of random widths, and each column into 1-3
+    blocks at random heights. x: screen column, f: px below the top of the face, lvl: terrace."""
+    v = (f - 1) % STEP
+    band = (f - 1) // STEP + lvl * 16
+    cw = 46
+    c0 = x // cw
+    jit = lambda c: c * cw + (h01(c, band, 2) * 26).astype(np.int64) - 13
+    col = np.where(x < jit(c0), c0 - 1, c0)
+    col = np.where(x >= jit(col + 1), col + 1, col)
+    left, right = jit(col), jit(col + 1)
+    u, w = x - left, right - left
+    # breaks down the column
+    s1 = 22 + (h01(col, band, 4) * 24).astype(np.int64)
+    s1 = np.where(h01(col, band, 7) < 0.25, STEP, s1)          # some columns are one tall block
+    s2 = np.full_like(s1, STEP)
+    top_ = np.where(v < s1, 0, np.where(v < s2, s1, s2))
+    bot_ = np.where(v < s1, s1, np.where(v < s2, s2, STEP))
+    t, h = v - top_, bot_ - top_
+    piece = col * 4 + (v >= s1) + (v >= s2)
+    alt = h01(piece, band, 3)
+    # some blocks sit a little to the side: their top/side planes shift
+    c = np.empty(x.shape + (3,), np.uint8)
+    c[:] = ROCK["body"]
+    c[alt < 0.35] = ROCK["body2"]
+    c[t <= 2] = ROCK["light"]
+    c[(t == 0) & (alt > 0.45)] = ROCK["shine"]
+    c[(u <= 2) & (t > 3)] = np.where((alt > 0.6)[..., None], ROCK["light"], ROCK["body"])[(u <= 2) & (t > 3)]
+    c[u >= w - 6] = ROCK["dark"]
+    c[t >= h - 3] = ROCK["dark"]
+    corner = ((u <= 1) | (u >= w - 2)) & ((t <= 1) | (t >= h - 2))
+    crack = (u == 0) | (t == h - 1) | corner | ((u == w - 1) & (h01(piece, band, 6) > 0.5))
+    c[crack] = ROCK["crack"]
+    return c
 
 
 def main():
@@ -167,13 +235,13 @@ def main():
     B = smooth_noise(W, H, 150, 2)
     sd = sd + 10 * (R - 0.5) + 10 * (Q - 0.5)
     peaks = np.clip((P - 0.32) / 0.36, 0, 1)
-    E = 1 + 3.4 * np.clip(sd / 22, 0, 1) + np.clip((sd - 30) / 170, 0, 1) * 4.0 * peaks \
-        + 2.2 * np.clip((sd - 20) / 50, 0, 1) * np.clip(B - 0.42, -0.3, 0.3) + 0.6 * (Q - 0.5) * np.clip(sd / 30, 0, 1)
+    E = 1 + 1.4 * np.clip(sd / 26, 0, 1) + np.clip((sd - 60) / 200, 0, 1) * 2.6 * peaks \
+        + 1.6 * np.clip((sd - 40) / 60, 0, 1) * np.clip(B - 0.42, -0.3, 0.3) + 0.4 * (Q - 0.5) * np.clip(sd / 30, 0, 1)
     level = np.where(sd > 0, np.clip(np.floor(E), 1, None), 0).astype(np.uint8)
     del P, E, B
     # tidy the terraces: no one-pixel spikes or pinholes (they'd draw as thin towers)
     im = Image.fromarray(level)
-    for flt in (ImageFilter.MaxFilter(7), ImageFilter.MinFilter(7), ImageFilter.MinFilter(7), ImageFilter.MaxFilter(7)):
+    for flt in (ImageFilter.MaxFilter(11), ImageFilter.MinFilter(11), ImageFilter.MinFilter(11), ImageFilter.MaxFilter(11)):
         im = im.filter(flt)
     level = np.where(sd > 0, np.maximum(np.asarray(im), 1), 0).astype(np.int32)
     z = level * STEP
@@ -211,74 +279,53 @@ def main():
     out[is_clay] = clay[is_clay]
     del edge, rx, ry, clay
 
-    # ---- pebbles and small stones on the floor, most of them near the foot of the cliffs
+    # ---- small stones on the clay, mostly near the foot of the cliffs (like the boulders, smaller)
     near_wall = (sd > -40 + 30 * R) & walk
-    e3, px, py = voronoi(cols + np.zeros((H, 1)), rows + np.zeros((1, W)), 16, 12)
-    lucky = (smooth_noise(W, H, 9, 1) > np.where(near_wall, 0.74, 0.9)) & is_clay
-    r2 = px * px + py * py
-    stone = lucky & (r2 < 0.35)
-    ssh = 0.6 - 0.6 * py - 0.3 * px
-    out[stone] = FACE[np.clip(np.digitize(ssh[stone], [0.3, 0.6, 0.9]) + 2, 0, 5)]
-    out[lucky & (r2 >= 0.35) & (r2 < 0.5)] = OUT
-    del e3, px, py, lucky, r2, stone, ssh, near_wall
+    e3, px, py = voronoi(cols + np.zeros((H, 1)), rows + np.zeros((1, W)), 18, 14)
+    lucky = (smooth_noise(W, H, 9, 1) > np.where(near_wall, 0.76, 0.92)) & is_clay
+    sz = np.maximum(np.abs(px) * 0.9, np.abs(py))
+    stone = lucky & (sz < 0.6)
+    out[stone] = boulder_colours(px[stone] / 0.6, py[stone] / 0.6, np.where(sz[stone] > 0.5, 0.0, 9.0))
+    del e3, px, py, lucky, stone, near_wall, sz
 
-    # ---- mountain tops: rocky ground in soft patches, clusters of boulders, tufts of dry grass
+    # ---- mountain tops: flat pale rock, a few lumps, and chunky boulders piled along the edges
     m_top = (~walk) & (f == 0)
     ty, tx = np.nonzero(m_top)
     gyy = g[ty, tx]
-    lvl = lv[ty, tx]
-    patch = tone[ty, tx] + 0.07 * lvl - 0.12 + 0.1 * (grain[ty, tx] - 0.5)
-    ti = np.clip(np.digitize(patch, [0.4, 0.55, 0.72]), 0, 3)
-    col = TOP[ti + 1]                                       # flat tones (the darkest is for lines)
-    e2, bx, by = voronoi(tx.astype(np.float32), gyy.astype(np.float32), 22, 15)
-    near_rim = sd[gyy, tx] < 24 + 8 * R[ty, tx]                  # rocks piled along the edges
-    boulders = ((smooth_noise(W, H, 70, 2)[ty, tx] > 0.56) | near_rim) & (by * by + bx * bx * 0.7 < 0.9)
-    bsh = 0.62 - 0.45 * by - 0.25 * bx - 0.25 * (bx * bx + by * by) + 0.05 * lvl
-    bi = np.clip(np.digitize(bsh, [0.2, 0.45, 0.72, 0.95]), 0, 4)
-    bi = np.where(e2 < 1.4, 0, bi)
-    col[boulders] = TOP[bi[boulders]]
-    tuft = (smooth_noise(W, H, 16, 2)[ty, tx] > 0.66) & ~boulders
-    gi = np.clip(np.digitize(grain[ty, tx] * 0.4 + by * -0.2 + 0.4, [0.35, 0.55]), 0, 2)
-    col[tuft] = GRASS[gi[tuft]]
+    col = np.where((tone[ty, tx] > 0.6)[:, None], ROCK["top2"], ROCK["top"]).astype(np.uint8)
+    e2, bx, by = voronoi(tx.astype(np.float32), gyy.astype(np.float32), 34, 26)
+    sx = np.clip(voronoi.seeds[:, 0].astype(np.int64), 0, W - 1)
+    sy = np.clip(voronoi.seeds[:, 1].astype(np.int64), 0, H - 1)
+    clump = smooth_noise(W, H, 110, 2)
+    # a whole rock where its middle is near an edge or inside a clump (so rocks are never cut)
+    boulder = (sd[sy, sx] < 30) | (clump[sy, sx] > 0.62)
+    col[boulder] = boulder_colours(bx[boulder], by[boulder], e2[boulder])
     out[ty, tx] = col
-    del tx, ty, gyy, lvl, patch, ti, col, e2, bx, by, boulders, bsh, bi, tuft, gi, near_rim
+    del ty, tx, gyy, col, e2, bx, by, sx, sy, clump, boulder
 
-    # ---- cliff faces: stacked rounded ledges, light on top, dark underneath
+    # ---- cliff faces: stacked blocks in columns, like the reference cliff
     m_face = (~walk) & (f > 0)
     fy, fx = np.nonzero(m_face)
-    warp = Q[fy, fx] - 0.5
-    e2, bx, by = voronoi(fx + 18 * warp, fy + 10 * (R[fy, fx] - 0.5), 28, 13)
-    band = ((f[fy, fx] - 1) % STEP) / float(STEP)          # where in this step's ledge
-    sh = 0.55 - 0.5 * by - 0.2 * bx - 0.3 * (bx * bx + by * by) + 0.4 * (0.45 - band) \
-        + 0.25 * (tone[fy, fx] - 0.5) + 0.1 * (grain[fy, fx] - 0.5)
-    fi = np.clip(np.digitize(sh, [0.05, 0.25, 0.45, 0.68, 0.92]), 0, 5)
-    fi = np.where(e2 < 1.25, np.where(sh < 0.55, 0, 1), fi)
-    fi = np.where(f[fy, fx] <= 2, 5, fi)                   # bright lip right under the rim
-    out[fy, fx] = FACE[fi]
-    del fy, fx, e2, bx, by, band, sh, fi, warp
+    out[fy, fx] = cliff_blocks(fx, f[fy, fx], lv[fy, fx])
+    del fy, fx
 
-    # ---- outlines where a higher terrace meets lower ground (sides, back rims, cliff feet)
+    # ---- dark cracks where a higher terrace meets lower ground (sides, back edges, cliff feet)
     def lower(dy, dx):
         return shifted(lv, dy, dx, 99) < lv
     line = (~walk) & (lower(1, 0) | lower(-1, 0) | lower(0, 1) | lower(0, -1))
-    out[line] = OUT
+    out[line] = ROCK["crack"]
     soft = line & (f == 0) & (shifted(f, 1, 0, 0) == 0) & ~shifted(walk, -1, 0, False) & ~shifted(walk, 1, 0, False)
-    out[soft] = TOP[0]                      # between two rock tops: a softer line
-    # the rim at the top of a cliff face: brightest
-    rim = (~walk) & (f == 0) & (shifted(f, -1, 0, 0) > 0) & ~line
-    out[rim] = FACE[5]
-    # the far (north) edge of a higher terrace: a lit lip just below its outline
-    back = (~walk) & (f == 0) & shifted(line & (shifted(lv, 1, 0, 99) < lv), 1, 0, False)
-    out[back & ~line] = TOP[4]
-    out[shifted(back, 1, 0, False) & (f == 0) & ~walk & ~line] = TOP[3]
+    out[soft] = np.where((tone[soft] > 0.6)[:, None], ROCK["top2"], ROCK["top"])   # no line between two rock tops
+    # the far (north) edge of a higher terrace: a pale lip just below the line
+    back = (~walk) & (f == 0) & shifted(line & (shifted(lv, 1, 0, 99) < lv), 1, 0, False) & ~line
+    out[back] = ROCK["rim"]
 
-    # ---- a soft shadow on the floor at the foot of the cliffs
+    # ---- shadow on the floor at the foot of the cliffs (solid, 3 world px)
     shade = np.zeros((H, W), bool)
-    for k in range(1, 6):
-        shade |= shifted(~walk, k, 0, False) & (grain > (k - 1) * 0.2)
+    for k in range(1, 7):
+        shade |= shifted(~walk, k, 0, False)
     shade &= walk
-    out[shade] = (out[shade].astype(np.float32) * 0.82).astype(np.uint8)
-
+    out[shade] = (out[shade].astype(np.float32) * 0.8).astype(np.uint8)
     # ---- land the camera never sees: left unpainted (east of the old map edge only)
     near = walk[::2 * G, ::2 * G].copy()
     rx_, ry_ = VIEW_HALF[0] // G, VIEW_HALF[1] // G
@@ -330,9 +377,9 @@ def minimap(out, lv, walk, unseen):
                 a[ty, X] = (20, 16, 24, 255)
             elif walk_f[ty, tx] < 0.5:
                 l = mean_lv[ty, tx]
-                c = (150, 104, 74) if l < 2.5 else (128, 88, 64) if l < 4.5 else (176, 132, 96)
+                c = (140, 127, 110) if l < 2.5 else (120, 105, 90) if l < 4.5 else (156, 144, 126)
                 if (tx + ty) % 2 and l >= 1.5 and l < 2.5:
-                    c = (140, 96, 70)
+                    c = (132, 118, 102)
                 a[ty, X] = (*c, 255)
             elif X0 + tx * 16 >= 3000 or a[ty, X, 3] == 0:
                 r, gg, b = clay_c[ty, tx]
