@@ -22,6 +22,7 @@ const HELP := [
 	"/xp N - give yourself N XP",
 	"/gold N - give yourself N coins",
 	"/heal - refill health, stamina and mana",
+	"/resetcharacter - back to a fresh character (level, items, gear, pets)",
 ]
 
 
@@ -65,12 +66,31 @@ static func run(text: String, player: Node2D) -> Dictionary:
 				return _out(["Usage: /gold N"], false)
 			inv.add(COINS, arg.to_int())
 			return _out(["Gave %d coins" % arg.to_int()])
+		"resetcharacter", "resetchar":
+			if arg.to_lower() != "confirm":
+				return _out(["This wipes your level, stat points, inventory, equipment, hotbar,",
+						"pets and gravestones (quests, settings and the map stay).",
+						"Type /resetcharacter confirm to do it."], false)
+			reset_character(player.get_tree())
+			return _out(["Character reset"])
 		"heal":
 			var st := player.get_node_or_null("Stats") as Stats
 			if st:
 				st.refill()
 			return _out(["Refilled"])
 	return _out(["Unknown command: /%s  (try /help)" % cmd], false)
+
+
+## Save keys that make up a character. Settings (keys, sound), the explored map and quests are kept.
+const CHARACTER_KEYS := ["inventory", "equipment", "experience", "attributes", "hotbar", "hotbar_bar",
+		"pets", "gravestones", "chase_owned"]
+
+
+## Back to a fresh character: forget its saved state, then reload the world so everything starts
+## from its defaults exactly as on a new save.
+static func reset_character(tree: SceneTree) -> void:
+	SaveGame.erase(CHARACTER_KEYS)
+	tree.reload_current_scene.call_deferred()
 
 
 static func _out(lines: Array, ok := true) -> Dictionary:

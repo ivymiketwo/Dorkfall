@@ -38,6 +38,17 @@ static func put(key: String, value: Variant) -> void:
 	_write()
 
 
+## Forgets these keys (one write).
+static func erase(keys: Array) -> void:
+	_load()
+	for k in keys:
+		_data.erase(k)
+	if _batch_depth > 0:
+		_dirty = true
+		return
+	_write()
+
+
 static var _batch_depth := 0
 static var _dirty := false
 
