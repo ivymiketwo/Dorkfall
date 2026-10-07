@@ -5332,7 +5332,7 @@ position = Vector2(3178, 207)
 kind = "dead2"
 
 [node name="Ravine15" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(3816, 322)
+position = Vector2(3155, 377)
 kind = "dead"
 
 [node name="Ravine16" parent="Entities" instance=ExtResource("4_tree")]
@@ -5344,5 +5344,5 @@ position = Vector2(3510, 187)
 kind = "dead2"
 
 [node name="Ravine18" parent="Entities" instance=ExtResource("4_tree")]
-position = Vector2(3154, 318)
+position = Vector2(3833, 306)
 kind = "dead"

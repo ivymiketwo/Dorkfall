@@ -39,6 +39,7 @@ RAVINE_X = 3060              # where the funnel has narrowed into the ravine
 RAVINE_END = 4470            # the ravine ends in a rounded dead end here
 BEFORE = "art/ground_src/east_before_ravine.png"   # the desert as it was (each run starts from it)
 STEP = 64                    # art px of cliff per terrace step (32 world px)
+WIGGLE = 110                 # world px the funnel's mountain lines wander (random bends)
 VIEW_HALF = (180, 110)       # world px the camera can see around the player (plus a margin)
 
 # colours, picked from Rex's reference pictures (flat shading, no speckle)
@@ -47,6 +48,7 @@ ROCK = {
     "dark": (84, 69, 57),         # shaded sides (right / underneath)
     "body": (108, 92, 78),        # front of a block
     "body2": (98, 83, 69),        # a slightly darker block, for variety
+    "body_hi": (121, 105, 90),    # a block standing out a little
     "light": (141, 127, 113),     # upward-facing planes
     "shine": (164, 150, 135),     # the brightest edge
     "top": (152, 139, 121),       # flat mountain top
@@ -178,39 +180,57 @@ def boulder_colours(bx, by, edge):
 
 
 def cliff_blocks(x, f, lvl):
-    """Colours for cliff-face pixels, like the reference cliff: tall columns of big blocks.
-    Each terrace step's face is split into columns of random widths, and each column into 1-3
-    blocks at random heights. x: screen column, f: px below the top of the face, lvl: terrace."""
+    """Colours for cliff-face pixels, after the reference cliffs: rock columns of very different
+    widths with rounded tops at different heights, some standing out and some set back, vertical
+    cracks, and now and then a break across a column.
+    x: screen column, f: px below the top of the face, lvl: terrace."""
     v = (f - 1) % STEP
     band = (f - 1) // STEP + lvl * 16
-    cw = 46
+    cw = 40
     c0 = x // cw
-    jit = lambda c: c * cw + (h01(c, band, 2) * 26).astype(np.int64) - 13
+    jit = lambda c: c * cw + ((h01(c, band, 2) - 0.5) * 0.76 * cw).astype(np.int64)
     col = np.where(x < jit(c0), c0 - 1, c0)
     col = np.where(x >= jit(col + 1), col + 1, col)
     left, right = jit(col), jit(col + 1)
     u, w = x - left, right - left
-    # breaks down the column
-    s1 = 22 + (h01(col, band, 4) * 24).astype(np.int64)
-    s1 = np.where(h01(col, band, 7) < 0.25, STEP, s1)          # some columns are one tall block
-    s2 = np.full_like(s1, STEP)
-    top_ = np.where(v < s1, 0, np.where(v < s2, s1, s2))
-    bot_ = np.where(v < s1, s1, np.where(v < s2, s2, STEP))
+    a, b, d = h01(col, band, 3), h01(col, band, 8), h01(col, band, 9)
+    # where the column's own top is (some start lower down, showing the rock behind them)
+    o = np.where(a < 0.3, 0, (b * 38).astype(np.int64))
+    tt = v - o
+    r = 6
+    cx = np.where(u < r, r - u, np.where(u > w - 1 - r, u - (w - 1 - r), 0))
+    cy = np.where(tt < r, r - tt, 0)
+    behind = (tt < 0) | ((cx * cx + cy * cy) > r * r)
+    # a break across the column, sometimes
+    s1 = o + 22 + (h01(col, band, 4) * 30).astype(np.int64)
+    s1 = np.where((h01(col, band, 7) < 0.7) | (s1 > STEP - 10), STEP, s1)
+    top_ = np.where(v < s1, o, s1)
+    bot_ = np.where(v < s1, s1, STEP)
     t, h = v - top_, bot_ - top_
-    piece = col * 4 + (v >= s1) + (v >= s2)
-    alt = h01(piece, band, 3)
-    # some blocks sit a little to the side: their top/side planes shift
+    piece = col * 4 + (v >= s1)
+    protrude, recess = d > 0.68, d < 0.25
     c = np.empty(x.shape + (3,), np.uint8)
     c[:] = ROCK["body"]
-    c[alt < 0.35] = ROCK["body2"]
+    c[recess] = ROCK["body2"]
+    c[protrude] = ROCK["body_hi"]
+    c[(u >= 1) & (u <= 2) & (protrude | (a > 0.5))] = ROCK["light"]          # lit left edge
+    c[u >= w - 4 - (d * 5).astype(np.int64)] = ROCK["dark"]                   # shaded right side
+    # vertical cracks down the wider columns
+    sx = 5 + (h01(col, band, 10) * np.maximum(w - 12, 1)).astype(np.int64)
+    st = (h01(col, band, 11) * h * 0.6).astype(np.int64)
+    streak = (w > 20) & (u == sx) & (t > st) & (t < h - 3)
+    c[streak] = ROCK["dark"]
+    c[(w > 20) & (u == sx + 1) & (t > st) & (t < h - 3)] = ROCK["light"]
     c[t <= 2] = ROCK["light"]
-    c[(t == 0) & (alt > 0.45)] = ROCK["shine"]
-    c[(u <= 2) & (t > 3)] = np.where((alt > 0.6)[..., None], ROCK["light"], ROCK["body"])[(u <= 2) & (t > 3)]
-    c[u >= w - 6] = ROCK["dark"]
+    c[(t == 0) & (protrude | (a > 0.55))] = ROCK["shine"]
     c[t >= h - 3] = ROCK["dark"]
+    c[(v >= STEP - 10) & (c == np.array(ROCK["body_hi"], np.uint8)).all(-1)] = ROCK["body"]   # darker near the foot
+    c[(v >= STEP - 10) & (c == np.array(ROCK["body"], np.uint8)).all(-1)] = ROCK["body2"]
     corner = ((u <= 1) | (u >= w - 2)) & ((t <= 1) | (t >= h - 2))
     crack = (u == 0) | (t == h - 1) | corner | ((u == w - 1) & (h01(piece, band, 6) > 0.5))
     c[crack] = ROCK["crack"]
+    c[behind] = ROCK["dark"]
+    c[behind & ((cx * cx + cy * cy) <= (r + 1) ** 2) & (tt >= -1)] = ROCK["crack"]          # outline of a rounded top
     return c
 
 
@@ -227,8 +247,13 @@ def main():
     G = 4
     gx = X0 + (np.arange(W // (2 * G)) + 0.5) * G
     gy = Y0 + (np.arange(H // (2 * G)) + 0.5) * G
-    top, bottom = walls_y(gx)
-    floor = (gy[:, None] > top[None, :]) & (gy[:, None] < bottom[None, :])
+    # bend the lines at random (strongly in the funnel, gently along the ravine so it stays open)
+    gh_, gw_ = len(gy), len(gx)
+    amp = np.interp(gx, [2950, 3150], [WIGGLE, WIGGLE * 0.25])[None, :]
+    wx_ = gx[None, :] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
+    wy_ = gy[:, None] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
+    top, bottom = walls_y(wx_)
+    floor = (wy_ > top) & (wy_ < bottom)
     sd = upscale(distance(floor, G) - distance(~floor, G), W, H)      # >0 in the mountain
 
     P = smooth_noise(W, H, 300)
