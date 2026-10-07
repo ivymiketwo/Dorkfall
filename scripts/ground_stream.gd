@@ -9,13 +9,14 @@ extends Node2D
 ## stays the same however big the map gets. Squares that are on screen and still missing are
 ## loaded at once (never a hole); the ring around them loads in the background.
 ## In the editor every square is shown, so placing things on the map works as before.
+## Squares with no file are land the camera can never see; they are simply skipped.
 
 const DIR := "res://art/ground/"
 
 ## World position of the painting's top-left corner.
 @export var origin := Vector2(-1680, -992)
 @export var tile_world := 512.0
-@export var cols := 10
+@export var cols := 13
 @export var rows := 6
 ## Art pixels per world pixel (the ground is painted at double resolution).
 @export var art_scale := 2.0
@@ -33,7 +34,8 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		for r in rows:
 			for c in cols:
-				_show(Vector2i(c, r), load(_path(Vector2i(c, r))))
+				if ResourceLoader.exists(_path(Vector2i(c, r))):
+					_show(Vector2i(c, r), load(_path(Vector2i(c, r))))
 		return
 	_update.call_deferred(true)
 
@@ -80,6 +82,8 @@ func _update(all_sync: bool) -> void:
 			var cell := center + Vector2i(dx, dy)
 			if cell.x < 0 or cell.y < 0 or cell.x >= cols or cell.y >= rows or _tiles.has(cell):
 				continue
+			if not ResourceLoader.exists(_path(cell)):
+				continue          # land nobody can see (around the east ravine) isn't stored
 			if all_sync or on_screen.intersects(_cell_rect(cell)):
 				_show(cell, load(_path(cell)))          # on screen: load now, no hole
 			elif not _pending.has(cell):

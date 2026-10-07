@@ -3,7 +3,7 @@ extends Node2D
 ## If you paint your own tiles on Ground in the editor, generation is skipped.
 
 const MAP_ORIGIN := Vector2i(-105, -62)   # top-left tile (the village starts at 0, 0)
-const MAP_SIZE := Vector2i(300, 168)      # in tiles
+const MAP_SIZE := Vector2i(400, 168)      # in tiles (x -1680..4720, y -992..1696 in world px)
 # West ocean: for each tile row (from the top), the first land tile counted from the left edge.
 # Everything between the wall and that tile is sea (impassable). Matches art/water_info_ocean.png.
 var OCEAN_SHORE := PackedInt32Array([35, 35, 36, 36, 36, 37, 36, 36, 36, 36, 35, 35, 35, 35, 35, 35, 35, 34, 33, 33, 32, 32, 32, 31, 31, 31, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 32, 33, 34, 34, 34, 34, 34, 35, 36, 36, 37, 38, 38, 38, 38, 37, 37, 37, 36, 35, 35, 34, 34, 33, 33, 33, 33, 33, 32, 32, 31, 31, 32, 32, 33, 33, 33, 34, 34, 35, 35, 36, 36, 36, 36, 36, 37, 37, 37, 37, 37, 37, 36, 36, 36, 36, 35, 35, 35, 34, 34, 34, 34, 33, 33, 33, 33, 33, 34, 34, 35, 36, 37, 37, 37, 37, 37, 37, 38, 38, 38, 38, 38, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 38, 38, 37, 37, 36, 36, 36, 36, 36, 36, 36, 36, 35, 35, 35, 35, 35, 35, 36, 36, 37, 38, 38, 38, 37, 38, 38, 39, 39, 40, 40, 40, 40, 40, 39, 38, 37, 37])
@@ -15,6 +15,9 @@ const PATH := Vector2i(2, 0)
 const WATER := Vector2i(3, 0)   # has collision
 const WALL := Vector2i(4, 0)    # has collision
 const DOCK_WEST := -76          # westmost tile column of the dock (art/dock.png)
+## East mountains and ravine: wall tiles made by tools/gen_ravine.py ('#' = wall).
+const MOUNTAINS := "res://data/mountains.json"
+var _mountains := {}
 
 @onready var ground: TileMapLayer = $Ground
 @onready var camera: Camera2D = $Entities/Player/Camera2D
@@ -55,6 +58,9 @@ func _ready() -> void:
 func _generate_map() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 1234  # same map every run
+	var f := FileAccess.open(MOUNTAINS, FileAccess.READ)
+	if f:
+		_mountains = JSON.parse_string(f.get_as_text())
 	for y in range(MAP_ORIGIN.y, MAP_ORIGIN.y + MAP_SIZE.y):
 		for x in range(MAP_ORIGIN.x, MAP_ORIGIN.x + MAP_SIZE.x):
 			ground.set_cell(Vector2i(x, y), 0, _pick_tile(x, y, rng))
@@ -63,6 +69,8 @@ func _generate_map() -> void:
 func _pick_tile(x: int, y: int, rng: RandomNumberGenerator) -> Vector2i:
 	# Border wall
 	if x == MAP_ORIGIN.x or y == MAP_ORIGIN.y or x == MAP_ORIGIN.x + MAP_SIZE.x - 1 or y == MAP_ORIGIN.y + MAP_SIZE.y - 1:
+		return WALL
+	if _is_mountain(x, y):
 		return WALL
 	# Dock at the west end of the road: walkable planks over the sea
 	if (y == 15 or y == 16) and x >= DOCK_WEST and x - MAP_ORIGIN.x < OCEAN_SHORE[y - MAP_ORIGIN.y]:
@@ -84,6 +92,17 @@ func _pick_tile(x: int, y: int, rng: RandomNumberGenerator) -> Vector2i:
 	if y == 15 or y == 16 or x == 12 or x == 13 or ((x == 90 or x == 91) and y >= 15):
 		return PATH
 	return GRASS_FLOWERS if rng.randf() < 0.08 else GRASS
+
+
+func _is_mountain(x: int, y: int) -> bool:
+	if _mountains.is_empty():
+		return false
+	var row := y - int(_mountains.y0)
+	var col := x - int(_mountains.x0)
+	var rows: Array = _mountains.rows
+	if row < 0 or row >= rows.size() or col < 0 or col >= (rows[row] as String).length():
+		return false
+	return (rows[row] as String)[col] == "#"
 
 
 func _fit_camera_to_map() -> void:

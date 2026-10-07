@@ -37,6 +37,12 @@ func _ready() -> void:
 		var raw := Marshalls.base64_to_raw(saved)
 		if raw.size() == _fog.size():
 			_fog = raw
+		elif raw.size() % _fh == 0 and raw.size() / _fh < _fw:
+			# saved before the map grew east: keep what was explored
+			var old_w := raw.size() / _fh
+			for z in _fh:
+				for x in old_w:
+					_fog[z * _fw + x] = raw[z * old_w + x]
 	_veil_img = Image.create(_w, _h, false, Image.FORMAT_RGBA8)
 	_paint_veil()
 	_veil_tex = ImageTexture.create_from_image(_veil_img)
@@ -53,7 +59,12 @@ func _ready() -> void:
 	_full.visible = false
 	_full.draw.connect(_draw_full)
 	add_child(_full)
-	CloseButton.attach_custom(_full, self, Vector2((640.0 - _w * 2.0) / 2.0 + _w * 2.0 - 14.0, 22.0), 2.0)
+	CloseButton.attach_custom(_full, self, Vector2((640.0 - _w * _full_scale()) / 2.0 + _w * _full_scale() - 14.0, 22.0), 2.0)
+
+
+## The world map is drawn 2x, or smaller if that wouldn't fit the screen.
+func _full_scale() -> float:
+	return minf(2.0, 600.0 / _w)
 
 
 func _hash(x: int, z: int) -> float:
@@ -187,7 +198,7 @@ func _draw_mini() -> void:
 
 func _draw_full() -> void:
 	_full.draw_rect(Rect2(Vector2.ZERO, Vector2(640, 360)), Color(0.05, 0.04, 0.08, 0.82))
-	var s := 2.0
+	var s := _full_scale()
 	var size := Vector2(_w, _h) * s
 	var pos := Vector2((640.0 - size.x) / 2.0, 22.0)
 	var r := Rect2(pos, size)
@@ -201,7 +212,7 @@ func _draw_full() -> void:
 			known += 1
 	var pct := "%d%% EXPLORED" % roundi(100.0 * known / _fog.size())
 	HiFont.draw(_full, Vector2(pos.x + 70, 9), pct, UiStyle.TEXT, 1.0)
-	HiFont.draw(_full, Vector2(pos.x + 450, 9), "M OR ESC TO CLOSE", UiStyle.TEXT, 1.0)
+	HiFont.draw(_full, Vector2(pos.x + size.x - 150, 9), "M OR ESC TO CLOSE", UiStyle.TEXT, 1.0)
 	var p := _player()
 	if p != null and _outside(p):
 		_quest_markers(_full, p, func(tile: Vector2) -> Vector2: return pos + tile * s, r)
