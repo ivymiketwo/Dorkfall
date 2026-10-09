@@ -36,6 +36,7 @@
 [ext_resource type="Script" uid="uid://b40ngpex8r5ry" path="res://scripts/ducks.gd" id="301_ducks"]
 [ext_resource type="PackedScene" path="res://scenes/bulletin_board.tscn" id="302_board"]
 [ext_resource type="PackedScene" path="res://scenes/luck.tscn" id="303_luck"]
+[ext_resource type="PackedScene" path="res://scenes/skeleton_wizard.tscn" id="310_wizard"]
 [ext_resource type="Texture2D" path="res://art/dock.png" id="dock_tex"]
 [ext_resource type="Script" path="res://scripts/ground_stream.gd" id="gstream"]
 [ext_resource type="Script" path="res://scripts/sleep_regions.gd" id="sleepreg"]
@@ -5475,3 +5476,18 @@ kind = "cactus_b"
 [node name="DesertE34" parent="Entities" instance=ExtResource("50_decor")]
 position = Vector2(6282, -782)
 kind = "cactus_b"
+
+[node name="SkeletonWizard1" parent="Entities" instance=ExtResource("310_wizard")]
+position = Vector2(3300, 230)
+
+[node name="SkeletonWizard2" parent="Entities" instance=ExtResource("310_wizard")]
+position = Vector2(3550, 320)
+
+[node name="SkeletonWizard3" parent="Entities" instance=ExtResource("310_wizard")]
+position = Vector2(3800, 238)
+
+[node name="SkeletonWizard4" parent="Entities" instance=ExtResource("310_wizard")]
+position = Vector2(4050, 200)
+
+[node name="SkeletonWizard5" parent="Entities" instance=ExtResource("310_wizard")]
+position = Vector2(4300, 300)
