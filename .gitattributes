@@ -1,1 +1,5 @@
 *.bat text eol=crlf
+# Godot writes these with LF line endings on every system; keep them that way so line
+# endings alone never make them look changed (which blocks the launchers' update).
+project.godot text eol=lf
+*.import text eol=lf
