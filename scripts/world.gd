@@ -3,7 +3,7 @@ extends Node2D
 ## If you paint your own tiles on Ground in the editor, generation is skipped.
 
 const MAP_ORIGIN := Vector2i(-105, -62)   # top-left tile (the village starts at 0, 0)
-const MAP_SIZE := Vector2i(400, 168)      # in tiles (x -1680..4720, y -992..1696 in world px)
+const MAP_SIZE := Vector2i(512, 168)      # in tiles (x -1680..6512, y -992..1696 in world px)
 # West ocean: for each tile row (from the top), the first land tile counted from the left edge.
 # Everything between the wall and that tile is sea (impassable). Matches art/water_info_ocean.png.
 var OCEAN_SHORE := PackedInt32Array([35, 35, 36, 36, 36, 37, 36, 36, 36, 36, 35, 35, 35, 35, 35, 35, 35, 34, 33, 33, 32, 32, 32, 31, 31, 31, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 32, 33, 34, 34, 34, 34, 34, 35, 36, 36, 37, 38, 38, 38, 38, 37, 37, 37, 36, 35, 35, 34, 34, 33, 33, 33, 33, 33, 32, 32, 31, 31, 32, 32, 33, 33, 33, 34, 34, 35, 35, 36, 36, 36, 36, 36, 37, 37, 37, 37, 37, 37, 36, 36, 36, 36, 35, 35, 35, 34, 34, 34, 34, 33, 33, 33, 33, 33, 34, 34, 35, 36, 37, 37, 37, 37, 37, 37, 38, 38, 38, 38, 38, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 38, 38, 37, 37, 36, 36, 36, 36, 36, 36, 36, 36, 35, 35, 35, 35, 35, 35, 36, 36, 37, 38, 38, 38, 37, 38, 38, 39, 39, 40, 40, 40, 40, 40, 39, 38, 37, 37])

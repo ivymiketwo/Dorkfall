@@ -16,7 +16,7 @@ const DIR := "res://art/ground/"
 ## World position of the painting's top-left corner.
 @export var origin := Vector2(-1680, -992)
 @export var tile_world := 512.0
-@export var cols := 13
+@export var cols := 16
 @export var rows := 6
 ## Art pixels per world pixel (the ground is painted at double resolution).
 @export var art_scale := 2.0

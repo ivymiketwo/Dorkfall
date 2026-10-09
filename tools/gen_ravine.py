@@ -1,12 +1,13 @@
-"""Paints the east mountains and the red-clay ravine, grows the map east to make room for it,
-and writes the walls (data/mountains.json), the minimap and the cleared props list.
+"""Paints the east mountains and the red-clay ravine (a pass through the mountains), the open
+desert beyond it, grows the map east to make room, and writes the walls (data/mountains.json),
+the minimap and the props.
 
     python3 tools/gen_ravine.py
 
 How it works (plain version):
   - Two curved lines (FUNNEL / RAVINE settings below) mark where you can walk: they start in the
-    desert, bend toward the road and then run east side by side as the ravine.
-    Everything outside them is mountain.
+    desert, bend toward the road, run east side by side as the ravine, then open out again
+    (a mirror of the west funnel) into the east desert. Everything outside them is mountain.
   - The mountain gets a height: low right at the edge, higher further in, with bumpy peaks.
     Heights come in steps (terraces), so the rock is drawn as stacked ledges.
   - It is drawn like a 3/4 view: higher ground is shifted up the screen, so the south-facing
@@ -29,18 +30,22 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ground_tiles import assemble, split, ORIGIN, VOID   # noqa: E402
 
 SEED = 21
-X0, X1 = 2400, 4720          # world x of the part this works on (east edge = new map edge)
+X0, X1 = 2400, 6512          # world x: the mountains start at X0; X1 is the map's east edge
+XM = 5280                    # world x where the mountain work ends (all open desert east of it)
 Y0, Y1 = -992, 1696          # world y (the whole height of the map)
 OLD_EDGE = 3120              # the old east edge of the map
 ROAD_Y = 256                 # middle of the east-west road
 FUNNEL_TOP_X = 2500          # where the north mountain line leaves the top of the map
 FUNNEL_BOTTOM_X = 2520       # where the south mountain line leaves the bottom of the map
 RAVINE_X = 3060              # where the funnel has narrowed into the ravine
-RAVINE_END = 4470            # the ravine ends in a rounded dead end here
+RAVINE_END = 4470            # the ravine starts opening out again here (east funnel)
+FUNNEL_E_TOP_X = 5030        # where the north mountain line reaches the top of the map again
+FUNNEL_E_BOTTOM_X = 5010     # where the south mountain line reaches the bottom of the map again
+CLAY_TO = 4970               # world x where the clay turns back into sand (east desert)
 BEFORE = "art/ground_src/east_before_ravine.png"   # the desert as it was (each run starts from it)
 STEP = 64                    # (old fixed step; heights are now LEVEL_Z)
 # how high each terrace is drawn, in art px: one tall cliff first, then smaller steps behind it
-LEVEL_Z = np.array([0, 120, 196, 256, 316, 372, 428, 484, 540, 596, 652], np.int64)
+LEVEL_Z = np.array([0, 120, 196, 256, 316, 372, 428, 484, 540, 596, 652], np.int32)
 WIGGLE = 110                 # world px the funnel's mountain lines wander (random bends)
 VIEW_HALF = (180, 110)       # world px the camera can see around the player (plus a margin)
 
@@ -64,11 +69,40 @@ CRACK = (78, 36, 29)
 CLAY_FROM = 2560             # world x where the sand turns to clay (the funnel into the ravine)
 
 rng = np.random.default_rng(SEED)
-W, H = (X1 - X0) * 2, (Y1 - Y0) * 2          # art size of the part
+W, H = (XM - X0) * 2, (Y1 - Y0) * 2          # art size of the mountain part
 AX0 = (X0 - ORIGIN[0]) * 2                    # its art x in the whole painting
 
 
+OLD_W = (4720 - X0) * 2      # art width the mountains had when the ravine was a dead end
+_rng_ext = np.random.default_rng(SEED + 9)
+SPLIT = True                 # keep the old part's random shapes exactly (see smooth_noise)
+
+
 def smooth_noise(w, h, cell, octaves=3):
+    """Blobby noise 0..1. The part of the picture that existed before the map grew east
+    (OLD_W) gets exactly the random numbers it always had, so the west funnel and the
+    ravine keep their shapes; the new east part gets its own, faded in over a short overlap."""
+    w_old = round(w * OLD_W / W)
+    if not SPLIT or w_old >= w:
+        return _smooth_noise(w, h, cell, octaves, rng)
+    a = _smooth_noise(w_old, h, cell, octaves, rng)
+    out = _smooth_noise(w, h, cell, octaves, _rng_ext)
+    ov = max(w_old // 16, 4)
+    t = np.clip((np.arange(w_old) - (w_old - ov)) / ov, 0.0, 1.0).astype(np.float32)[None, :]
+    out[:, :w_old] = a * (1 - t) + out[:, :w_old] * t
+    return out
+
+
+def split_random(h, w):
+    """rng.random((h, w)) with the same old-part / new-part split as smooth_noise."""
+    w_old = min(OLD_W, w)
+    a = rng.random((h, w_old)).astype(np.float32)
+    if w_old >= w:
+        return a
+    return np.concatenate([a, _rng_ext.random((h, w - w_old), dtype=np.float32)], axis=1)
+
+
+def _smooth_noise(w, h, cell, octaves, rng):
     out = np.zeros((h, w), np.float32)
     amp = total = 0.0
     amp = 1.0
@@ -90,17 +124,18 @@ def walls_y(wx):
     """World y of the north and south edges of the walkable ground, for world x values."""
     half = 96 + wave(wx, [(28, 170, 0.0), (14, 63, 1.0)])
     mid = ROAD_Y + wave(wx, [(26, 240, 0.5), (8, 90, 2.0)])
-    end = np.clip((wx - RAVINE_END) / 110.0, 0.0, 1.0)
-    half = half * np.sqrt(np.clip(1.0 - end ** 2, 0.0, 1.0))             # rounded dead end
     top = mid - half
     bottom = mid + half + 88           # the south wall's rim leans north over its foot
-    top = np.where(wx > RAVINE_END + 110, 1e5, top)
-    bottom = np.where(wx > RAVINE_END + 110, -1e5, bottom)
     # the funnel: the lines come down from the top / up from the bottom of the map
     t = np.clip((wx - FUNNEL_TOP_X) / (RAVINE_X - FUNNEL_TOP_X), 0.0, 1.0)
     top = np.where(wx < FUNNEL_TOP_X, -1e5, top - (top - (Y0 - 60)) * (1 - t) ** 2)
     t = np.clip((wx - FUNNEL_BOTTOM_X) / (RAVINE_X - FUNNEL_BOTTOM_X), 0.0, 1.0)
     bottom = np.where(wx < FUNNEL_BOTTOM_X, 1e5, bottom + ((Y1 + 60) - bottom) * (1 - t) ** 2)
+    # ...and the mirror of it at the east end: the lines go back up / down to the map edges
+    t = np.clip((FUNNEL_E_TOP_X - wx) / (FUNNEL_E_TOP_X - RAVINE_END), 0.0, 1.0)
+    top = np.where(wx > FUNNEL_E_TOP_X, -1e5, top - (top - (Y0 - 60)) * (1 - t) ** 2)
+    t = np.clip((FUNNEL_E_BOTTOM_X - wx) / (FUNNEL_E_BOTTOM_X - RAVINE_END), 0.0, 1.0)
+    bottom = np.where(wx > FUNNEL_E_BOTTOM_X, 1e5, bottom + ((Y1 + 60) - bottom) * (1 - t) ** 2)
     return top, bottom
 
 
@@ -134,6 +169,31 @@ _TAB = rng.random((2, 512)).astype(np.float32)
 
 
 def voronoi(x, y, cw, ch):
+    """Same as _voronoi, done in pieces so big pictures fit in memory."""
+    shape = np.broadcast_shapes(np.shape(x), np.shape(y))
+    if len(shape) == 2:                       # a whole picture: go a band of rows at a time
+        outs, seeds = [], []
+        for i in range(0, shape[0], 256):
+            xs = np.broadcast_to(x, shape)[i:i + 256].astype(np.float32)
+            ys = np.broadcast_to(y, shape)[i:i + 256].astype(np.float32)
+            outs.append(_voronoi(xs, ys, cw, ch))
+            seeds.append(_voronoi.seeds)
+        voronoi.seeds = np.concatenate(seeds)
+        return tuple(np.concatenate([o[k] for o in outs]) for k in range(3))
+    n = shape[0]
+    if n <= 2_000_000:
+        r = _voronoi(x, y, cw, ch)
+        voronoi.seeds = _voronoi.seeds
+        return r
+    outs, seeds = [], []
+    for i in range(0, n, 2_000_000):
+        outs.append(_voronoi(x[i:i + 2_000_000], y[i:i + 2_000_000], cw, ch))
+        seeds.append(_voronoi.seeds)
+    voronoi.seeds = np.concatenate(seeds)
+    return tuple(np.concatenate([o[k] for o in outs]) for k in range(3))
+
+
+def _voronoi(x, y, cw, ch):
     """Rock chunks: for points (x, y) in art px, returns (edge, rx, ry): edge = how far from the
     border with the next chunk (px), rx / ry = position inside its own chunk (-1..1)."""
     gx, gy = x / cw, y / ch
@@ -157,7 +217,7 @@ def voronoi(x, y, cw, ch):
             bx = np.where(closer, ddx, bx)
             by = np.where(closer, ddy, by)
             best = np.where(closer, dist, best)
-    voronoi.seeds = seeds
+    _voronoi.seeds = seeds
     return second - best, bx * 2.0, by * 2.0
 
 
@@ -242,8 +302,46 @@ def cliff_blocks(x, v, hh, key):
     return c
 
 
+SAND = np.array([(220, 188, 133), (233, 207, 155), (242, 223, 179)], np.uint8)   # same as the west desert
+SAND_DEEP = (209, 174, 120)
+SAND_SPECKS = [((192, 154, 108), 0.010), ((250, 236, 200), 0.004), ((214, 128, 84), 0.0012), ((150, 118, 84), 0.0015)]
+
+
+def desert(w, h, wx0):
+    """Sand like tools/gen_desert.py (flat tones, soft dunes, specks) for an area w x h art px
+    whose left edge is at world x wx0. Uses its own random numbers, so the mountains come out
+    the same as before."""
+    global rng, SPLIT
+    keep, rng = rng, np.random.default_rng(SEED + 5)
+    SPLIT = False
+    world_x = wx0 + np.arange(w)[None, :] / 2.0
+    world_y = Y0 + np.arange(h)[:, None] / 2.0
+    sand = SAND[np.digitize(smooth_noise(w, h, 90, 3), [0.44, 0.58])]
+    warp = smooth_noise(w, h, 260, 2)
+    ridge = np.sin((world_y + warp * 140.0 + np.sin(world_x / 130.0) * 24.0) / 21.0)
+    del warp
+    dune_zone = smooth_noise(w, h, 300, 2) > 0.58
+    sand[dune_zone & (ridge < -0.62) & (ridge > -0.78)] = SAND_DEEP
+    sand[dune_zone & (ridge > 0.96)] = SAND[2]
+    del ridge, dune_zone
+    spk = rng.random((h, w), dtype=np.float32)
+    acc = 0.0
+    for col, p in SAND_SPECKS:
+        sand[(spk >= acc) & (spk < acc + p)] = col
+        acc += p
+    rng = keep
+    SPLIT = True
+    return sand
+
+
+SAND_ART = None
+
+
 def main():
+    global SAND_ART
     whole = assemble()
+    # the east desert's sand, from X0 to the map's east edge (used in and past the mountains)
+    SAND_ART = desert((X1 - X0) * 2, H, X0)
     if not os.path.exists(BEFORE):
         os.makedirs(os.path.dirname(BEFORE), exist_ok=True)
         whole.crop((AX0, 0, AX0 + (OLD_EDGE - X0) * 2, H)).save(BEFORE, optimize=True)
@@ -257,7 +355,8 @@ def main():
     gy = Y0 + (np.arange(H // (2 * G)) + 0.5) * G
     # bend the lines at random (strongly in the funnel, gently along the ravine so it stays open)
     gh_, gw_ = len(gy), len(gx)
-    amp = np.interp(gx, [2950, 3150], [WIGGLE, WIGGLE * 0.25])[None, :]
+    amp = np.interp(gx, [2950, 3150, RAVINE_END - 90, RAVINE_END + 110],
+                    [WIGGLE, WIGGLE * 0.25, WIGGLE * 0.25, WIGGLE])[None, :]
     wx_ = gx[None, :] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
     wy_ = gy[:, None] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
     top, bottom = walls_y(wx_)
@@ -282,7 +381,7 @@ def main():
     z = LEVEL_Z[level]
 
     # ---- 3/4 view: for each screen pixel, which ground point shows there
-    rows = np.arange(H)[:, None]
+    rows = np.arange(H, dtype=np.int32)[:, None]
     topy = rows - z                                        # where each ground point's top is drawn
     sufmin = np.minimum.accumulate(topy[::-1], axis=0)[::-1]
     g = np.empty((H, W), np.int32)
@@ -294,34 +393,43 @@ def main():
     lv = level[g, cols]                                    # visible terrace level
     f = rows - topy[g, cols]                               # 0 = on top, >0 = down a cliff face
     walk = lv == 0
-    wx = X0 + cols / 2.0 + np.zeros((H, 1))
-    wy = Y0 + rows / 2.0
+    wx = (X0 + cols / 2.0).astype(np.float32) + np.zeros((H, 1), np.float32)
+    wy = (Y0 + rows / 2.0).astype(np.float32)
 
     out = art.copy()
-    grain = rng.random((H, W)).astype(np.float32)
+    grain = split_random(H, W)
     tone = smooth_noise(W, H, 80)
 
     # ---- floor: the desert sand turns into dark red clay going into the ravine
-    edge, rx, ry = voronoi(cols + np.zeros((H, 1)), rows + np.zeros((1, W)), 34, 25)
+    edge, rx, ry = voronoi(cols, rows, 34, 25)
+    del rx, ry
     crack_on = smooth_noise(W, H, 40) > 0.5
     clay = CLAY[np.digitize(tone, [0.36, 0.5, 0.64])].copy()
     clay[(edge < 1.6) & crack_on] = CRACK
     clay[(grain > 0.994)] = CLAY[0]
     clay[(grain < 0.004)] = CLAY[3]
-    clay_edge = CLAY_FROM + wave(wy, [(30, 160, 2.0), (12, 71, 0.4)]) + 70 * (Q - 0.5)
+    clay_edge = np.float32(CLAY_FROM) + wave(wy, [(30, 160, 2.0), (12, 71, 0.4)]).astype(np.float32) + 70 * (Q - 0.5)
     clay_t = (wx - clay_edge) / 36.0 + 0.5 + 0.45 * (grain - 0.5) + 0.4 * (R - 0.5)
-    is_clay = walk & ((clay_t > 0.5) | (wx >= OLD_EDGE - 16))
+    is_west = (clay_t > 0.5) | (wx >= OLD_EDGE - 16)
+    del clay_edge, clay_t
+    clay_edge_e = np.float32(CLAY_TO) + wave(wy, [(30, 150, 0.7), (12, 67, 2.4)]).astype(np.float32) + 70 * (Q - 0.5)
+    clay_te = (clay_edge_e - wx) / 36.0 + 0.5 + 0.45 * (grain - 0.5) + 0.4 * (R - 0.5)
+    is_clay = walk & is_west & (clay_te > 0.5)
+    del clay_edge_e, clay_te, is_west
     out[is_clay] = clay[is_clay]
-    del edge, rx, ry, clay
+    is_sand = walk & ~is_clay & (wx >= OLD_EDGE - 16)        # the east desert, past the clay
+    out[is_sand] = SAND_ART[:, :W][is_sand]
+    del edge, clay
 
     # ---- small stones on the clay, mostly near the foot of the cliffs (like the boulders, smaller)
     near_wall = (sd > -40 + 30 * R) & walk
-    e3, px, py = voronoi(cols + np.zeros((H, 1)), rows + np.zeros((1, W)), 18, 14)
+    e3, px, py = voronoi(cols, rows, 18, 14)
+    del e3
     lucky = (smooth_noise(W, H, 9, 1) > np.where(near_wall, 0.76, 0.92)) & is_clay
     sz = np.maximum(np.abs(px) * 0.9, np.abs(py))
     stone = lucky & (sz < 0.6)
     out[stone] = boulder_colours(px[stone] / 0.6, py[stone] / 0.6, np.where(sz[stone] > 0.5, 0.0, 9.0))
-    del e3, px, py, lucky, stone, near_wall, sz
+    del px, py, lucky, stone, near_wall, sz
 
     # ---- mountain tops: flat pale rock, a few lumps, and chunky boulders piled along the edges
     m_top = (~walk) & (f == 0)
@@ -354,7 +462,11 @@ def main():
     L = lv[fy, fx]
     zat = LEVEL_Z[L] - f[fy, fx]                           # height on the cliff of this pixel
     m = np.clip(np.searchsorted(LEVEL_Z, zat, side="left"), 1, len(LEVEL_Z) - 1)   # which tier
-    out[fy, fx] = cliff_blocks(fx, LEVEL_Z[m] - zat, LEVEL_Z[m] - LEVEL_Z[m - 1], m + L * 16)
+    for i in range(0, len(fy), 2_000_000):
+        j = slice(i, i + 2_000_000)
+        mm = m[j].astype(np.int64)
+        out[fy[j], fx[j]] = cliff_blocks(fx[j].astype(np.int64), (LEVEL_Z[mm] - zat[j]).astype(np.int64),
+                                         (LEVEL_Z[mm] - LEVEL_Z[mm - 1]).astype(np.int64), mm + L[j].astype(np.int64) * 16)
     del L, zat, m
     del fy, fx
 
@@ -388,6 +500,7 @@ def main():
     out[unseen] = VOID
 
     whole.paste(Image.fromarray(out), (AX0, 0))
+    whole.paste(Image.fromarray(np.ascontiguousarray(SAND_ART[:, W:])), (AX0 + W, 0))   # open desert past the mountains
     split(whole)
     walls(walk)
     minimap(out, lv, walk, unseen)
@@ -433,7 +546,14 @@ def minimap(out, lv, walk, unseen):
             elif X0 + tx * 16 >= CLAY_FROM - 60 or a[ty, X, 3] == 0:
                 r, gg, b = clay_c[ty, tx]
                 a[ty, X] = (int(r), int(gg), int(b), 255)
-    # the old east border wall column (now open ground or rock)
+    # the open desert past the mountains
+    east = SAND_ART[:, W:].astype(np.float32)
+    ew = east.shape[1] // T
+    em = east[:th * T, :ew * T].reshape(th, T, ew, T, 3).mean(axis=(1, 3))
+    for X in range(tx0 + tw, min(new_w, tx0 + tw + ew)):
+        for ty in range(th):
+            r, gg, b = em[ty, X - tx0 - tw]
+            a[ty, X] = (int(r), int(gg), int(b), 255)
     Image.fromarray(a).save("art/world_map.png")
 
 
@@ -487,6 +607,25 @@ def add_props(walk):
         res = "50_decor" if kind == "cave_bones" else "4_tree"
         nodes.append('[node name="Ravine%d" parent="Entities" instance=ExtResource("%s")]\n'
                      'position = Vector2(%d, %d)\nkind = "%s"\n' % (n, res, x, y, kind))
+    # cacti scattered over the east desert (not right on the way out of the pass)
+    s = "\n".join(b for b in re.split(r"\n(?=\[)", s) if not re.match(r'\[node name="DesertE\d+"', b))
+    cacti = []
+    tries = 0
+    while len(cacti) < 34 and tries < 5000:
+        tries += 1
+        x, y = r.uniform(CLAY_TO + 120, X1 - 40), r.uniform(Y0 + 50, Y1 - 30)
+        if x < XM:
+            ax, ay = int((x - X0) * 2), int((y - Y0) * 2)
+            if not walk[max(ay - 40, 0):ay + 12, ax - 30:ax + 30].all():
+                continue
+        if abs(y - ROAD_Y) < 60 and x < CLAY_TO + 400:
+            continue
+        if any((x - a) ** 2 + (y - b) ** 2 < 150 ** 2 for a, b in cacti):
+            continue
+        cacti.append((x, y))
+    for i, (x, y) in enumerate(cacti):
+        nodes.append('[node name="DesertE%d" parent="Entities" instance=ExtResource("50_decor")]\n'
+                     'position = Vector2(%d, %d)\nkind = "%s"\n' % (i + 1, x, y, r.choice(["cactus_a", "cactus_b", "cactus_b", "cactus_c"])))
     open(path, "w").write(s.rstrip("\n") + "\n\n" + "\n".join(nodes))
 
 

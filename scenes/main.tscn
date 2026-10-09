@@ -5338,3 +5338,139 @@ kind = "dead2"
 [node name="Ravine18" parent="Entities" instance=ExtResource("4_tree")]
 position = Vector2(4004, 320)
 kind = "dead"
+
+[node name="DesertE1" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5180, -811)
+kind = "cactus_b"
+
+[node name="DesertE2" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5649, 790)
+kind = "cactus_a"
+
+[node name="DesertE3" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5991, 884)
+kind = "cactus_b"
+
+[node name="DesertE4" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5999, -864)
+kind = "cactus_a"
+
+[node name="DesertE5" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5706, -841)
+kind = "cactus_a"
+
+[node name="DesertE6" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5212, -374)
+kind = "cactus_b"
+
+[node name="DesertE7" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5169, 805)
+kind = "cactus_b"
+
+[node name="DesertE8" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6091, -655)
+kind = "cactus_a"
+
+[node name="DesertE9" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5700, 1505)
+kind = "cactus_a"
+
+[node name="DesertE10" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6420, 467)
+kind = "cactus_b"
+
+[node name="DesertE11" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5518, 137)
+kind = "cactus_b"
+
+[node name="DesertE12" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5779, 490)
+kind = "cactus_c"
+
+[node name="DesertE13" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5592, 423)
+kind = "cactus_b"
+
+[node name="DesertE14" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5374, 528)
+kind = "cactus_a"
+
+[node name="DesertE15" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6397, 709)
+kind = "cactus_c"
+
+[node name="DesertE16" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5606, -290)
+kind = "cactus_b"
+
+[node name="DesertE17" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6127, -339)
+kind = "cactus_b"
+
+[node name="DesertE18" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6359, 1396)
+kind = "cactus_b"
+
+[node name="DesertE19" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5612, 1092)
+kind = "cactus_c"
+
+[node name="DesertE20" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5974, -468)
+kind = "cactus_c"
+
+[node name="DesertE21" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5425, -80)
+kind = "cactus_a"
+
+[node name="DesertE22" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5801, 916)
+kind = "cactus_a"
+
+[node name="DesertE23" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5699, 235)
+kind = "cactus_a"
+
+[node name="DesertE24" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6029, 543)
+kind = "cactus_c"
+
+[node name="DesertE25" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6286, 1053)
+kind = "cactus_a"
+
+[node name="DesertE26" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6240, 1542)
+kind = "cactus_a"
+
+[node name="DesertE27" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5966, 1374)
+kind = "cactus_c"
+
+[node name="DesertE28" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5477, -757)
+kind = "cactus_c"
+
+[node name="DesertE29" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6049, 0)
+kind = "cactus_b"
+
+[node name="DesertE30" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5210, -7)
+kind = "cactus_c"
+
+[node name="DesertE31" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6373, 271)
+kind = "cactus_b"
+
+[node name="DesertE32" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5304, 121)
+kind = "cactus_b"
+
+[node name="DesertE33" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5103, 1020)
+kind = "cactus_b"
+
+[node name="DesertE34" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6282, -782)
+kind = "cactus_b"
