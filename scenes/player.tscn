@@ -27,6 +27,7 @@
 size = Vector2(10, 6)
 
 [node name="Player" type="CharacterBody2D"]
+physics_interpolation_mode = 1
 collision_mask = 3
 motion_mode = 1
 script = ExtResource("1_script")
@@ -44,6 +45,8 @@ position = Vector2(0, -3)
 shape = SubResource("RectangleShape2D_feet")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+physics_interpolation_mode = 2
+top_level = true
 zoom = Vector2(2, 2)
 
 [node name="Stats" type="Node" parent="."]

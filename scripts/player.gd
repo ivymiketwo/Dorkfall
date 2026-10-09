@@ -74,7 +74,13 @@ var move_seq := 0                  ## number of the last movement tick
 var _moves: Array[Dictionary] = [] ## [{seq, vel, pos}]
 
 
+@onready var _cam: Camera2D = get_node_or_null("Camera2D")
+var _tick := TickTracker.new()
+
+
 func _ready() -> void:
+	_tick.body = self
+	add_child(_tick)
 	add_to_group("player")
 	_ensure_input_actions()
 	_spawn_point = position
@@ -101,6 +107,38 @@ func _gather_input() -> void:
 
 func _process(_delta: float) -> void:
 	_gather_input()
+	_place_camera()
+
+
+## The camera sits on the player's smoothed (interpolated) position, rounded to whole screen
+## pixels (half a world px at zoom 2), so the world scrolls one even pixel at a time and the
+## player never wobbles a pixel against it.
+func _place_camera() -> void:
+	if _cam == null:
+		return
+	if _tick.now != global_position:          # teleported since the last tick: jump straight there
+		_tick.prev = global_position
+		_tick.now = global_position
+	var at: Vector2 = _tick.prev.lerp(_tick.now, Engine.get_physics_interpolation_fraction())
+	_cam.global_position = (at * 2.0).round() / 2.0
+	_cam.force_update_scroll()          # use it this frame, not next
+
+
+## Remembers where the player was at the end of the last two physics ticks (it runs after the
+## player's own tick), which is exactly what the drawn player is smoothed between.
+class TickTracker extends Node:
+	var body: Node2D
+	var prev := Vector2.ZERO
+	var now := Vector2.ZERO
+
+	func _ready() -> void:
+		process_physics_priority = 1000
+		prev = body.global_position
+		now = prev
+
+	func _physics_process(_delta: float) -> void:
+		prev = now
+		now = body.global_position
 
 
 func _input(event: InputEvent) -> void:
@@ -349,6 +387,7 @@ func _on_died() -> void:
 	_leave_gravestone()
 	# Respawn at the start with full stats.
 	position = _spawn_point
+	reset_physics_interpolation()   # appear there at once, no slide
 	stats.refill()
 	# pets come along to the respawn point
 	var n := 0

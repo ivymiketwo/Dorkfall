@@ -94,6 +94,7 @@ func _finish() -> void:
 		world.go_home()
 	else:
 		player.position = player._spawn_point
+		player.reset_physics_interpolation()
 
 
 func _ring(c: Vector2, r: float, rot: float, n: int) -> PackedVector2Array:

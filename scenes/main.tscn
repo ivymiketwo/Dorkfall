@@ -66,6 +66,7 @@ shader_parameter/vignette = 0.28
 shader_parameter/grain = 0.025
 
 [node name="World" type="Node2D" unique_id=1814654346]
+physics_interpolation_mode = 2
 script = ExtResource("1_world")
 
 [node name="Ground" type="TileMapLayer" parent="." unique_id=1408966520]

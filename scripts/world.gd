@@ -171,6 +171,7 @@ func _travel(to_pos: Vector2, limits: Rect2i, new_inside: Node2D) -> void:
 	tw.tween_property(_fade, "color:a", 1.0, 0.15)
 	await tw.finished
 	player.global_position = to_pos
+	player.reset_physics_interpolation()   # jump straight there, no slide across the map
 	for pet: Node2D in get_tree().get_nodes_in_group("pets"):   # pets come along through doors
 		pet.global_position = to_pos + Vector2(14, 6)
 	_inside = new_inside
