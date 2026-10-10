@@ -30,7 +30,7 @@ var _t := 0.0
 var _struck := false
 var _timeline: AttackTimeline
 var _crows: Array = []       # each: {from, ctrl, to, away, ph, delay}
-var _circlers: Array = []    # each: {ang, r, ph, delay, drift}
+var _circlers: Array = []    # each: {ang, r, ph, delay, drift, h (own height offset)}
 var _fx: Node2D
 
 
@@ -39,7 +39,8 @@ func _ready() -> void:
 			maxf(warn_time + LEAVE_TIME, LAUNCH_AT + 0.2 + CIRCLE_TIME + RISE_TIME))
 	for i in CIRCLERS:
 		_circlers.append({"ang": TAU * float(i) / float(CIRCLERS) + randf() * 0.6, "r": randf_range(11.0, 16.0),
-				"ph": randf() * TAU, "delay": randf_range(0.0, 0.2), "drift": randf_range(-30.0, 30.0)})
+				"ph": randf() * TAU, "delay": randf_range(0.0, 0.2), "drift": randf_range(-30.0, 30.0),
+				"h": randf_range(-5.0, 5.0)})
 	var start := to_local(launch_from) + Vector2(0, -14)
 	for i in crow_count:
 		# each crow aims at its own spot inside the circle and curves in from the side
@@ -102,7 +103,7 @@ func _crow_pos(c: Dictionary) -> Variant:
 	return (c["to"] as Vector2) + (c["away"] as Vector2) * (f * f)  # scatter, speeding up
 
 
-## The scarecrow's chest in local space (follows it if it hops away; stays put if it's gone).
+## The scarecrow's feet in local space (follows it if it hops away; stays put if it's gone).
 var _home := Vector2.ZERO
 var _home_set := false
 
@@ -110,10 +111,10 @@ var _home_set := false
 func _scarecrow_at() -> Vector2:
 	var s := AttackGuard.caster_of(self) as Node2D
 	if s != null and is_instance_valid(s):
-		_home = to_local(s.global_position) + Vector2(0, -14)
+		_home = to_local(s.global_position)
 		_home_set = true
 	elif not _home_set:
-		_home = to_local(launch_from) + Vector2(0, -14)
+		_home = to_local(launch_from)
 		_home_set = true
 	return _home
 
@@ -127,17 +128,19 @@ func _draw_circlers() -> void:
 		var a := 1.0
 		var pos: Vector2
 		var dir := 1.0
+		# each crow keeps its own height; the ring starts down by the feet and drifts up the body
+		var lift: float = -4.0 - 22.0 * clampf(t / CIRCLE_TIME, 0.0, 1.0) + c["h"]
 		if t < CIRCLE_TIME:
-			# loops around the scarecrow's head, flattened like a ring seen from above
+			# loops around the scarecrow, flattened like a ring seen from above
 			var ang: float = c["ang"] + t * 5.5
-			pos = c0 + Vector2(cos(ang) * c["r"], sin(ang) * c["r"] * 0.45 - 6.0)
+			pos = c0 + Vector2(cos(ang) * c["r"], sin(ang) * c["r"] * 0.45 + lift)
 			dir = -signf(sin(ang)) if sin(ang) != 0.0 else 1.0
 		else:
 			# spirals up and away, off the top of the screen
 			var k := clampf((t - CIRCLE_TIME) / RISE_TIME, 0.0, 1.0)
 			var ang: float = c["ang"] + CIRCLE_TIME * 5.5 + k * 3.0
 			var r: float = c["r"] * (1.0 + k * 2.0)
-			pos = c0 + Vector2(cos(ang) * r + c["drift"] * k, sin(ang) * r * 0.45 - 6.0 - 230.0 * k * k)
+			pos = c0 + Vector2(cos(ang) * r + c["drift"] * k, sin(ang) * r * 0.45 + lift - 230.0 * k * k)
 			dir = signf(c["drift"]) if c["drift"] != 0.0 else 1.0
 			a = 1.0 - clampf((k - 0.75) / 0.25, 0.0, 1.0)
 		if a > 0.0:
