@@ -1,14 +1,14 @@
 class_name Equipment
 extends Node
-## What the player is wearing: weapon, helmet, chest, legs, shield. Draws the worn
-## gear as sprite layers over the player. Two-handed weapons block the shield slot.
+## What the player is wearing: weapon, helmet, chest, legs. Draws the worn
+## gear as sprite layers over the player.
 
 signal changed
 
-const SLOTS := ["helmet", "weapon", "chest", "legs", "shield"]
-const SLOT_NAMES := {"helmet": "Helmet", "weapon": "Weapon", "chest": "Chest", "legs": "Legs", "shield": "Shield"}
+const SLOTS := ["helmet", "weapon", "chest", "legs"]
+const SLOT_NAMES := {"helmet": "Helmet", "weapon": "Weapon", "chest": "Chest", "legs": "Legs"}
 ## Draw order (bottom to top).
-const LAYER_ORDER := ["legs", "chest", "helmet", "shield", "weapon"]
+const LAYER_ORDER := ["legs", "chest", "helmet", "weapon"]
 ## Worn layers are made for this body; a hand-drawn body sheet (the robe) has its own poses.
 const NAKED := preload("res://art/player_new.png")
 
@@ -83,12 +83,6 @@ func get_item(slot: String) -> Item:
 	return items.get(slot)
 
 
-## Shield slot is unusable while a two-handed weapon is held.
-func shield_blocked() -> bool:
-	var w := get_item("weapon")
-	return w != null and w.two_handed
-
-
 func _refresh() -> void:
 	for slot in _layers:
 		var s: Sprite2D = _layers[slot]
@@ -137,22 +131,11 @@ func equip_from(inv: Inventory, i: int) -> void:
 	if item == null or not item.is_equippable():
 		return
 	var slot := item.equip_slot
-	if slot == "shield" and shield_blocked():
-		_say("TWO-HANDED WEAPON", Color("e03c3c"))
-		return
 	var old := get_item(slot)
-	var kick_shield := slot == "weapon" and item.two_handed and get_item("shield") != null
-	# need one free slot for the shield if the old weapon is also taking our slot
-	if kick_shield and old != null and inv._first_free() == -1:
-		_say("INVENTORY FULL", Color("e03c3c"))
-		return
 	inv.remove_at(i, 1)
 	if old:
 		inv.replace_slot(i, old)
 	items[slot] = item
-	if kick_shield:
-		inv.add(get_item("shield"), 1)
-		items.erase("shield")
 	_refresh()
 	_say("EQUIPPED " + item.display_name.to_upper())
 

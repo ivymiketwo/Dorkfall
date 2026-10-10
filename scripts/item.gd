@@ -1,6 +1,6 @@
 class_name Item
 extends Resource
-## Definition of one kind of item (coins, a sword, a potion...). Create new
+## Definition of one kind of item (coins, a staff, a potion...). Create new
 ## ones as .tres files in the items/ folder. Icons come from art/items.png,
 ## 16x16 per frame.
 
@@ -28,8 +28,8 @@ extends Resource
 ## Seconds before this same item can be eaten / drunk again.
 @export var use_cooldown := 0.0
 ## Where this goes on the paperdoll (right-click > EQUIP in the inventory).
-@export_enum("none", "weapon", "helmet", "chest", "legs", "shield") var equip_slot := "none"
-## Two-handed weapons block the shield slot.
+@export_enum("none", "weapon", "helmet", "chest", "legs") var equip_slot := "none"
+## Held with both hands (staffs). Items that are not get the one-hand grip (hold_styles/melee_hand.tres).
 @export var two_handed := false
 ## Sprite sheet drawn over the character while worn (same layout as art/player.png).
 @export var worn_texture: Texture2D
@@ -49,8 +49,8 @@ extends Resource
 ## Melee (1hand) module: art pixels of the item left showing below the hand (+3 / +4 = a bit more handle past the hand,
 ## negative = hand nearer the very bottom). 0 = the module's automatic grip.
 @export var hold_grip_offset := 0.0
-## Weapons: decides the left-click melee animation.
-@export_enum("none", "fist", "staff", "sword") var weapon_kind := "none"
+## Weapons: the type picks the standard hold style (res://hold_styles/<type>.tres).
+@export_enum("none", "staff") var weapon_kind := "none"
 ## Locked to the account: it stays with you when you die (never left on a gravestone),
 ## can't be sold, and can't be traded.
 @export var soulbound := false
@@ -58,32 +58,23 @@ extends Resource
 ## into your bag the account is flagged, and later drops / purchases are refused.
 @export var chase_item := false
 @export_group("Gear stats")
-## Percent of incoming damage this piece blocks (2 = 2%).
+## Percent of incoming damage this piece absorbs (2 = 2%).
 @export var defense := 0.0
 ## Extra mana regenerated per second while worn.
 @export var mana_regen_bonus := 0.0
 ## Percent bonus to spell / staff-beam damage while worn (3 = +3%).
 @export var magic_damage_bonus := 0.0
-## Extra Intelligence / Strength / Dexterity points while worn.
+## Extra Intelligence / Vitality / Dexterity points while worn.
 @export var int_bonus := 0
-## Shields: percent of a blocked hit that is absorbed (70 = 70%).
-@export var block_percent := 0.0
-@export var str_bonus := 0
+@export var vit_bonus := 0
 @export var dex_bonus := 0
 @export_group("Fishing")
 ## Fishing rods are equipped in the weapon slot. Left-click casts (see fishing.gd).
 @export var fishing_rod := false
 ## 1-3: bigger = a wider catch zone, a calmer fish and better fish.
 @export_range(1, 3) var fishing_power := 1
-@export_group("Melee")
-@export var melee_damage := 15.0
-## How far the swing reaches (pixels) and how wide it is (degrees).
-@export var melee_range := 24.0
-@export var melee_arc := 90.0
-@export var melee_cooldown := 0.6
-@export var melee_stamina := 4.0
-## Optional: a ranged basic attack (an Ability, e.g. a beam) used for left-click
-## instead of the melee swing. Falls back to the swing when out of mana.
+@export_group("Basic attack")
+## Staffs: the spell fired on left-click (an Ability, e.g. a beam).
 @export var basic_attack: Ability
 @export_group("")
 ## Optional: icon changes as the stack grows (RuneScape coins). Each threshold
@@ -108,12 +99,10 @@ func stat_lines() -> PackedStringArray:
 		out.append("MANA REGEN +%s/S" % _num(mana_regen_bonus))
 	if magic_damage_bonus != 0.0:
 		out.append("MAGIC DAMAGE +%s%%" % _num(magic_damage_bonus))
-	if block_percent != 0.0:
-		out.append("BLOCK %s%%" % _num(block_percent))
 	if int_bonus != 0:
 		out.append("INTELLIGENCE +%d" % int_bonus)
-	if str_bonus != 0:
-		out.append("STRENGTH +%d" % str_bonus)
+	if vit_bonus != 0:
+		out.append("VITALITY +%d" % vit_bonus)
 	if dex_bonus != 0:
 		out.append("DEXTERITY +%d" % dex_bonus)
 	if fishing_rod:

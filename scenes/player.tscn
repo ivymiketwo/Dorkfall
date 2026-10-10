@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://art/player_new.png" id="2_tex"]
@@ -14,13 +14,11 @@
 [ext_resource type="Script" path="res://scripts/experience.gd" id="90_exp"]
 [ext_resource type="Script" path="res://scripts/inventory.gd" id="12_inv"]
 [ext_resource type="Script" path="res://scripts/home_teleport.gd" id="95_home"]
-[ext_resource type="Script" path="res://scripts/melee.gd" id="13_melee"]
+[ext_resource type="Script" path="res://scripts/basic_attack.gd" id="13_basic"]
 [ext_resource type="Resource" path="res://items/wooden_staff.tres" id="14_staff"]
 [ext_resource type="Resource" path="res://items/wizard_robe.tres" id="15_robe"]
-[ext_resource type="Resource" path="res://items/fists.tres" id="16_fists"]
 [ext_resource type="Script" path="res://scripts/equipment.gd" id="17_equip"]
 [ext_resource type="Script" path="res://scripts/attributes.gd" id="99_attr"]
-[ext_resource type="Script" path="res://scripts/guard.gd" id="98_guard"]
 [ext_resource type="Script" path="res://scripts/fishing.gd" id="97_fishing"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_feet"]
@@ -64,15 +62,11 @@ script = ExtResource("12_inv")
 [node name="HomeTeleport" type="Node2D" parent="."]
 script = ExtResource("95_home")
 
-[node name="Guard" type="Node2D" parent="."]
-script = ExtResource("98_guard")
-
 [node name="Fishing" type="Node2D" parent="."]
 script = ExtResource("97_fishing")
 
-[node name="Melee" type="Node" parent="."]
-script = ExtResource("13_melee")
-unarmed = ExtResource("16_fists")
+[node name="BasicAttack" type="Node" parent="."]
+script = ExtResource("13_basic")
 
 [node name="Equipment" type="Node" parent="."]
 script = ExtResource("17_equip")

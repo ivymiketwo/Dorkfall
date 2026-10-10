@@ -85,8 +85,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if _rod_item() == null:
 		return
-	var melee := caster.get_node_or_null("Melee")
-	if melee != null and melee.has_method("_ui_blocking") and melee._ui_blocking():
+	var basic := caster.get_node_or_null("BasicAttack")
+	if basic != null and basic.has_method("_ui_blocking") and basic._ui_blocking():
 		return
 	if stats.health <= 0.0:
 		return

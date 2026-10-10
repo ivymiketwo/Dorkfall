@@ -1,11 +1,7 @@
-class_name Melee
+class_name BasicAttack
 extends Node
-## Universal left-click melee attack. What it looks like and how hard it hits
-## depends on the equipped weapon (an Item with weapon_kind set): a staff bashes,
-## a sword sweeps. Lives as a child of the player.
-
-## Used when nothing is equipped in the weapon slot.
-@export var unarmed: Item
+## Left-click attack: fires the equipped staff's basic spell (its `basic_attack`, a beam).
+## Does nothing without a staff, and only warns when out of mana. Lives as a child of the player.
 
 ## GameClock time the next attack is allowed (see game_clock.gd).
 var _ready_at := 0.0
@@ -17,12 +13,11 @@ var _ready_at := 0.0
 
 var weapon: Item:
 	get:
-		var w := equipment.get_item("weapon")
-		return w if w else unarmed
+		return equipment.get_item("weapon")
 
 
 func _process(_delta: float) -> void:
-	# Holding left click keeps firing a staff's beam (swings still need a click each).
+	# Holding left click keeps firing a staff's beam.
 	if GameClock.passed(_ready_at) and caster.get("input_fire_held"):
 		var w := weapon
 		if w != null and not w.fishing_rod and w.basic_attack != null and w.basic_attack.kind == Ability.Kind.BEAM and not _ui_blocking():
@@ -50,59 +45,16 @@ func _ui_blocking() -> bool:
 
 
 func attack() -> void:
-	var guard := caster.get_node_or_null("Guard") as Guard
-	if guard != null and guard.guarding:
+	var w := weapon
+	if w == null or not w.is_weapon() or not GameClock.passed(_ready_at) or stats.health <= 0.0:
 		return
-	if weapon == null or not weapon.is_weapon() or not GameClock.passed(_ready_at) or stats.health <= 0.0:
+	var ab := w.basic_attack
+	if ab == null or ab.kind != Ability.Kind.BEAM:
 		return
-	var ab := weapon.basic_attack
-	if ab != null and ab.kind == Ability.Kind.BEAM and stats.mana >= ab.mana_cost:
-		_basic_beam(ab)
+	if stats.mana < ab.mana_cost:
+		stats.warn_out_of_mana()
 		return
-	if ab != null and ab.kind == Ability.Kind.BEAM:
-		stats.warn_out_of_mana()   # the swing below still happens
-	if stats.stamina < weapon.melee_stamina:
-		return
-	stats.spend_stamina(weapon.melee_stamina)
-	_ready_at = GameClock.now + weapon.melee_cooldown
-
-	var origin := caster.global_position + Vector2(0, -8)
-	var aim: Vector2 = caster.aim_world - origin
-	var dir := aim.normalized() if aim.length() > 1.0 else Vector2.DOWN
-	if "facing" in caster:   # turn to face the swing (0 down, 1 up, 2 left, 3 right)
-		caster.facing = (3 if dir.x > 0 else 2) if absf(dir.x) > absf(dir.y) else (0 if dir.y > 0 else 1)
-
-	# Hit test: a wedge in front of the player, tested against real collision shapes.
-	var half := deg_to_rad(weapon.melee_arc) * 0.5
-	var pts := PackedVector2Array([Vector2.ZERO])
-	for i in 7:
-		pts.append(Vector2.from_angle(lerpf(-half, half, i / 6.0)) * weapon.melee_range)
-	var wedge := ConvexPolygonShape2D.new()
-	wedge.points = pts
-	var q := PhysicsShapeQueryParameters2D.new()
-	q.shape = wedge
-	q.transform = Transform2D(dir.angle(), origin)
-	q.collision_mask = 1
-	if caster is CollisionObject2D:
-		q.exclude = [caster.get_rid()]
-	var seen := {}
-	for hit in caster.get_world_2d().direct_space_state.intersect_shape(q, 32):
-		var body := hit["collider"] as Node
-		if body == null or seen.has(body) or body.is_in_group("player"):
-			continue
-		seen[body] = true
-		var s := body.get_node_or_null("Stats") as Stats
-		if s:
-			s.take_damage(weapon.melee_damage * stats.melee_mult(), caster)
-
-	var fx := MeleeFx.new()
-	fx.kind = weapon.weapon_kind
-	fx.direction = dir
-	fx.reach = weapon.melee_range
-	fx.arc = weapon.melee_arc
-	fx.global_position = origin
-	fx.z_index = 4
-	caster.get_parent().add_child(fx)
+	_basic_beam(ab)
 
 
 ## Left-click ranged attack: same beam as the ability, fired from the weapon.

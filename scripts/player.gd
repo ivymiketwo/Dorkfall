@@ -28,23 +28,20 @@ const NAKED_TEX := preload("res://art/player_new.png")   # chest gear can swap i
 @onready var inventory: Inventory = $Inventory
 
 const COINS := preload("res://items/coins.tres")
-const TEST_GEAR := [preload("res://items/iron_sword.tres"), preload("res://items/wooden_shield.tres"),
-		preload("res://items/iron_helm.tres"), preload("res://items/wizard_hat.tres"),
-		preload("res://items/leather_armor.tres"), preload("res://items/iron_chestplate.tres"), preload("res://items/iron_greaves.tres")]
+const TEST_GEAR := [preload("res://items/wooden_staff.tres"), preload("res://items/vordy_staff.tres"),
+		preload("res://items/wizard_hat.tres"), preload("res://items/wizard_robe.tres")]
 
 ## What the player is asking for right now. Only `_gather_input` reads the keyboard and mouse;
-## everything else (movement, casting, melee, guarding) uses these values, so a server can
+## everything else (movement, casting, hopping) uses these values, so a server can
 ## be fed the same data over the network.
 var input_dir := Vector2.ZERO
 ## Set by minigames (fishing) so the keys don't walk the character.
 var control_locked := false
 var input_sprint := false
-var input_guard := false
 var aim_world := Vector2.ZERO      ## where in the world the player is aiming
-## Left / right mouse held down, counting only presses that started in the world (not on a
-## menu, the bag or the hotbar): holding to fire the beam or raise the shield.
+## Left mouse held down, counting only presses that started in the world (not on a
+## menu, the bag or the hotbar): holding it keeps firing the beam.
 var input_fire_held := false
-var _rmb_world := false
 
 var facing := Facing.DOWN
 var _anim_time := 0.0
@@ -94,11 +91,9 @@ func _ready() -> void:
 func _gather_input() -> void:
 	input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	input_sprint = Input.is_action_pressed("sprint")
-	input_guard = _rmb_world or Input.is_physical_key_pressed(KEY_Q)
 	if ChatLog.typing:          # typing a message: the keys are for the chat
 		input_dir = Vector2.ZERO
 		input_sprint = false
-		input_guard = false
 	if control_locked:
 		input_dir = Vector2.ZERO
 		input_sprint = false
@@ -145,14 +140,10 @@ class TickTracker extends Node:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		aim_world = get_global_mouse_position()
-	# Holding a mouse button only counts if the press started in the world, not on a menu,
+	# Holding the button only counts if the press started in the world, not on a menu,
 	# the bag or the hotbar (those mark their clicks handled before this runs, or sit under the mouse).
-	if event is InputEventMouseButton and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
-		var in_world: bool = event.pressed and get_viewport().gui_get_hovered_control() == null
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			input_fire_held = in_world
-		else:
-			_rmb_world = in_world
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		input_fire_held = event.pressed and get_viewport().gui_get_hovered_control() == null
 
 
 func _physics_process(delta: float) -> void:
@@ -168,11 +159,7 @@ func _physics_process(delta: float) -> void:
 	var dir: Vector2 = input_dir
 	var move_speed := speed
 	var sprinting := false
-	var guard := get_node_or_null("Guard") as Guard
-	var guarding := guard != null and guard.guarding
-	if guarding:
-		move_speed *= 0.5   # shield up: slow going
-	if dir != Vector2.ZERO and not guarding and input_sprint:
+	if dir != Vector2.ZERO and input_sprint:
 		sprinting = stats.spend_stamina(sprint_stamina_per_sec * delta)
 		if sprinting:
 			move_speed *= sprint_multiplier
@@ -239,7 +226,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		stats.spend_mana(debug_mana_cost)
 	elif event.is_action_pressed("debug_coins"):
 		inventory.add(COINS, 100)
-	elif event.is_action_pressed("debug_sword"):
+	elif event.is_action_pressed("debug_gear"):
 		for g: Item in TEST_GEAR:
 			inventory.add(g, 1)
 	elif event.is_action_pressed("interact"):
@@ -467,7 +454,7 @@ static func _ensure_input_actions() -> void:
 		"debug_damage": [KEY_F1],
 		"debug_spend_mana": [KEY_F2],
 		"debug_coins": [KEY_F3],
-		"debug_sword": [KEY_F4],
+		"debug_gear": [KEY_F4],
 		"paperdoll": [KEY_P],
 		"stats": [KEY_C],
 		"inventory": [KEY_B],

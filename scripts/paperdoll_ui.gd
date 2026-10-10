@@ -1,8 +1,7 @@
 class_name PaperdollUI
 extends Control
 ## Equipment panel (press P). Shows Rex wearing his gear with slots for helmet,
-## weapon, chest, legs and shield. The shield slot greys out while a two-handed weapon
-## is equipped. Right-click a slot to take the item off.
+## weapon, chest and legs. Right-click a slot to take the item off.
 
 const SLOT := 20
 const ICONS := preload("res://art/items.png")     # 32px icons, drawn 16x16 units
@@ -13,12 +12,12 @@ const PANEL_LIGHT := Color("5c4d3a")
 const SLOT_BG := Color("1a150f")
 const SLOT_EDGE := Color("4d4130")
 const SLOT_HOVER := Color("3d3324")
-const HINT := {"helmet": "head", "weapon": "weapon", "chest": "body", "legs": "legs", "shield": "shield"}
+const HINT := {"helmet": "head", "weapon": "weapon", "chest": "body", "legs": "legs"}
 
 # slot rectangles inside the panel
 const SLOT_POS := {
 	"helmet": Vector2(34, 14), "weapon": Vector2(6, 40),
-	"shield": Vector2(62, 40), "chest": Vector2(34, 74), "legs": Vector2(62, 74),
+	"chest": Vector2(34, 74), "legs": Vector2(62, 74),
 }
 
 var equipment: Equipment:
@@ -107,8 +106,7 @@ func _draw() -> void:
 
 	for slot: String in SLOT_POS:
 		var p: Vector2 = SLOT_POS[slot]
-		var blocked := slot == "shield" and equipment.shield_blocked()
-		UiStyle.slot(self, Rect2(p, Vector2(SLOT, SLOT)), slot == _hover and not blocked)
+		UiStyle.slot(self, Rect2(p, Vector2(SLOT, SLOT)), slot == _hover)
 		var it := equipment.get_item(slot)
 		if it:
 			draw_texture_rect_region(ICONS, Rect2(p + Vector2(2, 2), Vector2(16, 16)),
@@ -117,12 +115,6 @@ func _draw() -> void:
 			var hint: String = HINT[slot]
 			var w := HiFont.text_width(hint, px * 0.8)
 			HiFont.draw(self, p + Vector2((SLOT - w) / 2.0, 7), hint, Color(0.45, 0.4, 0.32), px * 0.8)
-		if blocked:
-			draw_rect(Rect2(p + Vector2.ONE, Vector2(SLOT - 2, SLOT - 2)), Color(0.02, 0.02, 0.02, 0.8))
-			draw_line(p + Vector2(3, 3), p + Vector2(SLOT - 3, SLOT - 3), Color(0.55, 0.15, 0.15), 1.0)
-			draw_line(p + Vector2(SLOT - 3, 3), p + Vector2(3, SLOT - 3), Color(0.55, 0.15, 0.15), 1.0)
-			var w2 := HiFont.text_width("2H", px)
-			HiFont.draw(self, p + Vector2((SLOT - w2) / 2.0, SLOT + 2), "2H", Color("e03c3c"), px)
 
 	# totals from everything worn
 	var ty := 100.0
@@ -142,8 +134,6 @@ func _draw() -> void:
 	if _hover != "":
 		var hit := equipment.get_item(_hover)
 		var label: String = hit.display_name if hit else Equipment.SLOT_NAMES[_hover]
-		if _hover == "shield" and equipment.shield_blocked():
-			label = "Blocked by two-handed weapon"
 		var lines: PackedStringArray = hit.stat_lines() if hit and label == hit.display_name else PackedStringArray()
 		var w := HiFont.text_width(label, px)
 		for l in lines:

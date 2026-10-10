@@ -1,18 +1,18 @@
 class_name Attributes
 extends Node
-## Intelligence / Strength / Dexterity. Everyone starts at 10; each level gives
+## Intelligence / Vitality / Dexterity. Everyone starts at 10; each level gives
 ## 2 points to spend. Base stats top out at 50; gear (and later elixirs) can push the
 ## total up to HARD_CAP.
 ##   Intelligence -> mana pool and magic damage
-##   Strength     -> health pool and melee damage
-##   Dexterity    -> stamina pool and ranged damage
+##   Vitality     -> health pool
+##   Dexterity    -> stamina pool (sprinting, hopping and later movement abilities)
 ## Pools: 400 at 10, +12.5 per point (900 at 50, about 1100 at 66).
-## Damage: +2% per point above 10.
+## Magic damage: +2% per Intelligence point above 10.
 
 signal changed
 
-const NAMES := ["int", "str", "dex"]
-const LABELS := {"int": "Intelligence", "str": "Strength", "dex": "Dexterity"}
+const NAMES := ["int", "vit", "dex"]
+const LABELS := {"int": "Intelligence", "vit": "Vitality", "dex": "Dexterity"}
 const START := 10
 const BASE_CAP := 50
 const HARD_CAP := 66
@@ -22,7 +22,7 @@ const POOL_PER_POINT := 12.5
 const DMG_PER_POINT := 2.0
 
 ## Points spent on each stat (on top of START).
-var spent := {"int": 0, "str": 0, "dex": 0}
+var spent := {"int": 0, "vit": 0, "dex": 0}
 ## Temporary boosts, e.g. from elixirs: stat -> points.
 var temp := {}
 
@@ -34,6 +34,8 @@ var temp := {}
 func _ready() -> void:
 	var saved = SaveGame.get_value("attributes")
 	if saved is Dictionary:
+		if saved.has("str") and not saved.has("vit"):
+			saved["vit"] = saved["str"]   # old saves: Strength became Vitality (same health pool)
 		for n in NAMES:
 			spent[n] = clampi(int(saved.get(n, 0)), 0, BASE_CAP - START)
 	# never more spent than earned (guards a hand-edited or old save)
@@ -51,7 +53,7 @@ func earned() -> int:
 
 
 func _spent_total() -> int:
-	return int(spent["int"]) + int(spent["str"]) + int(spent["dex"])
+	return int(spent["int"]) + int(spent["vit"]) + int(spent["dex"])
 
 
 func unspent() -> int:
@@ -94,11 +96,9 @@ func spend(stat: String) -> bool:
 
 func _refresh() -> void:
 	_set_pool("max_mana", pool_for("int"))
-	_set_pool("max_health", pool_for("str"))
+	_set_pool("max_health", pool_for("vit"))
 	_set_pool("max_stamina", pool_for("dex"))
 	stats.attr_magic_percent = damage_percent("int")
-	stats.attr_melee_percent = damage_percent("str")
-	stats.attr_ranged_percent = damage_percent("dex")
 	stats.changed.emit()
 	changed.emit()
 

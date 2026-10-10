@@ -83,8 +83,8 @@ static func rect_hits(rect: Rect2, p: Vector2, margin: float) -> bool:
 	return rect.grow(margin).has_point(p)
 
 
-## Applies an attack's damage to a character. `origin` (where the attack came from) makes
-## it blockable / parryable; leave it out for ground effects.
+## Applies an attack's damage to a character. `origin` is where an aimed attack came from;
+## leave it out for ground effects (see Stats.take_damage).
 static func deal(target: Node, amount: float, source: Node = null, origin := Vector2.INF) -> void:
 	var s := target.get_node_or_null("Stats") as Stats
 	if s:

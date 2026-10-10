@@ -107,7 +107,7 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
 ## 6. Player, abilities, items, pets
 
 - **Player:** 48x48 sheet (idle, run, jump); gear is fitted onto every frame through Rex's
-  **body-part map** (`art/gear_src/README.md`). Iron chestplate, helm, greaves and sword exist.
+  **body-part map** (`art/gear_src/README.md`). The player is always a wizard (no classes, no melee or blocking, no iron armour). The gear-fitting tools stay for future wizard-style armour (bone armour, say).
   Never edit `art/player_new.png` directly, and never regenerate `data/hands.json`.
 - **Abilities and attacks:**
   - **Fireball:** Rex's 8-direction sprite. The wind-up orb sits on the staff tip and is layered
@@ -140,6 +140,6 @@ exists.
 - The east desert has no monsters, road or landmarks yet.
 - The pet could also get a shorter "loot must sit for 1 s" delay if wanted.
 - Aim prediction is ready for future monsters Rex picks.
-- Older items: the "Build Windows release" GitHub Action is untested; armour, helmet and shield icons
+- Older items: the "Build Windows release" GitHub Action is untested; armour and helmet icons
   still need 48x48 art; an optional river could be re-added.
 - Leftover file `audio/music_our_town.ogg` may still sit in Rex's local folder (unused).

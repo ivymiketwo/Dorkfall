@@ -1,6 +1,6 @@
 class_name StatsUI
 extends Control
-## Character stats window (press C): Intelligence, Strength and Dexterity, with a
+## Character stats window (press C): Intelligence, Vitality and Dexterity, with a
 ## [+] button per stat to spend level-up points. Shows what each stat is doing.
 
 const ROW_H := 24
@@ -8,10 +8,10 @@ const TOP := 27
 const BTN := Vector2(11, 11)
 const INFO := {
 	"int": ["Mana", "Magic"],
-	"str": ["Health", "Melee"],
-	"dex": ["Stamina", "Ranged"],
+	"vit": ["Health"],
+	"dex": ["Stamina"],
 }
-const COLORS := {"int": Color("6fb4ff"), "str": Color("e8695a"), "dex": Color("6fd06f")}
+const COLORS := {"int": Color("6fb4ff"), "vit": Color("e8695a"), "dex": Color("6fd06f")}
 
 var attrs: Attributes
 var _hover := ""
@@ -99,12 +99,11 @@ func _draw() -> void:
 		if bonus > 0:
 			HiFont.draw(self, Vector2(6 + HiFont.text_width(val, px) + 3, y + 9), "+%d" % bonus, Color("8fd0ff"), px)
 		# what it does
-		var pool_stat: String = INFO[n][0]
-		var dmg_stat: String = INFO[n][1]
-		var pool := "%s %d" % [pool_stat, int(attrs.pool_for(n))]
-		var dmg := "%s +%d%%" % [dmg_stat, int(round(attrs.damage_percent(n)))]
+		var pool := "%s %d" % [INFO[n][0], int(attrs.pool_for(n))]
 		HiFont.draw(self, Vector2(38, y + 9), pool, UiStyle.TEXT_DIM, px)
-		HiFont.draw(self, Vector2(38, y + 17), dmg, UiStyle.TEXT_DIM, px)
+		if INFO[n].size() > 1:   # only Intelligence also raises damage
+			var dmg := "%s +%d%%" % [INFO[n][1], int(round(attrs.damage_percent(n)))]
+			HiFont.draw(self, Vector2(38, y + 17), dmg, UiStyle.TEXT_DIM, px)
 		var r := _btn_rect(i)
 		var can := attrs.can_spend(n)
 		UiStyle.slot(self, r, can and n == _hover)

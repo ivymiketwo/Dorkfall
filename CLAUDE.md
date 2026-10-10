@@ -34,6 +34,12 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   Unreachable land there is left unpainted and its ground squares don't exist (GroundStream skips them).
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
 
+## The player
+- Always a wizard: no classes, no melee swing, no blocking/shields, no iron armour. Left click fires
+  the staff's spell. Stats are Intelligence (mana, magic damage), Vitality (health), Dexterity
+  (stamina, for sprinting, hopping and future movement abilities).
+- Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
+
 ## Difficulty design (Rex's rules)
 - Stronger monsters must be *harder to play against*, not spongier: keep time-to-kill roughly flat
   and scale difficulty with shorter telegraphs, smaller punish windows, better aim, more/mixed

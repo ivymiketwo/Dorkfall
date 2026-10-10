@@ -26,10 +26,8 @@ signal out_of_mana
 var defense_percent := 0.0
 var mana_regen_bonus := 0.0
 var magic_damage_percent := 0.0
-## From Intelligence / Strength / Dexterity (set by Attributes).
+## From Intelligence (set by Attributes).
 var attr_magic_percent := 0.0
-var attr_melee_percent := 0.0
-var attr_ranged_percent := 0.0
 
 var health: float
 var stamina: float
@@ -37,8 +35,6 @@ var mana: float
 ## Whoever last damaged this (used to credit XP for kills).
 var last_source: Node = null
 
-## Set by the player's Guard: takes (amount, source, origin), returns the damage to apply.
-var guard_filter: Callable
 ## Damage dealt to this by each attacker: instance id -> total. Used for threat and kill credit.
 var contributions := {}
 var _stamina_cooldown := 0.0
@@ -87,26 +83,12 @@ func magic_mult() -> float:
 	return 1.0 + (magic_damage_percent + attr_magic_percent) / 100.0
 
 
-## Melee damage multiplier (Strength).
-func melee_mult() -> float:
-	return 1.0 + attr_melee_percent / 100.0
-
-
-## Ranged (non-magic) damage multiplier (Dexterity). No player weapon uses it yet.
-func ranged_mult() -> float:
-	return 1.0 + attr_ranged_percent / 100.0
-
-
 ## `ignore_defense` is for self-inflicted costs (like chaining hops).
-## `origin` is where a blockable attack came from (leave it out for ground effects,
-## which can't be blocked or parried).
+## `origin` is where an aimed attack came from (left out for ground effects). Nothing reads it
+## since blocking was removed; kept so a future ward spell can tell aimed hits from ground effects.
 func take_damage(amount: float, source: Node = null, ignore_defense := false, origin := Vector2.INF) -> void:
 	if health <= 0.0:
 		return
-	if origin != Vector2.INF and guard_filter.is_valid():
-		amount = guard_filter.call(amount, source, origin)
-		if amount <= 0.0:
-			return
 	# a player hitting a monster well above their level does less (AttackRules.level_gap_mult)
 	if source != null and is_instance_valid(source) and source.is_in_group("player") and "level" in get_parent():
 		var xp := source.get_node_or_null("Experience")
