@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://art/player_new.png" id="2_tex"]
@@ -20,6 +20,7 @@
 [ext_resource type="Script" path="res://scripts/equipment.gd" id="17_equip"]
 [ext_resource type="Script" path="res://scripts/attributes.gd" id="99_attr"]
 [ext_resource type="Script" path="res://scripts/fishing.gd" id="97_fishing"]
+[ext_resource type="Script" path="res://scripts/ward.gd" id="98_ward"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_feet"]
 size = Vector2(10, 6)
@@ -61,6 +62,9 @@ script = ExtResource("12_inv")
 
 [node name="HomeTeleport" type="Node2D" parent="."]
 script = ExtResource("95_home")
+
+[node name="Ward" type="Node2D" parent="."]
+script = ExtResource("98_ward")
 
 [node name="Fishing" type="Node2D" parent="."]
 script = ExtResource("97_fishing")

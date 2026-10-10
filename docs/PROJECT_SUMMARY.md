@@ -115,6 +115,11 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     sound plays only on impact. Speed 215 px/s with 0.5 s cast; damage 40.
   - **Red beam:** 60 damage.
   - **Blue staff beam** (left click): 15 damage, 1 s cooldown, hold to keep firing.
+  - **Ward** (hold right click or Q): a summoning circle under you and a glass orb around you, lit
+    only on the side facing the mouse. Stops 70% of aimed hits from that side (120 degree arc) for
+    mana; the first 0.25 s is a parry (95% stopped, half thrown back). Holding drains 10 mana/s,
+    halves your speed, and you can't attack, cast or hop. Out of mana: "WARD BROKEN", 1 s lockout.
+    Ground effects (marked circles, crows, wizard fireballs) can't be warded.
   - **Bunnyhop** ("Begone"): chain-hop health cost **set to 0 for testing** (was 35).
 - **Sounds:** fireball cast and hit (30% quieter), ray swoosh on every beam, jump (half volume).
 - **Economy:** sell items to vendors (right-click Sell while a shop is open; left-click shows the

@@ -37,6 +37,8 @@ var last_source: Node = null
 
 ## Damage dealt to this by each attacker: instance id -> total. Used for threat and kill credit.
 var contributions := {}
+## Set by the player's Ward: takes (amount, source, origin), returns the damage to apply.
+var ward_filter: Callable
 var _stamina_cooldown := 0.0
 var _poison_dps := 0.0
 var _poison_left := 0.0
@@ -84,11 +86,15 @@ func magic_mult() -> float:
 
 
 ## `ignore_defense` is for self-inflicted costs (like chaining hops).
-## `origin` is where an aimed attack came from (left out for ground effects). Nothing reads it
-## since blocking was removed; kept so a future ward spell can tell aimed hits from ground effects.
+## `origin` is where an aimed attack came from (left out for ground effects, which the
+## player's Ward can't stop).
 func take_damage(amount: float, source: Node = null, ignore_defense := false, origin := Vector2.INF) -> void:
 	if health <= 0.0:
 		return
+	if origin != Vector2.INF and ward_filter.is_valid():
+		amount = ward_filter.call(amount, source, origin)
+		if amount <= 0.0:
+			return
 	# a player hitting a monster well above their level does less (AttackRules.level_gap_mult)
 	if source != null and is_instance_valid(source) and source.is_in_group("player") and "level" in get_parent():
 		var xp := source.get_node_or_null("Experience")

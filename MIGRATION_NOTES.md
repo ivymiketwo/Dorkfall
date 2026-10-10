@@ -6,7 +6,7 @@ changes in one place, and visuals are separate from logic.
 
 ## Already server-friendly
 - `SaveGame` is the only place data is written (swap the backend later).
-- `Stats.take_damage` is the single choke point for damage.
+- `Stats.take_damage` is the single choke point for damage; the Ward (block/parry) hooks in there.
 - `Loot.roll` (rules) vs `Loot.spawn` (drawing): monsters roll drops through it.
 - **Vorly** is the model for monsters: `vordy.gd` is a brain with no visuals (state, threat targeting,
   spells, cast timers, loot, respawn timer); `vordy_look.gd` draws everything and listens to its signals.
@@ -25,7 +25,7 @@ changes in one place, and visuals are separate from logic.
 - `Experience.kill_xp` / `xp_to_next`: pure functions.
 
 - `Player` input adapter: only `_gather_input` reads keys/mouse (`input_dir`, `input_sprint`,
-  `input_fire_held`, `aim_world`); movement, casting, the staff's basic attack and home-teleport read those values.
+  `input_fire_held`, `input_ward`, `aim_world`); movement, casting, the staff's basic attack, the Ward and home-teleport read those values.
 - `Stats` has no visuals: it emits `damaged` / `out_of_mana`, `StatsFx` draws them (`show_effects`).
 - `Rng`: drops, unique drops and monster spell picks use it (seedable, server-ownable).
 - `Inventory.transact`: all-or-nothing changes (used by `Trade.buy`).
@@ -48,7 +48,7 @@ changes in one place, and visuals are separate from logic.
 - **Saving**: `SaveGame.batch` groups changes into one write (bag + gravestone, pet + bag, death), and
   every write goes to a temp file that is then swapped in, so a crash can't leave half a save.
 - **Time**: `GameClock` (autoload) counts fixed physics ticks. Hotbar, basic-attack and item cooldowns are
-  "ready at" times on it; regen, poison, home teleport, casting and fishing bites run on
+  "ready at" times on it; regen, poison, ward/parry, home teleport, casting and fishing bites run on
   the fixed tick. Vorly's cast timers count in physics ticks.
 - **Movement**: every movement tick is numbered (`move_seq`) and remembered (velocity + end spot);
   `player.reconcile(seq, server_pos)` snaps to the server's answer and replays the later ticks.

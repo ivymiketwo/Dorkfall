@@ -191,6 +191,9 @@ func try_cast(i: int) -> void:
 	var ab := slots[i]
 	if ab == null or casting_slot != -1:
 		return
+	if caster.has_method("is_warding") and caster.is_warding():   # no casting behind the Ward
+		_fail(i)
+		return
 	if cooldown_left(i) > 0.0 or not _can_afford(ab):
 		if cooldown_left(i) <= 0.0 and stats.mana < ab.mana_cost:
 			stats.warn_out_of_mana()

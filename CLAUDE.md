@@ -35,8 +35,9 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
 
 ## The player
-- Always a wizard: no classes, no melee swing, no blocking/shields, no iron armour. Left click fires
-  the staff's spell. Stats are Intelligence (mana, magic damage), Vitality (health), Dexterity
+- Always a wizard: no classes, no melee swing, no shields, no iron armour. Left click fires
+  the staff's spell. Right click (or Q) holds the Ward (`scripts/ward.gd`): a mana-powered
+  directional block with a parry window; the orb is lit from the mouse side (`shaders/ward_orb.gdshader`). Stats are Intelligence (mana, magic damage), Vitality (health), Dexterity
   (stamina, for sprinting, hopping and future movement abilities).
 - Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
 

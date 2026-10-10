@@ -97,45 +97,10 @@ func _finish() -> void:
 		player.reset_physics_interpolation()
 
 
-func _ring(c: Vector2, r: float, rot: float, n: int) -> PackedVector2Array:
-	var pts := PackedVector2Array()
-	for i in n + 1:
-		var a := rot + TAU * float(i) / float(n)
-		pts.append(c + Vector2(cos(a) * r, sin(a) * r * 0.5))     # squashed: seen from above at an angle
-	return pts
-
-
 func _draw_circle() -> void:
 	var k := _t / cast_time
-	var fade_in := clampf(_t / 0.35, 0.0, 1.0)
-	var pulse := 0.75 + 0.25 * sin(_t * 6.0)
-	var c := Vector2(0, -1)
-	var col := Color(0.35, 0.65, 1.0)
-	_fx.draw_colored_polygon(_ring(c, radius, 0.0, 28), Color(0.15, 0.35, 0.85, 0.20 * fade_in * pulse))
-	_fx.draw_polyline(_ring(c, radius, 0.0, 40), Color(0.55, 0.8, 1.0, 0.9 * fade_in), 1.0)
-	_fx.draw_polyline(_ring(c, radius * 0.82, 0.0, 40), Color(col.r, col.g, col.b, 0.7 * fade_in), 1.0)
-	# rotating runic star and ticks
-	var rot := _t * 1.1
-	var star := PackedVector2Array()
-	for i in 6:
-		var a := rot + TAU * float(i) / 6.0
-		star.append(c + Vector2(cos(a) * radius * 0.78, sin(a) * radius * 0.78 * 0.5))
-	for i in 6:
-		_fx.draw_line(star[i], star[(i + 2) % 6], Color(0.7, 0.88, 1.0, 0.8 * fade_in), 1.0)
-	for i in 12:
-		var a := -rot * 0.7 + TAU * float(i) / 12.0
-		var p1 := c + Vector2(cos(a) * radius * 0.86, sin(a) * radius * 0.86 * 0.5)
-		var p2 := c + Vector2(cos(a) * radius * 0.98, sin(a) * radius * 0.98 * 0.5)
-		_fx.draw_line(p1, p2, Color(0.8, 0.92, 1.0, 0.9 * fade_in), 1.0)
-	# rising motes that get denser as the spell charges
-	var motes := 6 + int(14.0 * k)
-	for i in motes:
-		var seed_a := float(i) * 2.399
-		var life := fposmod(_t * (0.9 + 0.4 * fmod(float(i) * 0.37, 1.0)) + float(i) * 0.31, 1.0)
-		var a := seed_a + _t * 0.5
-		var rr := radius * (0.25 + 0.65 * fmod(float(i) * 0.61, 1.0))
-		var p := c + Vector2(cos(a) * rr, sin(a) * rr * 0.5) + Vector2(0, -life * 24.0)
-		_fx.draw_rect(Rect2(p, Vector2(1, 1)), Color(0.7, 0.9, 1.0, (1.0 - life) * fade_in))
+	# motes get denser as the spell charges
+	SummonCircle.draw(_fx, radius, _t, 1.0, 6 + int(14.0 * k))
 	# a brightening pillar of light near the end
 	if k > 0.75:
 		var f := (k - 0.75) / 0.25

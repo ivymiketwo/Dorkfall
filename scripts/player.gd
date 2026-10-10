@@ -38,10 +38,12 @@ var input_dir := Vector2.ZERO
 ## Set by minigames (fishing) so the keys don't walk the character.
 var control_locked := false
 var input_sprint := false
+var input_ward := false            ## right mouse (pressed in the world) or Q: hold the Ward up
 var aim_world := Vector2.ZERO      ## where in the world the player is aiming
-## Left mouse held down, counting only presses that started in the world (not on a
-## menu, the bag or the hotbar): holding it keeps firing the beam.
+## Left / right mouse held down, counting only presses that started in the world (not on a
+## menu, the bag or the hotbar): holding left keeps firing the beam, right holds the Ward.
 var input_fire_held := false
+var _rmb_world := false
 
 var facing := Facing.DOWN
 var _anim_time := 0.0
@@ -91,12 +93,15 @@ func _ready() -> void:
 func _gather_input() -> void:
 	input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	input_sprint = Input.is_action_pressed("sprint")
+	input_ward = _rmb_world or Input.is_physical_key_pressed(KEY_Q)
 	if ChatLog.typing:          # typing a message: the keys are for the chat
 		input_dir = Vector2.ZERO
 		input_sprint = false
+		input_ward = false
 	if control_locked:
 		input_dir = Vector2.ZERO
 		input_sprint = false
+		input_ward = false
 	aim_world = get_global_mouse_position()
 
 
@@ -142,8 +147,12 @@ func _input(event: InputEvent) -> void:
 		aim_world = get_global_mouse_position()
 	# Holding the button only counts if the press started in the world, not on a menu,
 	# the bag or the hotbar (those mark their clicks handled before this runs, or sit under the mouse).
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		input_fire_held = event.pressed and get_viewport().gui_get_hovered_control() == null
+	if event is InputEventMouseButton and (event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT):
+		var in_world: bool = event.pressed and get_viewport().gui_get_hovered_control() == null
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			input_fire_held = in_world
+		else:
+			_rmb_world = in_world
 
 
 func _physics_process(delta: float) -> void:
@@ -159,7 +168,10 @@ func _physics_process(delta: float) -> void:
 	var dir: Vector2 = input_dir
 	var move_speed := speed
 	var sprinting := false
-	if dir != Vector2.ZERO and input_sprint:
+	var warding := is_warding()
+	if warding:
+		move_speed *= Ward.SPEED_MULT   # ward up: slow going
+	if dir != Vector2.ZERO and not warding and input_sprint:
 		sprinting = stats.spend_stamina(sprint_stamina_per_sec * delta)
 		if sprinting:
 			move_speed *= sprint_multiplier
@@ -233,9 +245,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		_interact()
 
 
-## Called by the hotbar. Returns false if a hop chain is already running.
+## True while the Ward (right click / Q) is up.
+func is_warding() -> bool:
+	var w := get_node_or_null("Ward") as Ward
+	return w != null and w.warding
+
+
+## Called by the hotbar. Returns false if a hop chain is already running (or the Ward is up).
 func start_hop(ab: Ability) -> bool:
-	if _hop_ab or _hop_cooldown > 0.0:
+	if _hop_ab or _hop_cooldown > 0.0 or is_warding():
 		return false
 	if not stats.spend_mana(ab.mana_cost):
 		stats.warn_out_of_mana()

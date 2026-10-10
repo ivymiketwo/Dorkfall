@@ -48,6 +48,8 @@ func attack() -> void:
 	var w := weapon
 	if w == null or not w.is_weapon() or not GameClock.passed(_ready_at) or stats.health <= 0.0:
 		return
+	if caster.has_method("is_warding") and caster.is_warding():   # no attacking behind the Ward
+		return
 	var ab := w.basic_attack
 	if ab == null or ab.kind != Ability.Kind.BEAM:
 		return
