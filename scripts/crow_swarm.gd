@@ -16,7 +16,7 @@ extends Node2D
 var launch_from := Vector2.ZERO
 
 ## When the swarm leaves the scarecrow (it flies the rest of the warning).
-const LAUNCH_AT := 0.4
+const LAUNCH_AT := 0.5
 ## The circling crows start first, as soon as the circle appears.
 const CIRCLE_START := 0.0
 const LEAVE_TIME := 0.9

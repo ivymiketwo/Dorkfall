@@ -23,11 +23,14 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 
 @export_group("Crow swarm")
 @export var throw_range := 85.0
+## Counted from the start of one swarm to the start of the next (so a longer warning doesn't
+## slow its attacks down).
 @export var throw_cooldown := 3.5
 @export var throw_damage := 50.0
 @export var swarm_radius := 20.0
-## Seconds from the circle appearing to the crows hitting (the scarecrow stands still meanwhile).
-@export var throw_warn := 1.0
+## Seconds from the circle appearing to the crows hitting (the scarecrow stands still meanwhile):
+## first a few crows circle it (an extra warning), then the swarm flies its 0.75 s.
+@export var throw_warn := 1.25
 
 @export_group("Death")
 @export var respawn_time := 5.0
