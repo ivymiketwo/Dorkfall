@@ -81,6 +81,8 @@ func _draw() -> void:
 		if spec.is_empty():
 			continue
 		var p := to_local(n.global_position)
+		if n is Pet:
+			p += Pet.LIFT            # the pet's node sits above its feet (see pet.gd)
 		if spec[0] == "blob":
 			_ellipse(p + Vector2(0, -1), spec[1], spec[2], Color(0, 0, 0, blob_alpha))
 		else:
