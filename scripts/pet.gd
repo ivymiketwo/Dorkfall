@@ -19,7 +19,7 @@ extends CharacterBody2D
 const RECALL_RANGE := 200.0
 
 var _t := 0.0
-var _row := 0            ## sprite row: 0 = side, 1 = facing the camera (south), 2 = facing away (north)
+var _row := 0            ## sprite row: 0 = facing the camera (south), 1 = away (north), 2 = left, 3 = right
 var _rest := 0.0
 var _target: Pickup
 var _skip := {}     ## pickups it gave up on (inventory full) -> ignore until
@@ -143,9 +143,9 @@ func _physics_process(delta: float) -> void:
 	if velocity.length() > 8.0:
 		_t += delta
 		_face(velocity)
-		sprite.frame = _row * 5 + int(_t * 9.0) % 4      # 4-frame walk cycle
+		sprite.frame = _row * 7 + int(_t * 10.0) % 6     # 6-frame walk cycle
 	else:
-		sprite.frame = _row * 5 + 4                      # standing
+		sprite.frame = _row * 7 + 6                      # standing
 
 
 ## Returns true while the pet is busy running to a pile.
@@ -192,7 +192,7 @@ func _fetch_loot(player: Node2D, delta: float) -> bool:
 	move_and_slide()
 	_t += delta
 	_face(velocity)
-	sprite.frame = _row * 5 + int(_t * 13.0) % 4     # runs the same cycle, faster
+	sprite.frame = _row * 7 + int(_t * 14.0) % 6     # runs the same cycle, faster
 	return true
 
 
@@ -208,14 +208,9 @@ func _on_screen(p: Vector2, player: Node2D) -> bool:
 ## Picks the sprite row from the direction of travel.
 func _face(v: Vector2) -> void:
 	if absf(v.y) > absf(v.x) * 1.2:
-		_row = 1 if v.y > 0.0 else 2
-		sprite.flip_h = false
-		sprite.offset.x = 0.0
-	else:
-		_row = 0
-		sprite.offset.x = -2.0 if v.x >= 0.0 else 2.0       # the side view has extra room for the tail
-		if absf(v.x) > 4.0:
-			sprite.flip_h = v.x < 0.0
+		_row = 0 if v.y > 0.0 else 1
+	elif absf(v.x) > 4.0:
+		_row = 2 if v.x < 0.0 else 3
 
 
 ## Jumps to the player's side (used after the player respawns).
