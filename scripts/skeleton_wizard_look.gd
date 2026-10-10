@@ -34,7 +34,10 @@ func _process(delta: float) -> void:
 		var col := mini(int(brain.cast_t * brain.CAST_FPS), brain.CAST_FRAMES - 1)
 		sprite.frame_coords = Vector2i(col, 5 + f)
 	elif brain.velocity != Vector2.ZERO:
-		sprite.frame_coords = Vector2i(int(_t * WALK_FPS) % 8, 1 + f)
+		var step := int(_t * WALK_FPS) % 8
+		if brain.backing:
+			step = 7 - step                 # the walk played backwards: stepping back
+		sprite.frame_coords = Vector2i(step, 1 + f)
 	else:
 		sprite.frame_coords = Vector2i(f, 0)
 

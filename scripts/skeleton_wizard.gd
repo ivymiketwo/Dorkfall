@@ -60,6 +60,8 @@ var state := State.WANDER
 var face := 0
 ## Seconds into the current throw (-1 = not throwing).
 var cast_t := -1.0
+## True while it is stepping backwards away from a player (still facing them).
+var backing := false
 var _home: Vector2
 var _wander_target: Vector2
 var _wander_timer := 0.0
@@ -117,6 +119,7 @@ func _physics_process(delta: float) -> void:
 
 	var move := Vector2.ZERO
 	var speed := wander_speed
+	backing = false
 	match state:
 		State.WANDER:
 			_wander_timer -= delta
@@ -136,6 +139,7 @@ func _physics_process(delta: float) -> void:
 				elif dist < keep_away:
 					move = -to_player / dist
 					speed = chase_speed * 0.7
+					backing = true
 		State.RETURN:
 			speed = chase_speed
 			move = position.direction_to(_home)
@@ -143,8 +147,9 @@ func _physics_process(delta: float) -> void:
 
 	if is_casting():
 		move = Vector2.ZERO
+		backing = false
 	elif move != Vector2.ZERO:
-		face = _face_of(move if state != State.CHASE or dist >= keep_away else -move)
+		face = _face_of(-move if backing else move)     # backing up: keeps facing the player
 	velocity = move * speed
 	move_and_slide()
 
