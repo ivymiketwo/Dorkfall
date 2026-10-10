@@ -17,6 +17,9 @@ extends CharacterBody2D
 
 ## How close the owner must be to put the pet back in the bag.
 const RECALL_RANGE := 200.0
+## The pet's node sits this far ABOVE its feet (the sprite is drawn this much lower), so the
+## y-sorting always puts the player in front of it when they overlap.
+const LIFT := Vector2(0, 14)
 
 var _t := 0.0
 var _row := 0            ## sprite row: 0 = facing the camera (south), 1 = away (north), 2 = left, 3 = right
@@ -63,7 +66,7 @@ static func summon(player: Node2D, slot: int) -> Pet:
 			return null
 		pet.item = item
 		pet.owner_id = player.get_instance_id()
-		pet.position = player.position + Vector2(10, 2)
+		pet.position = player.position + Vector2(10, 2) - LIFT
 		player.get_parent().add_child(pet)
 		Pet._save_all(player.get_tree())
 		inv.clear_slot(slot)
@@ -117,7 +120,7 @@ static func restore(player: Node2D) -> void:
 		var pet: Node2D = it.pet_scene.instantiate()
 		pet.item = it
 		pet.owner_id = player.get_instance_id()
-		pet.position = player.position + Vector2(10 + n * 8, 2 + n * 3)
+		pet.position = player.position + Vector2(10 + n * 8, 2 + n * 3) - LIFT
 		player.get_parent().add_child(pet)
 		n += 1
 
@@ -126,10 +129,10 @@ func _physics_process(delta: float) -> void:
 	var player := _owner()
 	if player == null:
 		return
-	var to := player.global_position - global_position
+	var to := player.global_position - (global_position + LIFT)
 	var dist := to.length()
 	if dist > 300.0:      # got stuck or left far behind
-		global_position = player.global_position + Vector2(14, 4)
+		global_position = player.global_position + Vector2(14, 4) - LIFT
 		reset_physics_interpolation()
 		return
 	if grabs_loot:
@@ -174,17 +177,17 @@ func _fetch_loot(player: Node2D, delta: float) -> bool:
 				continue
 			if pk.global_position.distance_to(player.global_position) > leash_range:
 				continue
-			var d := global_position.distance_to(pk.global_position)
+			var d := (global_position + LIFT).distance_to(pk.global_position)
 			if d < best:
 				best = d
 				_target = pk
 	if _target == null:
 		return false
-	var to := _target.global_position - global_position
+	var to := _target.global_position - (global_position + LIFT)
 	if to.length() < 8.0:
 		var pk := _target
 		_target = null
-		var gone := pk.grab_for(player, global_position)
+		var gone := pk.grab_for(player, global_position + LIFT)
 		if not gone:
 			_skip[pk] = GameClock.now + 8.0   # bag full: leave it
 		_rest = loot_cooldown
@@ -216,7 +219,7 @@ func _face(v: Vector2) -> void:
 
 ## Jumps to the player's side (used after the player respawns).
 func join_player(player: Node2D, n := 0) -> void:
-	global_position = player.global_position + Vector2(12 + n * 8, 4 + n * 3)
+	global_position = player.global_position + Vector2(12 + n * 8, 4 + n * 3) - LIFT
 	reset_physics_interpolation()
 	velocity = Vector2.ZERO
 	_target = null
@@ -225,7 +228,7 @@ func join_player(player: Node2D, n := 0) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
-		if get_global_mouse_position().distance_to(global_position + Vector2(0, -6)) < 10.0:
+		if get_global_mouse_position().distance_to(global_position + LIFT + Vector2(0, -6)) < 10.0:
 			var menu := get_tree().get_first_node_in_group("context_menu") as ContextMenu
 			if menu:
 				var label := "PICK UP " + (item.display_name.to_upper() if item else "PET")
