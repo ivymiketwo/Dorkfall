@@ -29,12 +29,14 @@ self-contained code.
 - **Protect what shouldn't change.** Build a mask of pixels that may be repainted, for example
   "grass-coloured pixels, but not roads or stone". Only paint inside it (see `replaceable()` below).
 - **Keep everything on the pixel grid.** The edges use single-pixel dithering, which flickers if
-  the camera stops between pixels. Dorkfall turns on `snap_2d_transforms_to_pixel` on the game's
-  SubViewport (`scenes/game.tscn`), which snaps every sprite to whole world px, and rounds the
-  camera to whole world px too (`Player._place_camera()` in `scripts/player.gd`), so the camera
-  and the sprites always agree. Movement stays smooth because the player is drawn with physics
-  interpolation. (Rounding the camera to half world px instead made it disagree with the snapped
-  sprites: the player wobbled. Turning the snap off made moving sprites look blurry.)
+  the camera stops between pixels. Dorkfall's settings (each tried and measured):
+  - the camera is rounded to whole *screen* pixels (half a world px) every frame
+    (`Player._place_camera()` in `scripts/player.gd`), so the ground never sits between pixels;
+  - `snap_2d_vertices_to_pixel` on the game's SubViewport (`scenes/game.tscn`) puts every sprite's
+    corners on whole screen pixels, so moving sprites stay crisp instead of blurry;
+  - the player, pets and monsters are drawn with physics interpolation, so they move every frame.
+  Do NOT use `snap_2d_transforms_to_pixel`: it snaps to whole *world* px (2 screen px), so the
+  player wobbles against a half-px camera, and a pet following you flickers 2 px back and forth.
 
 ---
 

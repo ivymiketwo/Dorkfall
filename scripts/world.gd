@@ -174,6 +174,7 @@ func _travel(to_pos: Vector2, limits: Rect2i, new_inside: Node2D) -> void:
 	player.reset_physics_interpolation()   # jump straight there, no slide across the map
 	for pet: Node2D in get_tree().get_nodes_in_group("pets"):   # pets come along through doors
 		pet.global_position = to_pos + Vector2(14, 6)
+		pet.reset_physics_interpolation()
 	_inside = new_inside
 	_set_camera_limits(limits)
 	camera.reset_smoothing()

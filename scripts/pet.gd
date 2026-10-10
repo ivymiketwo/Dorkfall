@@ -130,6 +130,7 @@ func _physics_process(delta: float) -> void:
 	var dist := to.length()
 	if dist > 300.0:      # got stuck or left far behind
 		global_position = player.global_position + Vector2(14, 4)
+		reset_physics_interpolation()
 		return
 	if grabs_loot:
 		_rest = maxf(_rest - delta, 0.0)
@@ -216,6 +217,7 @@ func _face(v: Vector2) -> void:
 ## Jumps to the player's side (used after the player respawns).
 func join_player(player: Node2D, n := 0) -> void:
 	global_position = player.global_position + Vector2(12 + n * 8, 4 + n * 3)
+	reset_physics_interpolation()
 	velocity = Vector2.ZERO
 	_target = null
 	_rest = 0.0

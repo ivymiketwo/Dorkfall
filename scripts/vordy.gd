@@ -453,6 +453,7 @@ func _drop_loot() -> void:
 
 func _respawn() -> void:
 	position = _home
+	reset_physics_interpolation()   # appear at home at once, no slide
 	stats.refill()
 	shape.disabled = false
 	state = State.WANDER

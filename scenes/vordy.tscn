@@ -14,6 +14,7 @@
 size = Vector2(60, 43.5)
 
 [node name="Vorly" type="CharacterBody2D"]
+physics_interpolation_mode = 1
 collision_mask = 0
 motion_mode = 1
 script = ExtResource("1_script")
@@ -23,6 +24,7 @@ rare_drop = ExtResource("7_vstaff")
 rare_drop_chance = 0.15
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+physics_interpolation_mode = 2
 texture = ExtResource("2_tex")
 offset = Vector2(0, -32)
 scale = Vector2(1.5, 1.5)
