@@ -137,7 +137,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey) or event.echo or not event.pressed:
 		return
 	# Find every hotbar action this key press matches and take the most specific
-	# one (so Shift+1 beats plain 1, while plain 1 still works when Shift is held for sprinting).
+	# one (so Shift+1 beats plain 1, while plain 1 still works when another modifier is held).
 	var best := ""
 	var best_mods := -1
 	var names: Array[String] = ["bar_up", "bar_down"]
@@ -298,8 +298,6 @@ func _finish(i: int) -> void:
 				return
 	if ab.mana_cost > 0.0:
 		stats.spend_mana(ab.mana_cost)
-	if ab.stamina_cost > 0.0:
-		stats.spend_stamina(ab.stamina_cost)
 	ready_at[i] = GameClock.now + ab.cooldown
 	changed.emit()
 
@@ -345,7 +343,7 @@ func _fire_beam(ab: Ability) -> void:
 
 
 func _can_afford(ab: Ability) -> bool:
-	return stats.mana >= ab.mana_cost and stats.stamina >= ab.stamina_cost
+	return stats.mana >= ab.mana_cost
 
 
 func _fail(i: int) -> void:

@@ -12,7 +12,6 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT }
 
 @export_group("Costs")
 @export var mana_cost := 0.0
-@export var stamina_cost := 0.0
 
 @export_group("Timing")
 ## Seconds spent casting before it goes off (0 = instant).
@@ -38,8 +37,8 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT }
 @export var poison_time := 0.0
 
 @export_group("Transfer")
-@export_enum("health", "stamina", "mana") var transfer_from: String = "health"
-@export_enum("health", "stamina", "mana") var transfer_to: String = "mana"
+@export_enum("health", "mana") var transfer_from: String = "health"
+@export_enum("health", "mana") var transfer_to: String = "mana"
 @export var transfer_amount := 50.0
 
 @export_group("Hop")

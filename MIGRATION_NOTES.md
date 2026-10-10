@@ -24,7 +24,7 @@ changes in one place, and visuals are separate from logic.
 - `Attributes`: stat points, pools and damage % computed in one class, applied to `Stats`.
 - `Experience.kill_xp` / `xp_to_next`: pure functions.
 
-- `Player` input adapter: only `_gather_input` reads keys/mouse (`input_dir`, `input_sprint`,
+- `Player` input adapter: only `_gather_input` reads keys/mouse (`input_dir`,
   `input_fire_held`, `input_ward`, `aim_world`); movement, casting, the staff's basic attack, the Ward and home-teleport read those values.
 - `Stats` has no visuals: it emits `damaged` / `out_of_mana`, `StatsFx` draws them (`show_effects`).
 - `Rng`: drops, unique drops and monster spell picks use it (seedable, server-ownable).

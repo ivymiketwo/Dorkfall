@@ -1,6 +1,6 @@
 class_name StatsUI
 extends Control
-## Character stats window (press C): Intelligence, Vitality and Dexterity, with a
+## Character stats window (press C): Intelligence and Vitality, with a
 ## [+] button per stat to spend level-up points. Shows what each stat is doing.
 
 const ROW_H := 24
@@ -9,9 +9,8 @@ const BTN := Vector2(11, 11)
 const INFO := {
 	"int": ["Mana", "Magic"],
 	"vit": ["Health"],
-	"dex": ["Stamina"],
 }
-const COLORS := {"int": Color("6fb4ff"), "vit": Color("e8695a"), "dex": Color("6fd06f")}
+const COLORS := {"int": Color("6fb4ff"), "vit": Color("e8695a")}
 
 var attrs: Attributes
 var _hover := ""
@@ -19,7 +18,7 @@ var _hover := ""
 
 func _ready() -> void:
 	CloseButton.attach(self)
-	size = Vector2(122, TOP + 3 * ROW_H + 6)
+	size = Vector2(122, TOP + Attributes.NAMES.size() * ROW_H + 6)
 	position = Vector2(94, 40)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false

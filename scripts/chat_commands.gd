@@ -21,7 +21,7 @@ const HELP := [
 	"/time 0-24 - set the hour of the day",
 	"/xp N - give yourself N XP",
 	"/gold N - give yourself N coins",
-	"/heal - refill health, stamina and mana",
+	"/heal - refill health and mana",
 	"/resetcharacter - back to a fresh character (level, items, gear, pets)",
 ]
 

@@ -10,7 +10,6 @@ display_name = "Fireball"
 kind = 0
 icon_index = 0
 mana_cost = 15.0
-stamina_cost = 5.0
 cast_time = 0.5
 cooldown = 1.0
 projectile_scene = ExtResource("2_fb")

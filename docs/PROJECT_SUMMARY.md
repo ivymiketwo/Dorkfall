@@ -122,6 +122,8 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     mana. The first 0.25 s is a parry against aimed hits you face (95% stopped, half thrown back).
     Holding drains 10 mana/s, halves your speed, and you can't attack, cast or hop. Out of mana:
     "WARD BROKEN", 1 s lockout. Poison ticks and hop costs ignore the Ward.
+  - **Stats:** Intelligence (mana, magic damage) and Vitality (health). Stamina, sprint and
+    Dexterity were removed; the bunnyhop is the fast way to move.
   - **Bunnyhop** ("Begone"): chain-hop health cost **set to 0 for testing** (was 35).
 - **Sounds:** fireball cast and hit (30% quieter), ray swoosh on every beam, jump (half volume).
 - **Economy:** sell items to vendors (right-click Sell while a shop is open; left-click shows the

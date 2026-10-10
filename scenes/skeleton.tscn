@@ -32,7 +32,6 @@ shape = SubResource("CapsuleShape2D_body")
 [node name="Stats" type="Node" parent="."]
 script = ExtResource("3_stats")
 max_health = 140.0
-max_stamina = 50.0
 max_mana = 50.0
 health_regen = 1.0
 

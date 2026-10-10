@@ -1,12 +1,10 @@
 extends CharacterBody2D
 ## Top-down player: 8-direction movement, 4-direction facing, 2-frame walk cycle,
-## sprinting that costs stamina, and health/stamina/mana via the Stats child.
+## and health/mana via the Stats child. (No sprint: the Space-key hop is the fast move.)
 
 @export var display_name := "Rex"
 @export var speed := 70.0              ## pixels per second
 @export var walk_fps := 7.0            ## walk animation speed (4 steps per cycle)
-@export var sprint_multiplier := 1.6
-@export var sprint_stamina_per_sec := 12.0
 @export var hop_ability: Ability        ## the Space-key gust hop (not on the hotbar)
 
 @export_group("Debug keys")
@@ -37,7 +35,6 @@ const TEST_GEAR := [preload("res://items/wooden_staff.tres"), preload("res://ite
 var input_dir := Vector2.ZERO
 ## Set by minigames (fishing) so the keys don't walk the character.
 var control_locked := false
-var input_sprint := false
 var input_ward := false            ## right mouse (pressed in the world) or Q: hold the Ward up
 var aim_world := Vector2.ZERO      ## where in the world the player is aiming
 ## Left / right mouse held down, counting only presses that started in the world (not on a
@@ -92,15 +89,12 @@ func _ready() -> void:
 
 func _gather_input() -> void:
 	input_dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	input_sprint = Input.is_action_pressed("sprint")
 	input_ward = _rmb_world or Input.is_physical_key_pressed(KEY_Q)
 	if ChatLog.typing:          # typing a message: the keys are for the chat
 		input_dir = Vector2.ZERO
-		input_sprint = false
 		input_ward = false
 	if control_locked:
 		input_dir = Vector2.ZERO
-		input_sprint = false
 		input_ward = false
 	aim_world = get_global_mouse_position()
 
@@ -167,18 +161,12 @@ func _physics_process(delta: float) -> void:
 			_hop_end()
 	var dir: Vector2 = input_dir
 	var move_speed := speed
-	var sprinting := false
-	var warding := is_warding()
-	if warding:
+	if is_warding():
 		move_speed *= Ward.SPEED_MULT   # ward up: slow going
-	if dir != Vector2.ZERO and not warding and input_sprint:
-		sprinting = stats.spend_stamina(sprint_stamina_per_sec * delta)
-		if sprinting:
-			move_speed *= sprint_multiplier
 	velocity = dir * move_speed
 	_corner_nudge(dir, move_speed, delta)
 	_move_tick()
-	_update_animation(dir, delta * (sprint_multiplier if sprinting else 1.0))
+	_update_animation(dir, delta)
 
 
 ## Moves the body one tick with the current velocity and remembers it (see MOVE_HISTORY).
@@ -467,7 +455,6 @@ static func _ensure_input_actions() -> void:
 		"move_down": [KEY_S, KEY_DOWN],
 		"move_left": [KEY_A, KEY_LEFT],
 		"move_right": [KEY_D, KEY_RIGHT],
-		"sprint": [KEY_SHIFT],
 		"jump": [KEY_SPACE],
 		"debug_damage": [KEY_F1],
 		"debug_spend_mana": [KEY_F2],

@@ -37,8 +37,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 ## The player
 - Always a wizard: no classes, no melee swing, no shields, no iron armour. Left click fires
   the staff's spell. Right click (or Q) holds the Ward (`scripts/ward.gd`): a mana-powered
-  block (50% / 25% mana for aimed hits it faces, 30% / 50% mana for everything else) with a parry window; the orb is lit from the mouse side (`shaders/ward_orb.gdshader`). Stats are Intelligence (mana, magic damage), Vitality (health), Dexterity
-  (stamina, for sprinting, hopping and future movement abilities).
+  block (50% / 25% mana for aimed hits it faces, 30% / 50% mana for everything else) with a parry window; the orb is lit from the mouse side (`shaders/ward_orb.gdshader`). Stats are Intelligence (mana, magic damage) and Vitality (health).
+  No stamina and no sprint: the Space-key bunnyhop is the fast way to move.
 - Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
 
 ## Difficulty design (Rex's rules)

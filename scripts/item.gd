@@ -66,10 +66,9 @@ extends Resource
 @export var magic_damage_bonus := 0.0
 ## Extra percent the Ward stops from aimed hits it faces (5 = 50% becomes 55%).
 @export var ward_bonus := 0.0
-## Extra Intelligence / Vitality / Dexterity points while worn.
+## Extra Intelligence / Vitality points while worn.
 @export var int_bonus := 0
 @export var vit_bonus := 0
-@export var dex_bonus := 0
 @export_group("Fishing")
 ## Fishing rods are equipped in the weapon slot. Left-click casts (see fishing.gd).
 @export var fishing_rod := false
@@ -107,8 +106,6 @@ func stat_lines() -> PackedStringArray:
 		out.append("INTELLIGENCE +%d" % int_bonus)
 	if vit_bonus != 0:
 		out.append("VITALITY +%d" % vit_bonus)
-	if dex_bonus != 0:
-		out.append("DEXTERITY +%d" % dex_bonus)
 	if fishing_rod:
 		out.append("FISHING POWER %d" % fishing_power)
 	if soulbound:

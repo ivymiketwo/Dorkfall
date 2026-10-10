@@ -1,6 +1,6 @@
 class_name Stats
 extends Node
-## Health / stamina / mana pools. Add as a child of anything that needs stats
+## Health / mana pools. Add as a child of anything that needs stats
 ## (player now, mobs and other players later).
 
 signal changed
@@ -12,15 +12,11 @@ signal out_of_mana
 @export var show_effects := true
 
 @export var max_health := 400.0
-@export var max_stamina := 400.0
 @export var max_mana := 400.0
 
 @export_group("Regeneration (per second)")
 @export var health_regen := 3.0
-@export var stamina_regen := 3.0
 @export var mana_regen := 3.0
-## Seconds after spending stamina before it starts refilling.
-@export var stamina_regen_delay := 0.0
 
 ## Set by Equipment from worn gear.
 var defense_percent := 0.0
@@ -34,7 +30,6 @@ var ward_bonus_percent := 0.0
 var attr_magic_percent := 0.0
 
 var health: float
-var stamina: float
 var mana: float
 ## Whoever last damaged this (used to credit XP for kills).
 var last_source: Node = null
@@ -43,7 +38,6 @@ var last_source: Node = null
 var contributions := {}
 ## Set by the player's Ward: takes (amount, source, origin), returns the damage to apply.
 var ward_filter: Callable
-var _stamina_cooldown := 0.0
 var _poison_dps := 0.0
 var _poison_left := 0.0
 var _poison_tick := 0.0
@@ -60,7 +54,6 @@ func refill() -> void:
 	last_source = null
 	contributions.clear()
 	health = max_health
-	stamina = max_stamina
 	mana = max_mana
 	changed.emit()
 
@@ -71,11 +64,6 @@ func _physics_process(delta: float) -> void:
 	var dirty := false
 	if health > 0.0 and health < max_health:
 		health = minf(health + health_regen * delta, max_health)
-		dirty = true
-	if _stamina_cooldown > 0.0:
-		_stamina_cooldown -= delta
-	elif stamina < max_stamina:
-		stamina = minf(stamina + stamina_regen * delta, max_stamina)
 		dirty = true
 	if mana < max_mana:
 		mana = minf(mana + (mana_regen + mana_regen_bonus) * delta, max_mana)
@@ -131,17 +119,7 @@ func heal(amount: float) -> void:
 	changed.emit()
 
 
-## Returns false (and spends nothing) if there isn't enough stamina.
-func spend_stamina(amount: float) -> bool:
-	if stamina < amount:
-		return false
-	stamina -= amount
-	_stamina_cooldown = stamina_regen_delay
-	changed.emit()
-	return true
-
-
-## Moves `amount` from one pool to another ("health", "stamina" or "mana").
+## Moves `amount` from one pool to another ("health" or "mana").
 ## Fails (and changes nothing) if the target is already full or the source
 ## doesn't have enough. Transferring out of health can never kill you.
 func transfer(from: String, to: String, amount: float) -> bool:
@@ -153,8 +131,6 @@ func transfer(from: String, to: String, amount: float) -> bool:
 		return false
 	set(from, src - amount)
 	set(to, minf(dst + amount, dst_max))
-	if from == "stamina":
-		_stamina_cooldown = stamina_regen_delay
 	changed.emit()
 	return true
 
