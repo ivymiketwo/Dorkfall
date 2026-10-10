@@ -225,7 +225,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _hop_t >= 0.0:
 			_jump_buffer = 0.05
 		elif _hop_window > 0.0:
-			stats.take_damage(_hop_ab.hop_chain_health_cost, null, true)       # chaining a hop costs blood
+			if _hop_ab.hop_chain_health_cost > 0.0:
+				stats.take_damage(_hop_ab.hop_chain_health_cost, null, true)       # chaining a hop costs blood
 			if _hop_ab:                                       # (dying ends the chain)
 				_hop_leap()
 		get_viewport().set_input_as_handled()
@@ -335,7 +336,8 @@ func _hop_land() -> void:
 	sprite.position.y = 0.0
 	_hop_t = -1.0
 	if _jump_buffer > 0.0:
-		stats.take_damage(_hop_ab.hop_chain_health_cost, null, true)
+		if _hop_ab.hop_chain_health_cost > 0.0:
+			stats.take_damage(_hop_ab.hop_chain_health_cost, null, true)
 		if _hop_ab:
 			_hop_leap()
 		return

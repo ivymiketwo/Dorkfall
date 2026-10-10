@@ -14,4 +14,4 @@ hop_time = 0.5
 hop_height = 13.0
 hop_window = 0.15
 hop_health_cost = 0.0
-hop_chain_health_cost = 35.0
+hop_chain_health_cost = 0.0
