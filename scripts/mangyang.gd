@@ -1,7 +1,6 @@
 extends CharacterBody2D
-## Mangyang: a low-level straw scarecrow with a butcher's cleaver. Wanders near
-## its spot, chases when you get close, then telegraphs a long rectangle in
-## front of it and throws the cleaver down it.
+## Mangyang: a low-level animated scarecrow that hops about. Wanders near its spot, chases
+## when you get close, then darkens a circle under you and sends a swarm of crows at it.
 ##
 ## This script is the BRAIN: state, targeting, the throw, loot, respawn. It draws nothing
 ## (same pattern as vordy.gd). Everything visible lives in mangyang_look.gd.
@@ -22,13 +21,13 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 @export var aggro_range := 90.0
 @export var leash_range := 208.0
 
-@export_group("Knife throw")
+@export_group("Crow swarm")
 @export var throw_range := 85.0
 @export var throw_cooldown := 3.5
 @export var throw_damage := 50.0
-@export var throw_length := 110.0
-@export var throw_width := 14.0
-@export var throw_warn := 0.9
+@export var swarm_radius := 20.0
+## Seconds from the circle appearing to the crows hitting (the scarecrow stands still meanwhile).
+@export var throw_warn := 1.0
 
 @export_group("Death")
 @export var respawn_time := 5.0
@@ -42,13 +41,20 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 ## One-shot events for the look script (and, later, for network clients).
 signal respawned
 
-const KNIFE := preload("res://scripts/knife_throw.gd")
+const SWARM := preload("res://scripts/crow_swarm.gd")
+## It moves in hops: one hop = HOP_TIME seconds; it only covers ground while in the air.
+const HOP_TIME := 0.7
+const HOP_AIR := Vector2(0.55, 0.86)    ## part of the hop spent in the air (frames 5-6 of 7)
 ## How long the topple-and-fade plays before the respawn countdown starts (seconds).
 const DEATH_ANIM := 1.65
 
 var state := State.WANDER
-## Last direction it moved or threw in (the look flips the art from this).
+## Last direction it moved or threw in.
 var facing := Vector2.LEFT
+## 0 down, 1 up, 2 left, 3 right (the look picks its row from this).
+var face := 0
+## How far through the current hop (0..1); the look shows the matching frame.
+var hop := 0.0
 var _home: Vector2
 var _wander_target: Vector2
 var _wander_timer := 0.0
@@ -124,24 +130,39 @@ func _physics_process(delta: float) -> void:
 
 	if _throwing > 0.0:
 		move = Vector2.ZERO
-	if move.x != 0.0:
+	if move != Vector2.ZERO:
 		facing = move
+		face = _face_of(move)
+		hop = fmod(hop + delta / HOP_TIME, 1.0)
+		# hops: covers its ground while in the air, barely moves while crouched on the ground
+		var air := hop >= HOP_AIR.x and hop < HOP_AIR.y
+		speed *= 1.0 / (HOP_AIR.y - HOP_AIR.x) * 0.9 if air else 0.1
+	elif hop > 0.0:
+		hop = minf(hop + delta / HOP_TIME, 1.0)    # finish the hop it's in, then stand
+		if hop >= 1.0:
+			hop = 0.0
 	velocity = move * speed
 	move_and_slide()
+
+
+static func _face_of(dir: Vector2) -> int:
+	if absf(dir.x) > absf(dir.y):
+		return 2 if dir.x < 0.0 else 3
+	return 0 if dir.y > 0.0 else 1
 
 
 func _start_throw(dir: Vector2) -> void:
 	_throw_timer = throw_cooldown
 	_throwing = throw_warn
 	facing = dir
-	var k: KnifeThrow = KNIFE.new()
-	k.direction = dir
+	face = _face_of(dir)
+	var target := Players.nearest(get_tree(), global_position, true)
+	var k: CrowSwarm = SWARM.new()
 	k.damage = throw_damage
-	k.length = throw_length
-	k.width = throw_width
+	k.radius = swarm_radius
 	k.warn_time = throw_warn
-	k.caster = self
-	k.global_position = global_position + Vector2(0, -8)
+	k.launch_from = global_position
+	k.global_position = target.global_position if target else global_position + dir * 40.0
 	AttackGuard.bind(k, self)
 	var root := get_parent().get_parent()
 	root.add_child(k)
