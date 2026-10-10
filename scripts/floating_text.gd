@@ -6,6 +6,9 @@ extends Node2D
 
 var text := ""
 var color := Color.WHITE
+## Optional second part drawn right after `text` in its own colour (the Ward's "(-X)").
+var suffix := ""
+var suffix_color := Color("8fd0ff")
 var px := 1.0          ## size of one font pixel in world units (1.0 = 2 screen pixels)
 var rise := 20.0
 var life := 1.0
@@ -22,7 +25,8 @@ static func spawn(parent: Node, pos: Vector2, msg: String, col: Color = Color.WH
 
 
 ## A damage number over `pos`. Big hits are bigger and orange; hits on the player are red.
-static func damage(parent: Node, pos: Vector2, amount: float, on_player: bool) -> void:
+## `warded` = damage the Ward stopped, shown after the number as a blue "(-X)".
+static func damage(parent: Node, pos: Vector2, amount: float, on_player: bool, warded := 0.0) -> void:
 	if amount < 0.5 or parent == null:
 		return
 	var col := Color("fff0a8")
@@ -35,6 +39,8 @@ static func damage(parent: Node, pos: Vector2, amount: float, on_player: bool) -
 	var t := FloatingText.new()
 	t.text = str(int(round(amount)))
 	t.color = col
+	if warded >= 0.5:
+		t.suffix = " (-%d)" % int(round(warded))
 	t.px = size
 	t.rise = 22.0 if size > 0.5 else 16.0
 	t.position = pos + Vector2(randf_range(-7.0, 7.0), randf_range(-3.0, 3.0))
@@ -52,8 +58,10 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	var w := HiFont.text_width(text, px)
+	var w := HiFont.text_width(text + suffix, px)
 	var p := Vector2(-w / 2.0, -HiFont.H * px / 2.0).snapped(Vector2(0.5, 0.5))
 	# drop shadow, then outlined text on top
-	HiFont.draw(self, p + Vector2(0.0, px * 1.5), text, Color(0, 0, 0, 0.55), px)
+	HiFont.draw(self, p + Vector2(0.0, px * 1.5), text + suffix, Color(0, 0, 0, 0.55), px)
 	HiFont.draw(self, p, text, color, px)
+	if suffix != "":
+		HiFont.draw(self, p + Vector2(HiFont.text_width(text, px) + px, 0.0), suffix, suffix_color, px)

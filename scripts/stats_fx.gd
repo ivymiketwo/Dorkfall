@@ -17,7 +17,8 @@ static func _host(stats: Stats) -> Node2D:
 static func _number(stats: Stats, amount: float) -> void:
 	var host := _host(stats)
 	if host:
-		FloatingText.damage(host.get_parent(), host.position + Vector2(0, -26), amount, host.is_in_group("player"))
+		FloatingText.damage(host.get_parent(), host.position + Vector2(0, -26), amount, host.is_in_group("player"),
+				stats.last_warded)
 
 
 static func _say(stats: Stats, text: String, col: Color) -> void:

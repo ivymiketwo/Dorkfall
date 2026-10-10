@@ -26,6 +26,8 @@ signal out_of_mana
 var defense_percent := 0.0
 var mana_regen_bonus := 0.0
 var magic_damage_percent := 0.0
+## How much the player's Ward stopped of the hit being reported by `damaged` (0 = none).
+var last_warded := 0.0
 ## Extra percent the Ward stops from aimed hits it faces (gear, later skills).
 var ward_bonus_percent := 0.0
 ## From Intelligence (set by Attributes).
@@ -93,8 +95,11 @@ func magic_mult() -> float:
 func take_damage(amount: float, source: Node = null, ignore_defense := false, origin := Vector2.INF) -> void:
 	if health <= 0.0:
 		return
+	last_warded = 0.0
 	if not ignore_defense and ward_filter.is_valid():
+		var before := amount
 		amount = ward_filter.call(amount, source, origin)
+		last_warded = maxf(before - amount, 0.0)
 		if amount <= 0.0:
 			return
 	# a player hitting a monster well above their level does less (AttackRules.level_gap_mult)

@@ -187,8 +187,7 @@ func _filter(amount: float, source: Node, origin: Vector2) -> float:
 		_break()
 		return amount - stopped
 	stats.spend_mana(stopped * rate)
-	_flash_col = Color(0.85, 0.95, 1.0)
-	_say("WARDED" if facing else "PARTLY WARDED", BLUE)
+	_flash_col = Color(0.85, 0.95, 1.0)   # the damage number shows how much was stopped
 	return amount - stopped
 
 
