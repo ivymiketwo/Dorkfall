@@ -24,6 +24,10 @@ const LIFT := Vector2(0, 14)
 var _t := 0.0
 var _row := 0            ## sprite row: 0 = facing the camera (south), 1 = away (north), 2 = left, 3 = right
 var _rest := 0.0
+## Seconds it stands still right after grabbing a pile (the rest above counts down meanwhile),
+## so it goes straight on to the next pile instead of first heading back to you.
+var _pause := 0.0
+const GRAB_PAUSE := 0.25
 var _target: Pickup
 var _skip := {}     ## pickups it gave up on (inventory full) -> ignore until
 ## Instance id of the player it belongs to (0 = the local player, for older saves).
@@ -154,6 +158,13 @@ func _physics_process(delta: float) -> void:
 
 ## Returns true while the pet is busy running to a pile.
 func _fetch_loot(player: Node2D, delta: float) -> bool:
+	if _pause > 0.0:
+		_pause -= delta
+		if _pause <= 0.0 and _rest < 0.05:
+			_rest = 0.0                           # same length as the pause: free to go now
+		velocity = Vector2.ZERO
+		sprite.frame = _row * 7 + 6               # stands there a moment with its prize
+		return true
 	if _rest > 0.0:
 		_target = null
 		return false
@@ -191,7 +202,9 @@ func _fetch_loot(player: Node2D, delta: float) -> bool:
 		if not gone:
 			_skip[pk] = GameClock.now + 8.0   # bag full: leave it
 		_rest = loot_cooldown
-		return false
+		_pause = GRAB_PAUSE
+		velocity = Vector2.ZERO
+		return true
 	velocity = to.normalized() * speed * 1.5
 	move_and_slide()
 	_t += delta
