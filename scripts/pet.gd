@@ -11,7 +11,7 @@ extends CharacterBody2D
 ## Seconds a drop has to sit on the ground before the pet goes for it.
 @export var loot_delay := 1.0
 ## Seconds the pet rests after each pile.
-@export var loot_cooldown := 1.0
+@export var loot_cooldown := 0.25
 @export var loot_range := 260.0   ## (unused: loot must be on screen now)
 @export var leash_range := 150.0   ## a grab pet never runs further than this from its owner
 
