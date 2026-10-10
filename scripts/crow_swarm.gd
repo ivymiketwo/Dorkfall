@@ -15,8 +15,10 @@ extends Node2D
 @export var crow_count := 12
 var launch_from := Vector2.ZERO
 
-## When the crows leave the scarecrow (they fly the rest of the warning).
-const LAUNCH_AT := 0.25
+## When the swarm leaves the scarecrow (it flies the rest of the warning).
+const LAUNCH_AT := 0.4
+## The circling crows start first, as soon as the circle appears.
+const CIRCLE_START := 0.0
 const LEAVE_TIME := 0.9
 ## A few crows stay behind and circle the scarecrow, then spiral up and away off screen.
 const CIRCLERS := 3
@@ -36,7 +38,7 @@ var _fx: Node2D
 
 func _ready() -> void:
 	_timeline = AttackTimeline.new().at(warn_time, _strike).lasts(
-			maxf(warn_time + LEAVE_TIME, LAUNCH_AT + 0.2 + CIRCLE_TIME + RISE_TIME))
+			maxf(warn_time + LEAVE_TIME, CIRCLE_START + 0.2 + CIRCLE_TIME + RISE_TIME))
 	for i in CIRCLERS:
 		_circlers.append({"ang": TAU * float(i) / float(CIRCLERS) + randf() * 0.6, "r": randf_range(11.0, 16.0),
 				"ph": randf() * TAU, "delay": randf_range(0.0, 0.2), "drift": randf_range(-30.0, 30.0),
@@ -122,7 +124,7 @@ func _scarecrow_at() -> Vector2:
 func _draw_circlers() -> void:
 	var c0 := _scarecrow_at()
 	for c in _circlers:
-		var t: float = _t - LAUNCH_AT - c["delay"]
+		var t: float = _t - CIRCLE_START - c["delay"]
 		if t < 0.0:
 			continue
 		var a := 1.0
