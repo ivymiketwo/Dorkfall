@@ -29,11 +29,11 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 @export var fireball_damage := 80.0
 @export var fireball_radius := 18.0
 ## Seconds from the circle appearing to the fireball landing.
-@export var fireball_warn := 1.4
-@export var fireball_cooldown := 2.6
+@export var fireball_warn := 1.0
+@export var fireball_cooldown := 1.8
 ## Aims where the target will be when the fireball lands, if they keep walking the same way
-## (1 = all the way, 0 = where they stand). Monsters past the ravine all aim ahead like this.
-@export var aim_lead := 1.0
+## (1 = all the way, 0 = where they stand). Off for these wizards; later monsters use it.
+@export var aim_lead := 0.0
 
 @export_group("Death")
 @export var respawn_time := 20.0
