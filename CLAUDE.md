@@ -38,8 +38,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Stronger monsters must be *harder to play against*, not spongier: keep time-to-kill roughly flat
   and scale difficulty with shorter telegraphs, smaller punish windows, better aim, more/mixed
   attacks, smarter movement and monster combinations. Avoid big health multipliers.
-- Aim prediction (`AttackRules.predict`): monsters past the ravine aim where the player will be,
-  not where they stand (the ravine's skeleton wizards don't; they're fast instead). Vorly (first boss) stays easy to dodge by moving.
+- Aim prediction (`AttackRules.predict`, e.g. the wizard's `aim_lead`): aims where the player will
+  be. Not a default: only use it on the monsters / attacks Rex picks. Vorly (first boss) stays easy to dodge by moving.
 - Level gap (`AttackRules.level_gap_mult`, applied in `Stats.take_damage`): a player hitting a
   monster up to 3 levels above does full damage, then 5% less per extra level, floor 60%.
 
