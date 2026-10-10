@@ -17,8 +17,9 @@ var launch_from := Vector2.ZERO
 
 ## When the swarm leaves the scarecrow (it flies the rest of the warning).
 const LAUNCH_AT := 0.5
-## The circling crows start first, as soon as the circle appears.
+## The circling crows start first (an extra warning); the ground circle shows up a beat later.
 const CIRCLE_START := 0.0
+const MARKER_AT := 0.25
 const LEAVE_TIME := 0.9
 ## A few crows stay behind and circle the scarecrow, then spiral up and away off screen.
 const CIRCLERS := 3
@@ -81,9 +82,9 @@ func _process(_delta: float) -> void:
 
 
 func _draw() -> void:
-	if _struck:
+	if _struck or _t < MARKER_AT:
 		return
-	var p := clampf(_t / warn_time, 0.0, 1.0)
+	var p := clampf((_t - MARKER_AT) / (warn_time - MARKER_AT), 0.0, 1.0)
 	var pulse := 0.5 + 0.5 * sin(_t * 9.0)
 	draw_circle(Vector2.ZERO, radius, Color(FILL.r, FILL.g, FILL.b, 0.2 + 0.15 * p))
 	draw_circle(Vector2.ZERO, radius * p, Color(FILL.r, FILL.g, FILL.b, 0.25))
