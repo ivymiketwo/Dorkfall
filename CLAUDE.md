@@ -19,6 +19,9 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   `xvfb-run ... --rendering-driver opengl3` for screenshots.
 - Main scene is `scenes/game.tscn` (a wrapper: the world in `scenes/main.tscn` renders at
   640x360 in a SubViewport; CanvasLayers in group `ui_layer` are drawn at full window resolution).
+- Pixels stay sharp everywhere: the project default texture filter is Nearest, and every
+  SubViewport must also set `canvas_item_default_texture_filter = 0` (Nearest), because
+  SubViewports ignore the project setting and default to Linear (blurry).
 
 ## Art and world facts
 - Viewport 640x360, camera zoom 2. Tiles are 32 px art drawn at half scale (16 world px), so
