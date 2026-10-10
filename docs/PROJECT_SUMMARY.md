@@ -116,10 +116,12 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
   - **Red beam:** 60 damage.
   - **Blue staff beam** (left click): 15 damage, 1 s cooldown, hold to keep firing.
   - **Ward** (hold right click or Q): a summoning circle under you and a glass orb around you, lit
-    only on the side facing the mouse. Stops 70% of aimed hits from that side (120 degree arc) for
-    mana; the first 0.25 s is a parry (95% stopped, half thrown back). Holding drains 10 mana/s,
-    halves your speed, and you can't attack, cast or hop. Out of mana: "WARD BROKEN", 1 s lockout.
-    Ground effects (marked circles, crows, wizard fireballs) can't be warded.
+    only on the side facing the mouse. Aimed hits from the side you face (120 degree arc): 50% stopped
+    (gear `ward_bonus` adds to it, max 90%), costing 25% of the stopped damage in mana. Everything
+    else (ground effects, aimed hits from the side or behind): 30% stopped, costing 50% of it in
+    mana. The first 0.25 s is a parry against aimed hits you face (95% stopped, half thrown back).
+    Holding drains 10 mana/s, halves your speed, and you can't attack, cast or hop. Out of mana:
+    "WARD BROKEN", 1 s lockout. Poison ticks and hop costs ignore the Ward.
   - **Bunnyhop** ("Begone"): chain-hop health cost **set to 0 for testing** (was 35).
 - **Sounds:** fireball cast and hit (30% quieter), ray swoosh on every beam, jump (half volume).
 - **Economy:** sell items to vendors (right-click Sell while a shop is open; left-click shows the

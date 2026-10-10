@@ -119,6 +119,7 @@ func _apply_stats() -> void:
 	st.defense_percent = total("defense")
 	st.mana_regen_bonus = total("mana_regen_bonus")
 	st.magic_damage_percent = total("magic_damage_bonus")
+	st.ward_bonus_percent = total("ward_bonus")
 
 
 func _say(msg: String, col := Color("f0d040")) -> void:

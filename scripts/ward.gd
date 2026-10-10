@@ -4,12 +4,12 @@ extends Node2D
 ##
 ## A summoning circle spins under your feet and a glass orb surrounds you. The orb is lit
 ## from the mouse's side: that is the side you are warding.
-## - Only attacks that come from where you're aiming are stopped (a 120 degree arc in
-##   front of you). Ground effects (slam, blob, toxic clouds, boulders, marked circles)
-##   can't be warded.
-## - Ward: stops WARD_PERCENT of the hit and costs mana per point stopped. Holding it costs
-##   mana too, slows you to half speed and you can't attack or cast. Run out of mana and the
-##   ward breaks: full damage and you can't raise it again for STUN_TIME.
+## - Aimed attacks from where you're aiming (a 120 degree arc in front of you): stops 50%
+##   (FACING_PERCENT, raised by gear later) and costs 25% of the stopped damage in mana.
+## - Everything else (ground effects like marked circles and boulders, and aimed hits from the
+##   side or behind): stops 30% and costs 50% of the stopped damage in mana.
+## - Holding it costs mana too, slows you to half speed and you can't attack, cast or hop.
+##   Run out of mana and the ward breaks: you can't raise it again for STUN_TIME.
 ## - Parry: a hit landing in the first PARRY_WINDOW seconds is almost fully stopped and half
 ##   of it is thrown back at the attacker. A new parry window only opens PARRY_LOCKOUT
 ##   seconds after the last one started, so mashing doesn't work.
@@ -20,9 +20,16 @@ extends Node2D
 const PARRY_WINDOW := 0.25
 const PARRY_LOCKOUT := 0.8
 const HALF_ARC := deg_to_rad(60.0)
-const WARD_PERCENT := 70.0
+## Hits from where you're aiming (an aimed attack, inside the 120 degree arc): stops this much
+## (plus gear / skill bonuses, see Stats.ward_bonus_percent), paying this share of it in mana.
+const FACING_PERCENT := 50.0
+const FACING_MANA := 0.25
+## Everything else (ground effects, and aimed hits from the side or behind): stops less and
+## costs more mana per point stopped.
+const OTHER_PERCENT := 30.0
+const OTHER_MANA := 0.5
+const MAX_PERCENT := 90.0
 const HOLD_DRAIN := 10.0          # mana per second while warding
-const MANA_PER_DAMAGE := 0.3      # mana spent per point of damage stopped
 const PARRY_NEGATE := 0.95
 const PARRY_REFLECT := 0.5
 const STUN_TIME := 1.0
@@ -147,15 +154,23 @@ func _say(text: String, col: Color) -> void:
 		FloatingText.spawn(player.get_parent(), player.position + Vector2(0, -34), text, col)
 
 
-## Called by Stats.take_damage for attacks that have a direction. Returns the damage to take.
+## How much of a hit the Ward stops (percent) when it comes from where you're aiming.
+func facing_percent() -> float:
+	return minf(FACING_PERCENT + stats.ward_bonus_percent, MAX_PERCENT)
+
+
+## Called by Stats.take_damage for every hit except self-inflicted ones (poison ticks, hop
+## costs). `origin` = where an aimed attack came from, Vector2.INF for ground effects.
+## Returns the damage to take.
 func _filter(amount: float, source: Node, origin: Vector2) -> float:
-	if not warding:
+	if not warding or amount <= 0.0:
 		return amount
-	var to := origin - (player.global_position + ORB_CENTER)
-	if to.length() > 1.0 and absf(angle_difference(to.angle(), _aim.angle())) > HALF_ARC:
-		return amount   # hit from the side or behind
+	var facing := false
+	if origin != Vector2.INF:
+		var to := origin - (player.global_position + ORB_CENTER)
+		facing = to.length() <= 1.0 or absf(angle_difference(to.angle(), _aim.angle())) <= HALF_ARC
 	_flash = 1.0
-	if in_parry_window():
+	if facing and in_parry_window():
 		_flash_col = GOLD
 		_say("PARRY!", GOLD)
 		if source != null and is_instance_valid(source):
@@ -163,12 +178,18 @@ func _filter(amount: float, source: Node, origin: Vector2) -> float:
 			if st and st != stats:
 				st.take_damage(amount * PARRY_REFLECT, player)
 		return amount * (1.0 - PARRY_NEGATE)
-	if not stats.spend_mana(amount * MANA_PER_DAMAGE):
+	var pct := facing_percent() if facing else OTHER_PERCENT
+	var rate := FACING_MANA if facing else OTHER_MANA
+	var stopped := amount * pct / 100.0
+	if stats.mana < stopped * rate:
+		# not enough mana for all of it: stop what the last of it pays for, then the ward breaks
+		stopped = maxf(stats.mana, 0.0) / rate
 		_break()
-		return amount
+		return amount - stopped
+	stats.spend_mana(stopped * rate)
 	_flash_col = Color(0.85, 0.95, 1.0)
-	_say("WARDED", BLUE)
-	return amount * (1.0 - WARD_PERCENT / 100.0)
+	_say("WARDED" if facing else "PARTLY WARDED", BLUE)
+	return amount - stopped
 
 
 ## Only drawing from here on.

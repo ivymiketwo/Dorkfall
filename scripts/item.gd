@@ -64,6 +64,8 @@ extends Resource
 @export var mana_regen_bonus := 0.0
 ## Percent bonus to spell / staff-beam damage while worn (3 = +3%).
 @export var magic_damage_bonus := 0.0
+## Extra percent the Ward stops from aimed hits it faces (5 = 50% becomes 55%).
+@export var ward_bonus := 0.0
 ## Extra Intelligence / Vitality / Dexterity points while worn.
 @export var int_bonus := 0
 @export var vit_bonus := 0
@@ -99,6 +101,8 @@ func stat_lines() -> PackedStringArray:
 		out.append("MANA REGEN +%s/S" % _num(mana_regen_bonus))
 	if magic_damage_bonus != 0.0:
 		out.append("MAGIC DAMAGE +%s%%" % _num(magic_damage_bonus))
+	if ward_bonus != 0.0:
+		out.append("WARD +%s%%" % _num(ward_bonus))
 	if int_bonus != 0:
 		out.append("INTELLIGENCE +%d" % int_bonus)
 	if vit_bonus != 0:

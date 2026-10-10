@@ -26,6 +26,8 @@ signal out_of_mana
 var defense_percent := 0.0
 var mana_regen_bonus := 0.0
 var magic_damage_percent := 0.0
+## Extra percent the Ward stops from aimed hits it faces (gear, later skills).
+var ward_bonus_percent := 0.0
 ## From Intelligence (set by Attributes).
 var attr_magic_percent := 0.0
 
@@ -86,12 +88,12 @@ func magic_mult() -> float:
 
 
 ## `ignore_defense` is for self-inflicted costs (like chaining hops).
-## `origin` is where an aimed attack came from (left out for ground effects, which the
-## player's Ward can't stop).
+## `origin` is where an aimed attack came from (left out for ground effects). The player's Ward
+## sees every hit except self-inflicted ones (`ignore_defense`).
 func take_damage(amount: float, source: Node = null, ignore_defense := false, origin := Vector2.INF) -> void:
 	if health <= 0.0:
 		return
-	if origin != Vector2.INF and ward_filter.is_valid():
+	if not ignore_defense and ward_filter.is_valid():
 		amount = ward_filter.call(amount, source, origin)
 		if amount <= 0.0:
 			return
