@@ -107,6 +107,11 @@ func take_damage(amount: float, source: Node = null, ignore_defense := false, or
 		amount = guard_filter.call(amount, source, origin)
 		if amount <= 0.0:
 			return
+	# a player hitting a monster well above their level does less (AttackRules.level_gap_mult)
+	if source != null and is_instance_valid(source) and source.is_in_group("player") and "level" in get_parent():
+		var xp := source.get_node_or_null("Experience")
+		if xp != null and "level" in xp:
+			amount *= AttackRules.level_gap_mult(int(xp.level), int(get_parent().level))
 	if not ignore_defense and defense_percent > 0.0:
 		amount *= 1.0 - minf(defense_percent, 90.0) / 100.0
 	if source != null:

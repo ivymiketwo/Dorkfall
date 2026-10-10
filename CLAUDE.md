@@ -34,6 +34,15 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   Unreachable land there is left unpainted and its ground squares don't exist (GroundStream skips them).
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
 
+## Difficulty design (Rex's rules)
+- Stronger monsters must be *harder to play against*, not spongier: keep time-to-kill roughly flat
+  and scale difficulty with shorter telegraphs, smaller punish windows, better aim, more/mixed
+  attacks, smarter movement and monster combinations. Avoid big health multipliers.
+- Aim prediction (`AttackRules.predict`): the skeleton wizards and every monster past the ravine
+  aim where the player will be, not where they stand. Vorly (first boss) stays easy to dodge by moving.
+- Level gap (`AttackRules.level_gap_mult`, applied in `Stats.take_damage`): a player hitting a
+  monster up to 3 levels above does full damage, then 5% less per extra level, floor 60%.
+
 ## Gear (armour) pipeline: read art/gear_src/README.md
 - Never regenerate `data/hands.json` with `tools/gen_hand_data.py`: it holds hand-tuned
   staff positions that the tool would overwrite.

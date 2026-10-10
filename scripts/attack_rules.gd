@@ -47,6 +47,22 @@ static func can_hurt(source: Node, target: Node) -> bool:
 	return from_player or target.is_in_group("player")
 
 
+## Player damage against a higher-level monster. Up to 3 levels above you: full damage;
+## then 5% less per extra level, never below 60% (so fighting up is still worth it).
+static func level_gap_mult(player_level: int, monster_level: int) -> float:
+	var gap := monster_level - player_level
+	if gap <= 3:
+		return 1.0
+	return maxf(0.6, 1.0 - 0.05 * float(gap - 3))
+
+
+## Where a target will be after `seconds` if it keeps moving the same way (aim prediction).
+## `lead` 1 = all the way, 0 = where it stands now.
+static func predict(target: Node2D, seconds: float, lead := 1.0) -> Vector2:
+	var v: Vector2 = target.velocity if "velocity" in target else Vector2.ZERO
+	return target.global_position + v * seconds * lead
+
+
 static func circle_hits(p: Vector2, radius: float) -> bool:
 	return p.length() <= radius
 

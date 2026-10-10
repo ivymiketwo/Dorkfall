@@ -350,8 +350,10 @@ func _fire_small_orb(target: Node2D) -> void:
 	orb.blob_size = 5.0
 	orb.arc_height = 14.0
 	orb.launch_from = mouth
-	orb.travel_time = barrage_travel
-	orb.global_position = target.global_position
+	# a little scatter so the stream isn't perfectly on top of you, but small enough that
+	# simply moving still dodges it (first boss)
+	orb.travel_time = barrage_travel * Rng.randf_range(0.92, 1.08)
+	orb.global_position = target.global_position + Vector2.from_angle(Rng.randf() * TAU) * Rng.randf_range(0.0, barrage_radius * 0.35)
 	AttackGuard.bind(orb, self)
 	_add_ground_attack(orb)
 

@@ -31,6 +31,9 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 ## Seconds from the circle appearing to the fireball landing.
 @export var fireball_warn := 1.4
 @export var fireball_cooldown := 2.6
+## Aims where the target will be when the fireball lands, if they keep walking the same way
+## (1 = all the way, 0 = where they stand). Monsters past the ravine all aim ahead like this.
+@export var aim_lead := 1.0
 
 @export_group("Death")
 @export var respawn_time := 20.0
@@ -171,7 +174,7 @@ func _start_cast(target: Node2D) -> void:
 	f.warn_time = fireball_warn
 	f.launch_at = (float(hand["frame"]) + 1.0) / CAST_FPS
 	f.launch_from = global_position + hand["at"]
-	f.global_position = target.global_position
+	f.global_position = AttackRules.predict(target, fireball_warn, aim_lead)
 	AttackGuard.bind(f, self)
 	_add_ground_attack(f)
 
