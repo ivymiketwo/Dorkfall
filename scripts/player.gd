@@ -110,9 +110,10 @@ func _process(_delta: float) -> void:
 	_place_camera()
 
 
-## The camera sits on the player's smoothed (interpolated) position, rounded to whole screen
-## pixels (half a world px at zoom 2), so the world scrolls one even pixel at a time and the
-## player never wobbles a pixel against it.
+## The camera sits on the player's smoothed (interpolated) position, rounded to whole world px.
+## The game screen snaps every sprite to whole world px too (snap_2d_transforms_to_pixel in
+## scenes/game.tscn), so the ground, the player and everyone else line up exactly: crisp art,
+## no shimmer on fine ground patterns, no wobble.
 func _place_camera() -> void:
 	if _cam == null:
 		return
@@ -120,7 +121,7 @@ func _place_camera() -> void:
 		_tick.prev = global_position
 		_tick.now = global_position
 	var at: Vector2 = _tick.prev.lerp(_tick.now, Engine.get_physics_interpolation_fraction())
-	_cam.global_position = (at * 2.0).round() / 2.0
+	_cam.global_position = at.round()     # whole world px: the same grid the screen snaps sprites to
 	_cam.force_update_scroll()          # use it this frame, not next
 
 

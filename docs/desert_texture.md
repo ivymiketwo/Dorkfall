@@ -28,11 +28,13 @@ self-contained code.
   each time. Otherwise each run paints over the last.
 - **Protect what shouldn't change.** Build a mask of pixels that may be repainted, for example
   "grass-coloured pixels, but not roads or stone". Only paint inside it (see `replaceable()` below).
-- **Keep the camera on whole screen pixels.** The edges use single-pixel dithering. If the camera
-  can stop between two screen pixels, those dithered pixels flicker while moving. Dorkfall rounds
-  the camera's position to whole screen pixels (half a world px at zoom 2) every frame, in
-  `Player._place_camera()` in `scripts/player.gd`. Godot's blanket `snap_2d_transforms_to_pixel`
-  also stops the flicker, but it was dropped because it made the player wobble against the ground.
+- **Keep everything on the pixel grid.** The edges use single-pixel dithering, which flickers if
+  the camera stops between pixels. Dorkfall turns on `snap_2d_transforms_to_pixel` on the game's
+  SubViewport (`scenes/game.tscn`), which snaps every sprite to whole world px, and rounds the
+  camera to whole world px too (`Player._place_camera()` in `scripts/player.gd`), so the camera
+  and the sprites always agree. Movement stays smooth because the player is drawn with physics
+  interpolation. (Rounding the camera to half world px instead made it disagree with the snapped
+  sprites: the player wobbled. Turning the snap off made moving sprites look blurry.)
 
 ---
 
