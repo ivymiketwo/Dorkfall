@@ -58,7 +58,9 @@ const TRAIL_LIFE := 1.6
 ## The fountain part of a trail (drawn while rising) fades sooner than the slam part.
 const FOUNTAIN_TRAIL_LIFE := 0.9
 ## Everything left fades over this long at the very end.
-const TRAIL_FADE := 0.55
+const TRAIL_FADE := 0.25
+## ...and that whole-trail fade is over this long before the spell ends.
+const TRAIL_FADE_EARLY := 0.3
 ## The tightest known way to fit 15 circles (radius 1) inside one circle (its radius: 4.52).
 ## The cluster uses this, turned to a random angle, so the target area is as small and round
 ## as it can be. Other counts fall back to a honeycomb blob.
@@ -404,7 +406,7 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 	var head := _progress(b, r)
 	if head <= 0.001:
 		return
-	var fade := clampf((_timeline.end_time - _t) / TRAIL_FADE, 0.0, 1.0)
+	var fade := clampf((_timeline.end_time - TRAIL_FADE_EARLY - _t) / TRAIL_FADE, 0.0, 1.0)
 	var n := 28
 	var prev := _path(b, 0.0)
 	for j in range(1, n + 1):
