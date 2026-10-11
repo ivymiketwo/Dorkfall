@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ability.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Crimson Barrage"
+kind = 5
+icon_index = 6
+mana_cost = 40.0
+cooldown = 8.0
+damage = 20.0
+swarm_count = 10
+swarm_spot_radius = 6.0
+swarm_range = 170.0
+swarm_stream = true
+swarm_interval = 0.5

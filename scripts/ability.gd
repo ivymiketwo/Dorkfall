@@ -45,6 +45,10 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT, SWARM }
 @export var swarm_spot_radius := 6.0
 ## How far from the caster the cluster can be centred (world px).
 @export var swarm_range := 170.0
+## Crimson Barrage: the knot hovers and shoots one missile every `swarm_interval` seconds
+## (`swarm_count` in all), each at wherever the caster is aiming when it leaves.
+@export var swarm_stream := false
+@export var swarm_interval := 0.5
 
 @export_group("Transfer")
 @export_enum("health", "mana") var transfer_from: String = "health"

@@ -7,8 +7,12 @@ extends Node2D
 ## hits everything in its circle the moment it lands, and Rex's red flame
 ## (art/crimson_flame.png) bursts up there.
 ##
+## With `stream` on (the Crimson Barrage spell) the knot hovers instead and shoots one missile
+## every `interval` seconds, `count` in all; each lands on its own circle wherever the caster
+## is aiming at the moment it leaves the knot (no further than `max_reach` from the caster).
+##
 ## Place this node at the target spot and set `caster`, `launch_from` (global), `count`,
-## `spot_radius` and `damage` before adding it. The rules (where the circles are, when each
+## `spot_radius` and `damage` (and the stream settings) before adding it. The rules (where the circles are, when each
 ## one lands, who it hits) are picked with Rng and run on the game tick through
 ## AttackTimeline; everything else is only drawing.
 
@@ -17,6 +21,10 @@ var launch_from := Vector2.ZERO
 var count := 10
 var spot_radius := 6.0
 var damage := 15.0
+## Crimson Barrage: one missile at a time from a hovering knot, aimed at the cursor.
+var stream := false
+var interval := 0.5
+var max_reach := 170.0
 
 const HIT_SOUND := preload("res://audio/fireball_hit.wav")
 const FLAME_TEX := preload("res://art/crimson_flame.png")
@@ -74,45 +82,79 @@ var _fx: Node2D                  # beams and flames, drawn above characters
 
 func _ready() -> void:
 	_start = to_local(launch_from)
-	var spots := _pick_spots()
 	_timeline = AttackTimeline.new()
-	var last := 0.0
 	_tip = Vector2(0.0, -BURST_HEIGHT)
-	# missiles fan out of the tip in every direction but straight down (left ones land on the
-	# left circles), each on a clean ballistic arc
-	# round the clock by where they hang, so each petal heads out on its own side
-	spots.sort_custom(func(a, b): return a.rotated(TWIST).angle() < b.rotated(TWIST).angle())
-	var petal0: float = (spots[0] as Vector2).rotated(TWIST).angle() if not spots.is_empty() else 0.0
-	var n := spots.size()
-	for i in n:
-		var spot: Vector2 = spots[i]
-		# a fountain: every missile is thrown up out of the knot to its own height, then falls
-		# onto its circle. The arc is a parabola: y = tip.y + vy*u + ay*u*u, x straight across.
-		var drop := spot.y - _tip.y                       # how far below the knot it lands
-		var h := Rng.randf_range(14.0, 24.0)             # how high above the knot it climbs
-		var vy := -2.0 * h - 2.0 * sqrt(h * h + h * drop)
-		var ay := drop - vy
-		var delay := EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015)
-		var float_t := Rng.randf_range(0.4, 0.46)        # drifting up and lingering at the top
-		var slam := Rng.randf_range(0.12, 0.16)          # then slamming down
-		var flight := float_t + slam
-		var b := {"spot": spot,
-				"vy": vy, "ay": ay, "apex": -vy / (2.0 * ay),
-				# drifts out to its side on the way up, falls back in onto its circle
-				# like a flower: every missile spreads out on its own side (evenly round the clock,
-				# in the same order as where they hang), none straight up, then curls back in
-				"out": Vector2.from_angle(_petal_angle(spots[i], i, n, petal0)) * Rng.randf_range(20.0, 26.0) * Vector2(1.0, 0.5),
-				"delay": delay, "float": float_t, "slam": slam, "flight": flight, "land": delay + flight,
-				"flick": randf() * 10.0}
-		_beams.append(b)
-		_timeline.at(b["land"], _land.bind(i))
-		last = maxf(last, b["land"])
+	var last := 0.0
+	if stream:
+		# one missile every `interval` seconds; where each lands is picked when it leaves
+		for i in count:
+			var b := _new_missile(EMIT_AT + float(i) * interval)
+			_beams.append(b)
+			_timeline.at(b["delay"], _launch.bind(i))
+			_timeline.at(b["land"], _land.bind(i))
+			last = maxf(last, b["land"])
+	else:
+		var spots := _pick_spots()
+		# round the clock by where they hang, so each petal heads out on its own side
+		spots.sort_custom(func(a, b): return a.rotated(TWIST).angle() < b.rotated(TWIST).angle())
+		var petal0: float = (spots[0] as Vector2).rotated(TWIST).angle() if not spots.is_empty() else 0.0
+		var n := spots.size()
+		for i in n:
+			var b := _new_missile(EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015))
+			# like a flower: every missile spreads out on its own side (evenly round the clock,
+			# in the same order as where they hang), none straight up, then curls back in
+			_aim(b, spots[i], _petal_angle(spots[i], i, n, petal0))
+			_beams.append(b)
+			_timeline.at(b["land"], _land.bind(i))
+			last = maxf(last, b["land"])
 	_timeline.lasts(last + FLAME_TIME + 0.3)
 	_fx = Node2D.new()
 	_fx.z_index = 5
 	_fx.draw.connect(_draw_fx)
 	add_child(_fx)
 	_fire_laser.call_deferred()
+
+
+## A missile's timing: it leaves the knot at `delay`, floats up and lingers, then slams down.
+func _new_missile(delay: float) -> Dictionary:
+	var float_t := Rng.randf_range(0.4, 0.46)        # drifting up and lingering at the top
+	var slam := Rng.randf_range(0.12, 0.16)          # then slamming down
+	return {"delay": delay, "float": float_t, "slam": slam, "flight": float_t + slam,
+			"land": delay + float_t + slam, "flick": randf() * 10.0, "aimed": false}
+
+
+## Gives missile `b` its circle (local space) and its arc: thrown up out of the knot to its own
+## height, then falling onto the circle (a parabola: y = tip.y + vy*u + ay*u*u), drifting out
+## toward `petal` (an angle) near the top.
+func _aim(b: Dictionary, spot: Vector2, petal: float) -> void:
+	var drop := spot.y - _tip.y                       # how far below the knot it lands
+	var h := Rng.randf_range(14.0, 24.0)             # how high above the knot it climbs
+	var vy := -2.0 * h - 2.0 * sqrt(h * h + h * maxf(drop, 0.0))
+	var ay := drop - vy
+	b["spot"] = spot
+	b["vy"] = vy
+	b["ay"] = ay
+	b["apex"] = -vy / (2.0 * ay)
+	b["out"] = Vector2.from_angle(petal) * Rng.randf_range(20.0, 26.0) * Vector2(1.0, 0.5)
+	# the twist sweeps at most about as far as it does across the swarm's cluster, however far
+	# from the knot this circle is
+	b["twist"] = TWIST * clampf(27.0 / maxf(spot.length(), 1.0), 0.0, 1.0)
+	b["aimed"] = true
+
+
+## Crimson Barrage: missile `i` leaves the knot, aimed where the caster is aiming right now.
+func _launch(i: int) -> void:
+	var b: Dictionary = _beams[i]
+	var target := to_global(Vector2.ZERO)
+	if caster != null and is_instance_valid(caster):
+		var to: Vector2 = caster.aim_world - caster.global_position
+		if to.length() > max_reach:
+			to = to.normalized() * max_reach
+		target = caster.global_position + to
+	var spot := to_local(target)
+	# drifts out to the side it is heading (straight up gets a random side)
+	var petal := spot.angle() if spot.length() > 4.0 else Rng.randf() * TAU
+	_aim(b, spot, petal)
 
 
 ## The red beam from the staff to the burst point (only a flash: it doesn't hurt anything).
@@ -178,6 +220,8 @@ func _physics_process(delta: float) -> void:
 ## A beam lands: everything standing in its circle takes the hit.
 func _land(i: int) -> void:
 	var b: Dictionary = _beams[i]
+	if not b["aimed"]:
+		return
 	var at := to_global(b["spot"])
 	var shape := CircleShape2D.new()
 	shape.radius = spot_radius
@@ -251,7 +295,7 @@ func _path(b: Dictionary, u: float) -> Vector2:
 	# stops moving sideways at the top, so the trail has no sharp corner there.
 	var reach := sqrt(u)               # keeps moving outward through the top: no corner there
 	var turn := fall * fall * (3.0 - 2.0 * fall)
-	var ground := (spot * reach).rotated(TWIST * (1.0 - turn)) + drift
+	var ground := (spot * reach).rotated(float(b["twist"]) * (1.0 - turn)) + drift
 	return Vector2(ground.x, ground.y - height)
 
 
@@ -264,6 +308,8 @@ func _process(_delta: float) -> void:
 ## then leave a fading scorch mark.
 func _draw() -> void:
 	for b in _beams:
+		if not b["aimed"]:
+			continue
 		var spot: Vector2 = b["spot"]
 		var since: float = _t - b["land"]
 		if since < 0.0:
@@ -282,6 +328,8 @@ func _draw() -> void:
 func _draw_fx() -> void:
 	# the knot of light at the beam's tip while the missiles pour out of it
 	var last_out: float = _beams[-1]["delay"] if not _beams.is_empty() else 0.0
+	if stream:
+		last_out = EMIT_AT + float(count) * interval - 0.2      # hovers the whole time
 	if _t < last_out + 0.2:
 		var k := 1.0 - clampf((_t - last_out) / 0.2, 0.0, 1.0)
 		var r := (2.5 + 0.5 * sin(_t * 50.0)) * k
@@ -289,6 +337,8 @@ func _draw_fx() -> void:
 		_fx.draw_circle(_tip, r, B_MAIN)
 		_fx.draw_circle(_tip, r * 0.5, B_CORE)
 	for b in _beams:
+		if not b["aimed"]:
+			continue
 		if _t > b["delay"]:
 			_draw_missile(b, _t - b["delay"])
 		var since: float = _t - b["land"]

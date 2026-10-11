@@ -122,6 +122,11 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     bursts up (`art/crimson_flame.png`, 12 frames made from his drawing by
     `tools/gen_crimson_flame.py`; original in `art/crimson_flame_src`). 40 mana, 6 s cooldown.
     Placed once on bar 1 for older saves (`Hotbar.GRANT_ONCE`).
+  - **Crimson Barrage** (`abilities/crimson_barrage.tres`, same script with `stream` on): instant cast.
+    The laser fires to a knot 40 px above the target; the knot hovers ~5 s and shoots one missile every
+    0.5 s (10 in all), each with the same bloom-and-slam flight onto its own circle wherever the cursor
+    is when it leaves (max 170 px from the caster). 20 damage per missile, 40 mana, 8 s cooldown.
+    Placeholder icon (index 6).
   - **Red beam:** 60 damage.
   - **Blue staff beam** (left click): 15 damage, 1 s cooldown, hold to keep firing.
   - **Ward** (hold right click or Q): a summoning circle under you and a glass orb around you, lit

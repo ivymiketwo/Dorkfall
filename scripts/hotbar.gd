@@ -10,9 +10,10 @@ const PER_BAR := 7
 const BARS := 4
 const SLOT_COUNT := PER_BAR * BARS
 ## Spells every player knows (shown in the spellbook).
-const ALWAYS_KNOWN := ["res://abilities/home_teleport.tres", "res://abilities/crimson_swarm.tres"]
+const ALWAYS_KNOWN := ["res://abilities/home_teleport.tres", "res://abilities/crimson_swarm.tres",
+		"res://abilities/crimson_barrage.tres"]
 ## New spells put on the first free slot of bar 1 once, for saves made before they existed.
-const GRANT_ONCE := ["res://abilities/crimson_swarm.tres"]
+const GRANT_ONCE := ["res://abilities/crimson_swarm.tres", "res://abilities/crimson_barrage.tres"]
 
 @export var slots: Array[Ability] = []
 
@@ -369,6 +370,9 @@ func _cast_swarm(ab: Ability) -> void:
 	s.count = ab.swarm_count
 	s.spot_radius = ab.swarm_spot_radius
 	s.damage = ab.damage * stats.magic_mult()
+	s.stream = ab.swarm_stream
+	s.interval = ab.swarm_interval
+	s.max_reach = ab.swarm_range
 	s.global_position = caster.global_position + to
 	var root := caster.get_parent().get_parent()
 	root.add_child(s)
