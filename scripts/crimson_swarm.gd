@@ -41,6 +41,16 @@ const TRAIL_FADE := 0.25
 const SMOKE_STEP := 0.02
 const SMOKE_LIFE := 0.5
 const SMOKE := Color(0.62, 0.58, 0.58)
+## The tightest known way to fit 15 circles (radius 1) inside one circle (its radius: 4.52).
+## The cluster uses this, turned to a random angle, so the target area is as small and round
+## as it can be. Other counts fall back to a honeycomb blob.
+const PACK_15 := [Vector2(-3.457, -0.669), Vector2(1.213, -1.193), Vector2(1.541, -3.166),
+		Vector2(-0.760, -1.522), Vector2(1.510, 0.784), Vector2(0.614, 3.467), Vector2(-2.535, -2.444),
+		Vector2(-0.280, 1.678), Vector2(3.487, 0.487), Vector2(-1.682, 0.253), Vector2(-3.108, 1.656),
+		Vector2(-0.432, -3.495), Vector2(-1.705, 3.081), Vector2(3.190, -1.490), Vector2(2.403, 2.574)]
+## As the missiles fall, the whole cluster turns counter-clockwise by this much: each missile
+## starts out over the spot this far clockwise of its own circle and twists onto it.
+const TWIST := deg_to_rad(30.0)
 ## The laser: the same as the Red Beam ability.
 const LASER_COLOR := Color(1, 0.15, 0.12, 1)
 
@@ -110,9 +120,15 @@ func _fire_laser() -> void:
 	host.add_child(fx)
 
 
-## `count` circles packed edge to edge (a honeycomb, so neighbours touch exactly), in a
-## slightly irregular blob centred on the target (local space).
+## Where the circles go (local space, centred on the target): for 15, the tightest round
+## packing (PACK_15) at a random angle; otherwise a honeycomb blob (neighbours touching).
 func _pick_spots() -> Array:
+	if count == PACK_15.size():
+		var turn := Rng.randf() * TAU
+		var out: Array = []
+		for q in PACK_15:
+			out.append((q as Vector2).rotated(turn) * spot_radius * 1.001)   # (rounding: never overlap)
+		return out
 	var d := spot_radius * 2.0
 	var rot := Rng.randf() * TAU
 	var centre := Vector2.from_angle(Rng.randf() * TAU) * d * 0.5 * Rng.randf()
@@ -190,14 +206,21 @@ static func _time_at(b: Dictionary, u: float) -> float:
 
 
 ## Where missile `b` is at arc position `u` (0 = the knot, 1 = its circle): a parabola up and
-## down, swinging out to its side near the top and back in as it falls.
+## down, swinging out to its side near the top and back in as it falls, while the whole
+## cluster twists counter-clockwise onto the circles.
 func _path(b: Dictionary, u: float) -> Vector2:
 	var spot: Vector2 = b["spot"]
-	# the sideways drift peaks around the top of the arc and is gone at both ends
 	var apex: float = b["apex"]
+	# the sideways drift peaks around the top of the arc and is gone at both ends
 	var shape := log(0.5) / log(clampf(apex + 0.1, 0.2, 0.8))
 	var drift := float(b["out"]) * sin(PI * pow(u, shape))
-	return Vector2(lerpf(_tip.x, spot.x, u) + drift, _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u)
+	# split into where it is over the ground and how high it is, so the twist turns only the
+	# ground position (round the cluster's middle, right under the knot)
+	var screen_y := _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u
+	var height := spot.y * u - screen_y
+	var fall := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
+	var ground := (spot * u).rotated(TWIST * (1.0 - fall * fall * (3.0 - 2.0 * fall))) + Vector2(drift, 0.0)
+	return Vector2(ground.x, ground.y - height)
 
 
 func _process(_delta: float) -> void:

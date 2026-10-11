@@ -117,8 +117,8 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     red summoning circle under the player, the staff fires the Red Beam laser (visual only) up to a point
     40 px above the target; 15 missiles fountain up and fan out from its tip (outer ones drift out up to ~28 px, then curve back in) with smoke
     trails ("missile massacre"), float and linger ~0.43 s at the top, slam down in ~0.15 s (each bit of
-    trail fades 1.6 s after the missile passed, knot end first) onto 15 small circles (radius 6) packed edge to edge in a honeycomb
-    on the mouse (max 170 px away). Each circle hits what's in it for 15 damage and Rex's red flame
+    trail fades 1.6 s after the missile passed, knot end first) onto 15 small circles (radius 6) in the tightest round packing
+    (`PACK_15`, cluster radius ~27; the falls twist the cluster 30 degrees counter-clockwise) on the mouse (max 170 px away). Each circle hits what's in it for 15 damage and Rex's red flame
     bursts up (`art/crimson_flame.png`, 12 frames made from his drawing by
     `tools/gen_crimson_flame.py`; original in `art/crimson_flame_src`). 40 mana, 6 s cooldown.
     Placed once on bar 1 for older saves (`Hotbar.GRANT_ONCE`).
