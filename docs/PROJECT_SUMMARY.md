@@ -115,8 +115,9 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     sound plays only on impact. Speed 215 px/s with 0.5 s cast; damage 40.
   - **Crimson Swarm** (`abilities/crimson_swarm.tres`, `scripts/crimson_swarm.gd`): 0.8 s cast with a
     red summoning circle under the player, the staff fires the Red Beam laser (visual only) up to a point
-    50 px above the target; 10 missiles burst out of its tip in looping petals with smoke trails
-    ("missile massacre"), start slow and speed up, and come straight down onto 10 small circles (radius 6) packed edge to edge in a honeycomb
+    40 px above the target; 10 missiles fountain up out of its tip on ballistic arcs with smoke
+    trails ("missile massacre"), float ~0.25 s to the top, slam down in ~0.15 s (their trails stay
+    drawn until the spell ends) onto 10 small circles (radius 6) packed edge to edge in a honeycomb
     on the mouse (max 170 px away). Each circle hits what's in it for 15 damage and Rex's red flame
     bursts up (`art/crimson_flame.png`, 12 frames made from his drawing by
     `tools/gen_crimson_flame.py`; original in `art/crimson_flame_src`). 40 mana, 6 s cooldown.

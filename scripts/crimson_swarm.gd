@@ -1,8 +1,8 @@
 class_name CrimsonSwarm
 extends Node2D
 ## The Crimson Swarm spell: the staff fires the red beam up to a point above the target; from
-## the beam's tip a swarm of missiles bursts out in loops (like the petals of a flower), then
-## curves back and comes down onto a tight cluster of small circles around the target (the
+## the beam's tip a swarm of missiles is thrown up like a fountain, each on a ballistic arc,
+## and comes down onto a tight cluster of small circles around the target (the
 ## circles touch but never overlap). The missiles start slow and keep speeding up. Each one
 ## hits everything in its circle the moment it lands, and Rex's red flame
 ## (art/crimson_flame.png) bursts up there.
@@ -29,11 +29,11 @@ const LOOP_FPS := 15.0
 const DIE_FPS := 16.0
 const FLAME_TIME := 0.75
 ## The beam's tip (where the missiles burst out) is this high above the target.
-const BURST_HEIGHT := 50.0
+const BURST_HEIGHT := 40.0
 ## When the missiles start coming out of the tip (the beam fires at 0).
 const EMIT_AT := 0.05
-## A missile's tail, as a share of its flight time (it stretches into a streak as it speeds up).
-const TRAIL := 0.3
+## The missiles' trails stay drawn until the spell ends, fading over this long at the end.
+const TRAIL_FADE := 0.25
 ## Smoke left behind by each missile: a puff every SMOKE_STEP seconds, lasting SMOKE_LIFE.
 const SMOKE_STEP := 0.02
 const SMOKE_LIFE := 0.5
@@ -50,7 +50,7 @@ var _timeline: AttackTimeline
 var _t := 0.0
 var _start := Vector2.ZERO       # launch point, local space
 var _tip := Vector2.ZERO         # the beam's tip, local space
-var _beams: Array = []           # each missile: {spot, p1, p2, delay, flight, land, flick}
+var _beams: Array = []           # each missile: {spot, vy, ay, apex, delay, float, slam, flight, land, flick}
 var _fx: Node2D                  # beams and flames, drawn above characters
 
 
@@ -61,20 +61,25 @@ func _ready() -> void:
 	var last := 0.0
 	_tip = Vector2(0.0, -BURST_HEIGHT)
 	# missiles fan out of the tip in every direction but straight down (left ones land on the
-	# left circles, so the loops don't tangle), loop round and come down onto their circles
+	# left circles), each on a clean ballistic arc
 	spots.sort_custom(func(a, b): return a.x < b.x)
 	var n := spots.size()
 	for i in n:
 		var spot: Vector2 = spots[i]
-		var f := float(i) / float(maxi(n - 1, 1))
-		var ang := deg_to_rad(-90.0 + (f - 0.5) * 290.0 + Rng.randf_range(-12.0, 12.0))
+		# a fountain: every missile is thrown up out of the knot to its own height, then falls
+		# onto its circle. The arc is a parabola: y = tip.y + vy*u + ay*u*u, x straight across.
+		var drop := spot.y - _tip.y                       # how far below the knot it lands
+		var h := Rng.randf_range(14.0, 30.0)             # how high above the knot it climbs
+		var vy := -2.0 * h - 2.0 * sqrt(h * h + h * drop)
+		var ay := drop - vy
 		var delay := EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015)
-		var flight := Rng.randf_range(0.62, 0.78)
+		var float_t := Rng.randf_range(0.23, 0.27)       # drifting up and over
+		var slam := Rng.randf_range(0.12, 0.16)          # then slamming down
+		var flight := float_t + slam
 		var b := {"spot": spot,
-				"p1": _tip + Vector2.from_angle(ang) * Rng.randf_range(48.0, 70.0),
-				"p2": spot + Vector2(Rng.randf_range(-3.0, 3.0), -Rng.randf_range(22.0, 32.0)),
-				"delay": delay, "flight": flight, "land": delay + flight, "flick": randf() * 10.0,
-				"wob": randf() * TAU}
+				"vy": vy, "ay": ay, "apex": -vy / (2.0 * ay),
+				"delay": delay, "float": float_t, "slam": slam, "flight": flight, "land": delay + flight,
+				"flick": randf() * 10.0}
 		_beams.append(b)
 		_timeline.at(b["land"], _land.bind(i))
 		last = maxf(last, b["land"])
@@ -158,24 +163,24 @@ func _land(i: int) -> void:
 		s.play()
 
 
-## How far along its curve (0..1) a missile is, `k` (0..1) of the way through its flight:
-## it leaves the beam's tip slowly and keeps speeding up until it hits.
-static func _progress(k: float) -> float:
-	k = clampf(k, 0.0, 1.0)
-	return 0.25 * k + 0.75 * k * k * k
+## How far along its curve (0..1) missile `b` is `r` seconds after leaving the knot: it floats
+## up and over, slowing at the top of the fountain (about 0.25 s), then slams down fast.
+static func _progress(b: Dictionary, r: float) -> float:
+	if r <= 0.0:
+		return 0.0
+	var apex: float = b["apex"]
+	if r < b["float"]:
+		var k: float = r / b["float"]
+		return apex * (1.0 - (1.0 - k) * (1.0 - k))      # up to the top of its arc, slowing
+	var k := clampf((r - b["float"]) / b["slam"], 0.0, 1.0)
+	return apex + (1.0 - apex) * k * k                   # then down, faster and faster
 
 
-## Where missile `b` is at curve position `u`: out of the tip, round in a loop, and down
-## onto its circle (the last stretch comes straight down).
+## Where missile `b` is at arc position `u` (0 = the knot, 1 = its circle): a ballistic arc,
+## straight across sideways and a parabola up and down.
 func _path(b: Dictionary, u: float) -> Vector2:
-	var p1: Vector2 = b["p1"]
-	var p2: Vector2 = b["p2"]
-	var p3: Vector2 = b["spot"]
-	var v := 1.0 - u
-	var base := _tip * (v * v * v) + p1 * (3.0 * v * v * u) + p2 * (3.0 * v * u * u) + p3 * (u * u * u)
-	# a jittery missile wobble (drawing only), gone by the time it comes down
-	var w := sin(u * 40.0 + b["wob"]) * 1.5 * (1.0 - u)
-	return base + Vector2(w, w * 0.6)
+	var spot: Vector2 = b["spot"]
+	return Vector2(lerpf(_tip.x, spot.x, u), _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u)
 
 
 func _process(_delta: float) -> void:
@@ -213,9 +218,8 @@ func _draw_fx() -> void:
 		_fx.draw_circle(_tip, r * 0.5, CORE)
 	_draw_smoke()
 	for b in _beams:
-		var k: float = (_t - b["delay"]) / b["flight"]
-		if k > 0.0 and k < 1.0 + TRAIL:
-			_draw_missile(b, k)
+		if _t > b["delay"]:
+			_draw_missile(b, _t - b["delay"])
 		var since: float = _t - b["land"]
 		if since >= 0.0 and since < FLAME_TIME:
 			_draw_flame(b["spot"], since, b["flick"])
@@ -234,28 +238,27 @@ func _draw_smoke() -> void:
 			if age > SMOKE_LIFE:
 				continue
 			var k := age / SMOKE_LIFE
-			var pos := _path(b, _progress((at - t0) / b["flight"])) + Vector2(0, -k * 3.0)
+			var pos := _path(b, _progress(b, at - t0)) + Vector2(0, -k * 3.0)
 			var r := 0.7 + k * 2.6
 			_fx.draw_circle(pos.snapped(Vector2(0.5, 0.5)), r, Color(SMOKE.r, SMOKE.g, SMOKE.b, 0.4 * (1.0 - k)))
 
 
-## A missile: a bright head with a fading tail covering the last part of its flight, so the
-## tail is short while it is slow and stretches into a streak as it speeds up. After it
-## lands the tail catches up.
-func _draw_missile(b: Dictionary, k: float) -> void:
-	var head := _progress(k)
-	var tail := _progress(k - TRAIL)
-	if head - tail <= 0.001:
+## A missile: its whole trail, from the knot to the bright head, stays drawn until the
+## spell ends (fading out at the very end).
+func _draw_missile(b: Dictionary, r: float) -> void:
+	var head := _progress(b, r)
+	if head <= 0.001:
 		return
-	var n := 16
-	var prev := _path(b, tail)
+	var fade := clampf((_timeline.end_time - _t) / TRAIL_FADE, 0.0, 1.0)
+	var n := 28
+	var prev := _path(b, 0.0)
 	for j in range(1, n + 1):
-		var p := _path(b, lerpf(tail, head, float(j) / float(n)))
-		var a := float(j) / float(n)            # 0 at the tail, 1 at the head
+		var p := _path(b, head * float(j) / float(n))
+		var a := (0.55 + 0.45 * float(j) / float(n)) * fade      # a little brighter toward the head
 		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.5 * a), 2.0)
 		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, a), 1.0)
 		prev = p
-	if k < 1.0:
+	if head < 1.0:
 		var hp := _path(b, head).snapped(Vector2(0.5, 0.5))
 		_fx.draw_rect(Rect2(hp - Vector2(1.0, 1.0), Vector2(2.0, 2.0)), HOT)
 		_fx.draw_rect(Rect2(hp - Vector2(0.5, 0.5), Vector2(1.0, 1.0)), CORE)
