@@ -83,7 +83,7 @@ func _ready() -> void:
 		# a fountain: every missile is thrown up out of the knot to its own height, then falls
 		# onto its circle. The arc is a parabola: y = tip.y + vy*u + ay*u*u, x straight across.
 		var drop := spot.y - _tip.y                       # how far below the knot it lands
-		var h := Rng.randf_range(14.0, 30.0)             # how high above the knot it climbs
+		var h := Rng.randf_range(14.0, 24.0)             # how high above the knot it climbs
 		var vy := -2.0 * h - 2.0 * sqrt(h * h + h * drop)
 		var ay := drop - vy
 		var delay := EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015)
