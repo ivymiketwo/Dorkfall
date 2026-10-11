@@ -37,12 +37,6 @@ const EMIT_AT := 0.05
 const TRAIL_LIFE := 1.6
 ## Everything left fades over this long at the very end.
 const TRAIL_FADE := 0.25
-## Smoke left behind by each missile: a puff every SMOKE_STEP seconds, lasting SMOKE_LIFE.
-const SMOKE_STEP := 0.02
-const SMOKE_LIFE := 0.5
-## Smallest distance between two puffs (world px).
-const SMOKE_GAP := 3.0
-const SMOKE := Color(0.62, 0.58, 0.58)
 ## The tightest known way to fit 15 circles (radius 1) inside one circle (its radius: 4.52).
 ## The cluster uses this, turned to a random angle, so the target area is as small and round
 ## as it can be. Other counts fall back to a honeycomb blob.
@@ -262,37 +256,12 @@ func _draw_fx() -> void:
 		_fx.draw_circle(_tip, r + 1.0, Color(DARK.r, DARK.g, DARK.b, 0.6))
 		_fx.draw_circle(_tip, r, RED)
 		_fx.draw_circle(_tip, r * 0.5, CORE)
-	_draw_smoke()
 	for b in _beams:
 		if _t > b["delay"]:
 			_draw_missile(b, _t - b["delay"])
 		var since: float = _t - b["land"]
 		if since >= 0.0 and since < FLAME_TIME:
 			_draw_flame(b["spot"], since, b["flick"])
-
-
-## Missile-massacre smoke: every missile leaves a trail of grey puffs that swell and fade.
-func _draw_smoke() -> void:
-	for b in _beams:
-		var t0: float = b["delay"]
-		var end: float = minf(_t, b["land"])
-		var j := 0
-		var last := Vector2.INF
-		while t0 + float(j) * SMOKE_STEP <= end:
-			var at := t0 + float(j) * SMOKE_STEP
-			var age := _t - at
-			j += 1
-			var spot := _path(b, _progress(b, at - t0))
-			# puffs are spaced by distance, so a missile hanging at the top doesn't pile them up
-			if last != Vector2.INF and spot.distance_to(last) < SMOKE_GAP:
-				continue
-			last = spot
-			if age > SMOKE_LIFE:
-				continue
-			var k := age / SMOKE_LIFE
-			var pos := spot + Vector2(0, -k * 3.0)
-			var r := 0.7 + k * 2.6
-			_fx.draw_circle(pos.snapped(Vector2(0.5, 0.5)), r, Color(SMOKE.r, SMOKE.g, SMOKE.b, 0.4 * (1.0 - k)))
 
 
 ## A missile: its trail from the knot to the bright head. Each part fades a while after the
