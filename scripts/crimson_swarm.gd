@@ -52,14 +52,17 @@ const KNOT_ABOVE := 38.0
 const FOUNTAIN_TRAVEL := 6.0
 ## When the missiles start coming out of the tip (the beam fires at 0).
 const EMIT_AT := 0.05
-## Each bit of a missile's trail fades out this long after the missile passed it, so the
-## start of a trail (by the knot) is gone by the time the spell ends and the rest follows.
-const TRAIL_LIFE := 1.6
+## Each bit of a missile's trail fades out over a while after the missile passed it: the
+## fountain part quickly, the slam part from the top down, its bottom lasting longest. With
+## these, the top of a slam trail is already fading when the missile lands, and by the final
+## fade only the lower ~70% of it is left.
+const TRAIL_LIFE := 0.95          # bottom of the slam trail
+const SLAM_TOP_LIFE := 0.45       # top of the slam trail
 ## How each bit of trail fades over its life: 1 = steadily, 2 = holds then drops. Lower = more
 ## gradual, so the older (upper) parts are already well faded when the spell ends.
 const TRAIL_FADE_CURVE := 1.1
-## The fountain part of a trail (drawn while rising) fades sooner than the slam part.
-const FOUNTAIN_TRAIL_LIFE := 0.9
+## The fountain part of a trail (drawn while rising), gone just before the top of the slam.
+const FOUNTAIN_TRAIL_LIFE := 0.5
 ## Everything left fades over this long at the very end.
 const TRAIL_FADE := 0.25
 ## ...and that whole-trail fade is over this long before the spell ends.
@@ -420,7 +423,7 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 		# to the ground (the top of the slam goes with the fountain, the bottom lasts longest)
 		var apex: float = b["apex"]
 		var down := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
-		var life := lerpf(FOUNTAIN_TRAIL_LIFE, TRAIL_LIFE, down)
+		var life := FOUNTAIN_TRAIL_LIFE if u < apex else lerpf(SLAM_TOP_LIFE, TRAIL_LIFE, down)
 		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / life, 0.0, 1.0), TRAIL_FADE_CURVE))
 		# the fountain part is a pixel thinner, widening over the top of the arc
 		var thick := clampf((u - apex * 0.7) / (apex * 0.6), 0.0, 1.0) * 0.5
