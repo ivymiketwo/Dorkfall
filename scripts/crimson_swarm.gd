@@ -43,13 +43,8 @@ const BURST_HEIGHT := 40.0
 const SWARM_MIN_H := 12.0
 const SWARM_MAX_H := 18.0
 const SWARM_SPREAD := 24.0
-## Crimson Swarm's mushroom shape: the cap's overhang peaks this far into the fall, and by
-## STEM_AT the missiles are over their circles and drop straight down (the stem).
-const CAP_PEAK := 0.2
-## Share of the cap's spread already reached at the top of the fountain (keeps the fountain
-## itself small; the rest of the fan-out happens as the slam begins).
-const CAP_RISE := 0.35
-const STEM_AT := 0.55
+## Crimson Swarm's light-bulb shape: the trails are widest this far into the fall.
+const BULB_PEAK := 0.3
 ## Crimson Barrage: the knot hovers this high above the caster's feet and moves with them.
 const KNOT_ABOVE := 38.0
 ## How far (world px) a missile drifts toward its circle while rising; the rest of the way is
@@ -124,7 +119,7 @@ func _ready() -> void:
 			# in the same order as where they hang), none straight up, then curls back in
 			_aim(b, spots[i], _petal_angle(spots[i], i, n, petal0), _tip, BURST_HEIGHT,
 					SWARM_MIN_H, SWARM_MAX_H, SWARM_SPREAD)
-			b["mushroom"] = true
+			b["bulb"] = true
 			_beams.append(b)
 			_timeline.at(b["land"], _land.bind(i))
 			last = maxf(last, b["land"])
@@ -325,15 +320,12 @@ func _path(b: Dictionary, u: float) -> Vector2:
 	# at the top of the arc, and eases out again by the time it lands
 	var fall := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
 	var bump: float
-	if b.get("mushroom", false):
-		# a mushroom: the drift keeps growing into the start of the slam (the cap overhangs),
-		# then pulls back in so the missiles drop nearly straight into their circles (the stem)
-		if u < apex:
-			bump = CAP_RISE * _ease(u / maxf(apex, 0.01))
-		elif fall < CAP_PEAK:
-			bump = CAP_RISE + (1.0 - CAP_RISE) * _ease(fall / CAP_PEAK)
-		else:
-			bump = 1.0 - _ease(clampf((fall - CAP_PEAK) / (STEM_AT - CAP_PEAK), 0.0, 1.0))
+	if b.get("bulb", false):
+		# a light bulb: one smooth swell, widest a little way into the slam, narrowing gently
+		# back in to the circles at the bottom
+		var peak := apex + BULB_PEAK * (1.0 - apex)
+		var w := 0.5 * u / peak if u < peak else 0.5 + 0.5 * (u - peak) / maxf(1.0 - peak, 0.01)
+		bump = sin(PI * w)
 	elif u < apex:
 		bump = _ease(u / maxf(apex, 0.01))
 	else:
@@ -349,9 +341,8 @@ func _path(b: Dictionary, u: float) -> Vector2:
 	var reach: float
 	if u < apex:
 		reach = rise_reach * sin(0.5 * PI * u / maxf(apex, 0.01))
-	elif b.get("mushroom", false):
-		# over its circle early in the fall, so the stem comes straight down
-		reach = rise_reach + (1.0 - rise_reach) * _ease(clampf(fall / STEM_AT, 0.0, 1.0))
+	elif b.get("bulb", false):
+		reach = rise_reach + (1.0 - rise_reach) * _ease(fall)
 	else:
 		reach = rise_reach + (1.0 - rise_reach) * fall
 	var turn := fall * fall * (3.0 - 2.0 * fall)
