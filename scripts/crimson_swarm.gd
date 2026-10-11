@@ -38,6 +38,11 @@ const DIE_FPS := 16.0
 const FLAME_TIME := 0.75
 ## The beam's tip (where the missiles burst out) is this high above the target.
 const BURST_HEIGHT := 40.0
+## Crimson Barrage: the knot hovers this high above the caster's feet and moves with them.
+const KNOT_ABOVE := 38.0
+## How far (world px) a missile drifts toward its circle while rising; the rest of the way is
+## covered by the slam, so fountain trails stay short however far away the circle is.
+const FOUNTAIN_TRAVEL := 12.0
 ## When the missiles start coming out of the tip (the beam fires at 0).
 const EMIT_AT := 0.05
 ## Each bit of a missile's trail fades out this long after the missile passed it, so the
@@ -103,7 +108,7 @@ func _ready() -> void:
 			var b := _new_missile(EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015))
 			# like a flower: every missile spreads out on its own side (evenly round the clock,
 			# in the same order as where they hang), none straight up, then curls back in
-			_aim(b, spots[i], _petal_angle(spots[i], i, n, petal0))
+			_aim(b, spots[i], _petal_angle(spots[i], i, n, petal0), _tip, BURST_HEIGHT)
 			_beams.append(b)
 			_timeline.at(b["land"], _land.bind(i))
 			last = maxf(last, b["land"])
@@ -126,8 +131,10 @@ func _new_missile(delay: float) -> Dictionary:
 ## Gives missile `b` its circle (local space) and its arc: thrown up out of the knot to its own
 ## height, then falling onto the circle (a parabola: y = tip.y + vy*u + ay*u*u), drifting out
 ## toward `petal` (an angle) near the top.
-func _aim(b: Dictionary, spot: Vector2, petal: float) -> void:
-	var drop := spot.y - _tip.y                       # how far below the knot it lands
+func _aim(b: Dictionary, spot: Vector2, petal: float, tip: Vector2, knot_height: float) -> void:
+	b["tip"] = tip                                    # where it leaves the knot (local space)
+	b["g"] = tip + Vector2(0.0, knot_height)          # the ground right under the knot
+	var drop := spot.y - tip.y                        # how far below the knot it lands
 	var h := Rng.randf_range(14.0, 24.0)             # how high above the knot it climbs
 	var vy := -2.0 * h - 2.0 * sqrt(h * h + h * maxf(drop, 0.0))
 	var ay := drop - vy
@@ -138,7 +145,10 @@ func _aim(b: Dictionary, spot: Vector2, petal: float) -> void:
 	b["out"] = Vector2.from_angle(petal) * Rng.randf_range(20.0, 26.0) * Vector2(1.0, 0.5)
 	# the twist sweeps at most about as far as it does across the swarm's cluster, however far
 	# from the knot this circle is
-	b["twist"] = TWIST * clampf(27.0 / maxf(spot.length(), 1.0), 0.0, 1.0)
+	var rel: Vector2 = spot - b["g"]
+	b["twist"] = TWIST * clampf(27.0 / maxf(rel.length(), 1.0), 0.0, 1.0)
+	# only a short way toward the circle while rising (at most FOUNTAIN_TRAVEL)
+	b["rise_reach"] = clampf(FOUNTAIN_TRAVEL / maxf(rel.length(), 1.0), 0.0, 0.5)
 	b["aimed"] = true
 
 
@@ -152,15 +162,25 @@ func _launch(i: int) -> void:
 			to = to.normalized() * max_reach
 		target = caster.global_position + to
 	var spot := to_local(target)
-	# drifts out to the side it is heading (straight up gets a random side)
-	var petal := spot.angle() if spot.length() > 4.0 else Rng.randf() * TAU
-	_aim(b, spot, petal)
+	var tip := _knot()
+	var rel := spot - (tip + Vector2(0.0, KNOT_ABOVE))
+	# drifts out to the side it is heading (straight down / close by gets a random side)
+	var petal := rel.angle() if rel.length() > 4.0 else Rng.randf() * TAU
+	_aim(b, spot, petal, tip, KNOT_ABOVE)
+
+
+## Where the knot is (local space): over the target for the swarm; above the caster (moving
+## with them) for the barrage.
+func _knot() -> Vector2:
+	if stream and caster != null and is_instance_valid(caster):
+		return to_local(caster.global_position) + Vector2(0.0, -KNOT_ABOVE)
+	return _tip
 
 
 ## The red beam from the staff to the burst point (only a flash: it doesn't hurt anything).
 func _fire_laser() -> void:
 	var host := caster.get_parent() if caster != null and is_instance_valid(caster) else get_parent()
-	var to := to_global(_tip) - launch_from
+	var to := to_global(_knot()) - launch_from
 	var fx := BeamFx.new()
 	fx.global_position = launch_from
 	fx.direction = to.normalized() if to.length() > 1.0 else Vector2.UP
@@ -273,6 +293,9 @@ static func _time_at(b: Dictionary, u: float) -> float:
 ## cluster twists counter-clockwise onto the circles.
 func _path(b: Dictionary, u: float) -> Vector2:
 	var spot: Vector2 = b["spot"]
+	var tip: Vector2 = b["tip"]
+	var g: Vector2 = b["g"]
+	var rel := spot - g
 	var apex: float = b["apex"]
 	# the petal drift eases in from nothing (so every missile leaves the knot going up), peaks
 	# at the top of the arc, and eases out again by the time it lands
@@ -285,17 +308,20 @@ func _path(b: Dictionary, u: float) -> Vector2:
 		bump = 1.0 - x * x * (3.0 - 2.0 * x)
 	var drift: Vector2 = (b["out"] as Vector2) * bump
 	# split into where it is over the ground and how high it is, so the twist turns only the
-	# ground position (round the cluster's middle, right under the knot)
-	var screen_y := _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u
-	var height := spot.y * u - screen_y          # height above the ground (the arc's own shape)
+	# ground position (round the point under the knot)
+	var screen_y := tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u
+	var height := (g.y + rel.y * u) - screen_y   # height above the ground (the arc's own shape)
 	var fall := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
-	# over the ground: while rising it heads out toward the spot it hangs over (its circle
-	# turned TWIST clockwise), so the fountain keeps its arch; once the slam starts it swings
-	# round counter-clockwise onto its circle, easing in so the trail bends smoothly. It never
-	# stops moving sideways at the top, so the trail has no sharp corner there.
-	var reach := sqrt(u)               # keeps moving outward through the top: no corner there
+	# over the ground: while rising it only edges a little way toward its circle (keeping the
+	# fountain short); the slam covers the rest, swinging round counter-clockwise as it goes
+	var rise_reach: float = b["rise_reach"]
+	var reach: float
+	if u < apex:
+		reach = rise_reach * sin(0.5 * PI * u / maxf(apex, 0.01))
+	else:
+		reach = rise_reach + (1.0 - rise_reach) * fall
 	var turn := fall * fall * (3.0 - 2.0 * fall)
-	var ground := (spot * reach).rotated(float(b["twist"]) * (1.0 - turn)) + drift
+	var ground := g + (rel * reach).rotated(float(b["twist"]) * (1.0 - turn)) + drift
 	return Vector2(ground.x, ground.y - height)
 
 
@@ -333,9 +359,10 @@ func _draw_fx() -> void:
 	if _t < last_out + 0.2:
 		var k := 1.0 - clampf((_t - last_out) / 0.2, 0.0, 1.0)
 		var r := (2.5 + 0.5 * sin(_t * 50.0)) * k
-		_fx.draw_circle(_tip, r + 1.0, Color(B_DARK.r, B_DARK.g, B_DARK.b, 0.6))
-		_fx.draw_circle(_tip, r, B_MAIN)
-		_fx.draw_circle(_tip, r * 0.5, B_CORE)
+		var kp := _knot()
+		_fx.draw_circle(kp, r + 1.0, Color(B_DARK.r, B_DARK.g, B_DARK.b, 0.6))
+		_fx.draw_circle(kp, r, B_MAIN)
+		_fx.draw_circle(kp, r * 0.5, B_CORE)
 	for b in _beams:
 		if not b["aimed"]:
 			continue

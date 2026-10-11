@@ -373,7 +373,7 @@ func _cast_swarm(ab: Ability) -> void:
 	s.stream = ab.swarm_stream
 	s.interval = ab.swarm_interval
 	s.max_reach = ab.swarm_range
-	s.global_position = caster.global_position + to
+	s.global_position = caster.global_position + (Vector2.ZERO if ab.swarm_stream else to)   # barrage: its knot rides above the caster
 	var root := caster.get_parent().get_parent()
 	root.add_child(s)
 	var ground := root.get_node_or_null("GroundArt")
