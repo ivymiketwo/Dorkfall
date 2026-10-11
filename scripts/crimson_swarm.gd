@@ -57,7 +57,7 @@ const EMIT_AT := 0.05
 const TRAIL_LIFE := 1.6
 ## How each bit of trail fades over its life: 1 = steadily, 2 = holds then drops. Lower = more
 ## gradual, so the older (upper) parts are already well faded when the spell ends.
-const TRAIL_FADE_CURVE := 1.4
+const TRAIL_FADE_CURVE := 1.1
 ## The fountain part of a trail (drawn while rising) fades sooner than the slam part.
 const FOUNTAIN_TRAIL_LIFE := 0.9
 ## Everything left fades over this long at the very end.
