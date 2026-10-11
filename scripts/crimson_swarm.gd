@@ -50,6 +50,7 @@ const TWIST := deg_to_rad(65.0)
 ## The laser: the same as the Red Beam ability.
 const LASER_COLOR := Color(1, 0.15, 0.12, 1)
 
+const EDGE := Color(0.25, 0.01, 0.03)
 const DARK := Color(0.55, 0.04, 0.05)
 const RED := Color(0.9, 0.1, 0.08)
 const HOT := Color(1.0, 0.42, 0.25)
@@ -278,9 +279,9 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 		var p := _path(b, u)
 		var age := r - _time_at(b, u)                             # how long ago the missile was here
 		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / TRAIL_LIFE, 0.0, 1.0), 2.0))
-		# feathered: soft wide glow, a narrower glow, then the solid core
-		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, 0.12 * a), 3.0)
-		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, 0.28 * a), 2.0)
+		# feathered, darker toward the edge for contrast: dark outer fringe, deep red, bright core
+		_fx.draw_line(prev, p, Color(EDGE.r, EDGE.g, EDGE.b, 0.4 * a), 3.0)
+		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.7 * a), 2.0)
 		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, a), 1.0)
 		prev = p
 	if head < 1.0:
