@@ -55,6 +55,9 @@ const EMIT_AT := 0.05
 ## Each bit of a missile's trail fades out this long after the missile passed it, so the
 ## start of a trail (by the knot) is gone by the time the spell ends and the rest follows.
 const TRAIL_LIFE := 1.6
+## How each bit of trail fades over its life: 1 = steadily, 2 = holds then drops. Lower = more
+## gradual, so the older (upper) parts are already well faded when the spell ends.
+const TRAIL_FADE_CURVE := 1.4
 ## The fountain part of a trail (drawn while rising) fades sooner than the slam part.
 const FOUNTAIN_TRAIL_LIFE := 0.9
 ## Everything left fades over this long at the very end.
@@ -418,7 +421,7 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 		var apex: float = b["apex"]
 		var down := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
 		var life := lerpf(FOUNTAIN_TRAIL_LIFE, TRAIL_LIFE, down)
-		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / life, 0.0, 1.0), 2.0))
+		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / life, 0.0, 1.0), TRAIL_FADE_CURVE))
 		# the fountain part is a pixel thinner, widening over the top of the arc
 		var thick := clampf((u - apex * 0.7) / (apex * 0.6), 0.0, 1.0) * 0.5
 		# feathered, darker toward the edge for contrast: dark outer fringe, deep red, bright core
