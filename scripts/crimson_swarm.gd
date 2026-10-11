@@ -1,7 +1,7 @@
 class_name CrimsonSwarm
 extends Node2D
-## The Crimson Swarm spell: a swarm of snaking red beams shoots up out of the staff, arcs over
-## and slams straight down onto a tight cluster of small circles around the target spot (the
+## The Crimson Swarm spell: a tight bundle of snaking red beams climbs out of the staff (still
+## attached to it), gathers above the target and slams straight down onto a tight cluster of small circles around the target spot (the
 ## circles touch but never overlap). Each beam hits everything in its circle the moment it
 ## lands, and Rex's red flame (art/crimson_flame.png) bursts up there.
 ##
@@ -26,12 +26,11 @@ const BURST_FPS := 25.0
 const LOOP_FPS := 15.0
 const DIE_FPS := 16.0
 const FLAME_TIME := 0.75
-## Part of the flight spent climbing (the rest is the slam down).
-const RISE := 0.55
-## How much of the curve the climb covers.
-const RISE_PATH := 0.6
-## Tail length, in flight time.
-const TRAIL := 0.22
+## How much of the curve the climb covers (the rest is the slam down).
+const RISE_PATH := 0.62
+## After the slam starts, the beam lets go of the staff and its tail runs after the head,
+## reaching the ground this long (in slams) after the head does.
+const TAIL_LAG := 0.35
 
 const DARK := Color(0.55, 0.04, 0.05)
 const RED := Color(0.9, 0.1, 0.08)
@@ -41,7 +40,7 @@ const CORE := Color(1.0, 0.86, 0.7)
 var _timeline: AttackTimeline
 var _t := 0.0
 var _start := Vector2.ZERO       # launch point, local space
-var _beams: Array = []           # each: {spot, p1, p2, delay, flight, land, swirl, turns, ph, flick}
+var _beams: Array = []           # each: {spot, p1, p2, delay, rise, slam, land, swirl, turns, ph, flick, p0}
 var _fx: Node2D                  # beams and flames, drawn above characters
 
 
@@ -50,22 +49,20 @@ func _ready() -> void:
 	var spots := _pick_spots()
 	_timeline = AttackTimeline.new()
 	var last := 0.0
-	var reach := 0.0
-	for s in spots:
-		reach = maxf(reach, (s as Vector2).length())
+	# the whole swarm climbs as one tight bundle, gathers above the target, then slams down
+	var apex := minf(_start.y, 0.0) - 66.0
+	var lean := (0.0 - _start.x) * 0.25          # the climb leans toward the target
 	for i in spots.size():
 		var spot: Vector2 = spots[i]
-		var delay := float(i) * 0.04 + Rng.randf_range(0.0, 0.03)
-		var flight := Rng.randf_range(0.8, 0.95)
-		# up out of the staff, over the top, then straight down onto its circle
-		var apex := minf(_start.y, spot.y) - Rng.randf_range(55.0, 75.0)
-		var toward := Vector2(0.0 - _start.x, 0.0) * Rng.randf_range(0.15, 0.35)   # leans toward the cluster
+		var delay := float(i) * 0.015 + Rng.randf_range(0.0, 0.01)
+		var rise := Rng.randf_range(0.6, 0.66)
+		var slam := Rng.randf_range(0.13, 0.17)
 		var b := {"spot": spot,
-				"p1": Vector2(_start.x + toward.x + Rng.randf_range(-14.0, 14.0), apex - Rng.randf_range(0.0, 15.0)),
-				"p2": Vector2(spot.x + Rng.randf_range(-reach, reach) * 0.4, apex - Rng.randf_range(0.0, 10.0)),
-				"delay": delay, "flight": flight, "land": delay + flight,
-				"swirl": Rng.randf_range(3.0, 5.0), "turns": Rng.randf_range(1.2, 2.0),
-				"ph": Rng.randf() * TAU, "flick": randf() * 10.0}
+				"p1": Vector2(_start.x + lean + Rng.randf_range(-3.0, 3.0), apex - Rng.randf_range(0.0, 4.0)),
+				"p2": Vector2(spot.x * 0.15 + Rng.randf_range(-2.0, 2.0), apex - Rng.randf_range(0.0, 4.0)),
+				"delay": delay, "rise": rise, "slam": slam, "land": delay + rise + slam,
+				"swirl": Rng.randf_range(1.5, 2.5), "turns": Rng.randf_range(1.5, 2.2),
+				"ph": Rng.randf() * TAU, "flick": randf() * 10.0, "p0": _start}
 		_beams.append(b)
 		_timeline.at(b["land"], _land.bind(i))
 		last = maxf(last, b["land"])
@@ -134,20 +131,32 @@ func _land(i: int) -> void:
 		s.play()
 
 
-## How far along its curve (0..1) a beam is, `s` (0..1) of the way through its flight:
-## a quick climb that slows at the top, then a slam that keeps speeding up.
-static func _progress(s: float) -> float:
-	if s < RISE:
-		var k := s / RISE
+## Where along its curve (0..1) the head of beam `b` is at time `t`: a climb that slows at the
+## top, then a slam that keeps speeding up.
+static func _head(b: Dictionary, t: float) -> float:
+	var r: float = t - b["delay"]
+	if r <= 0.0:
+		return 0.0
+	if r < b["rise"]:
+		var k: float = r / b["rise"]
 		return RISE_PATH * (1.0 - (1.0 - k) * (1.0 - k))
-	var k := (s - RISE) / (1.0 - RISE)
-	return RISE_PATH + (1.0 - RISE_PATH) * k * k * k
+	var k := clampf((r - b["rise"]) / b["slam"], 0.0, 1.0)
+	return RISE_PATH + (1.0 - RISE_PATH) * k * k
+
+
+## Where the tail is: held on the staff while climbing, then it lets go and runs after the head.
+static func _tail(b: Dictionary, t: float) -> float:
+	var r: float = t - b["delay"] - b["rise"]
+	if r <= 0.0:
+		return 0.0
+	var k := clampf(r / (b["slam"] * (1.0 + TAIL_LAG)), 0.0, 1.0)
+	return k * k * (3.0 - 2.0 * k)
 
 
 ## Where beam `b` is at curve position `u`: up out of the staff, over, and straight down
 ## (the last stretch is vertical). The climb snakes; the slam is straight.
 func _path(b: Dictionary, u: float) -> Vector2:
-	var p0 := _start
+	var p0: Vector2 = b["p0"]
 	var p1: Vector2 = b["p1"]
 	var p2: Vector2 = b["p2"]
 	var p3: Vector2 = b["spot"]
@@ -159,6 +168,13 @@ func _path(b: Dictionary, u: float) -> Vector2:
 
 
 func _process(_delta: float) -> void:
+	# while climbing, each beam stays attached to the staff (which moves with the caster)
+	var staff := _start
+	if caster != null and is_instance_valid(caster):
+		staff = to_local(HeldWeapon.beam_origin(caster))
+	for b in _beams:
+		if _t < b["delay"] + b["rise"]:
+			b["p0"] = staff
 	queue_redraw()
 	_fx.queue_redraw()
 
@@ -170,7 +186,7 @@ func _draw() -> void:
 		var spot: Vector2 = b["spot"]
 		var since: float = _t - b["land"]
 		if since < 0.0:
-			var k := clampf((_t - b["delay"]) / b["flight"], 0.0, 1.0)
+			var k := clampf((_t - b["delay"]) / (b["rise"] + b["slam"]), 0.0, 1.0)
 			draw_circle(spot, spot_radius, Color(RED.r, RED.g, RED.b, 0.12 + 0.12 * k))
 			draw_circle(spot, spot_radius * k, Color(RED.r, RED.g, RED.b, 0.18))
 			draw_arc(spot, spot_radius - 0.5, 0.0, TAU, 20, Color(HOT.r, HOT.g, HOT.b, 0.55 + 0.3 * k), 1.0)
@@ -184,32 +200,30 @@ func _draw() -> void:
 
 func _draw_fx() -> void:
 	for b in _beams:
-		var s: float = (_t - b["delay"]) / b["flight"]
-		if s > 0.0 and s < 1.0 + TRAIL:
-			_draw_beam(b, s)
+		if _t > b["delay"]:
+			_draw_beam(b)
 		var since: float = _t - b["land"]
 		if since >= 0.0 and since < FLAME_TIME:
 			_draw_flame(b["spot"], since, b["flick"])
 
 
-## The beam: a fading red tail behind a bright head. The tail covers the last part of the
-## flight, so it stretches into a long streak as the beam slams down. After it lands the
-## tail catches up.
-func _draw_beam(b: Dictionary, s: float) -> void:
-	var head := minf(s, 1.0)
-	var tail := maxf(s - TRAIL, 0.0)
-	if head - tail <= 0.001:
+## The beam: one line from its tail to a bright head. While climbing the tail is the staff;
+## once the slam starts it lets go and the tail chases the head down.
+func _draw_beam(b: Dictionary) -> void:
+	var head := _head(b, _t)
+	var tail := _tail(b, _t)
+	if head - tail <= 0.002:
 		return
-	var n := 16
-	var prev := _path(b, _progress(tail))
+	var n := 24
+	var prev := _path(b, tail)
 	for k in range(1, n + 1):
-		var p := _path(b, _progress(lerpf(tail, head, float(k) / float(n))))
-		var a := float(k) / float(n)            # 0 at the tail, 1 at the head
+		var p := _path(b, lerpf(tail, head, float(k) / float(n)))
+		var a := 0.45 + 0.55 * float(k) / float(n)      # brighter toward the head
 		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.5 * a), 2.0)
 		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, a), 1.0)
 		prev = p
-	if s < 1.0:
-		var hp := _path(b, _progress(head)).snapped(Vector2(0.5, 0.5))
+	if head < 1.0:
+		var hp := _path(b, head).snapped(Vector2(0.5, 0.5))
 		_fx.draw_rect(Rect2(hp - Vector2(1.0, 1.0), Vector2(2.0, 2.0)), HOT)
 		_fx.draw_rect(Rect2(hp - Vector2(0.5, 0.5), Vector2(1.0, 1.0)), CORE)
 
