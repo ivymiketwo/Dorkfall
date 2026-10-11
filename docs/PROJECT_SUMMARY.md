@@ -114,7 +114,7 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     correctly (behind the head facing west/north). The cast sound starts on key press and the hit
     sound plays only on impact. Speed 215 px/s with 0.5 s cast; damage 40.
   - **Crimson Swarm** (`abilities/crimson_swarm.tres`, `scripts/crimson_swarm.gd`): 0.8 s cast with a
-    red summoning circle under the player, the staff fires a blue laser (visual only; the beams and trails are blue, circles and flames red) up to a point
+    red summoning circle under the player, the staff fires the Red Beam laser (visual only) up to a point
     40 px above the target; 15 missiles bloom up out of its tip like a flower (each spreads out on its own side, evenly round the clock, then curls back in) on
     glowing magic trails (no smoke: they're magic missiles), float and linger ~0.43 s at the top, slam down in ~0.15 s (each bit of
     trail fades 1.6 s after the missile passed, knot end first) onto 15 small circles (radius 6) in the tightest round packing
