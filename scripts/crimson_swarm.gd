@@ -42,12 +42,12 @@ const BURST_HEIGHT := 40.0
 ## each drifts out on its own side at the top.
 const SWARM_MIN_H := 12.0
 const SWARM_MAX_H := 18.0
-const SWARM_SPREAD := 19.0
+const SWARM_SPREAD := 9.5
 ## Crimson Barrage: the knot hovers this high above the caster's feet and moves with them.
 const KNOT_ABOVE := 38.0
 ## How far (world px) a missile drifts toward its circle while rising; the rest of the way is
 ## covered by the slam, so fountain trails stay short however far away the circle is.
-const FOUNTAIN_TRAVEL := 12.0
+const FOUNTAIN_TRAVEL := 6.0
 ## When the missiles start coming out of the tip (the beam fires at 0).
 const EMIT_AT := 0.05
 ## Each bit of a missile's trail fades out this long after the missile passed it, so the
