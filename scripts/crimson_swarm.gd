@@ -58,7 +58,7 @@ const TRAIL_LIFE := 1.6
 ## The fountain part of a trail (drawn while rising) fades sooner than the slam part.
 const FOUNTAIN_TRAIL_LIFE := 0.9
 ## Everything left fades over this long at the very end.
-const TRAIL_FADE := 0.25
+const TRAIL_FADE := 0.55
 ## The tightest known way to fit 15 circles (radius 1) inside one circle (its radius: 4.52).
 ## The cluster uses this, turned to a random angle, so the target area is as small and round
 ## as it can be. Other counts fall back to a honeycomb blob.
