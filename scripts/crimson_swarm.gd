@@ -32,7 +32,10 @@ const FLAME_TIME := 0.75
 const BURST_HEIGHT := 40.0
 ## When the missiles start coming out of the tip (the beam fires at 0).
 const EMIT_AT := 0.05
-## The missiles' trails stay drawn until the spell ends, fading over this long at the end.
+## Each bit of a missile's trail fades out this long after the missile passed it, so the
+## start of a trail (by the knot) is gone by the time the spell ends and the rest follows.
+const TRAIL_LIFE := 1.6
+## Everything left fades over this long at the very end.
 const TRAIL_FADE := 0.25
 ## Smoke left behind by each missile: a puff every SMOKE_STEP seconds, lasting SMOKE_LIFE.
 const SMOKE_STEP := 0.02
@@ -73,7 +76,7 @@ func _ready() -> void:
 		var vy := -2.0 * h - 2.0 * sqrt(h * h + h * drop)
 		var ay := drop - vy
 		var delay := EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015)
-		var float_t := Rng.randf_range(0.23, 0.27)       # drifting up and over
+		var float_t := Rng.randf_range(0.4, 0.46)        # drifting up and lingering at the top
 		var slam := Rng.randf_range(0.12, 0.16)          # then slamming down
 		var flight := float_t + slam
 		var b := {"spot": spot,
@@ -171,9 +174,17 @@ static func _progress(b: Dictionary, r: float) -> float:
 	var apex: float = b["apex"]
 	if r < b["float"]:
 		var k: float = r / b["float"]
-		return apex * (1.0 - (1.0 - k) * (1.0 - k))      # up to the top of its arc, slowing
+		return apex * (1.0 - pow(1.0 - k, 3.0))          # up to the top of its arc, lingering there
 	var k := clampf((r - b["float"]) / b["slam"], 0.0, 1.0)
 	return apex + (1.0 - apex) * k * k                   # then down, faster and faster
+
+
+## The other way round: seconds after leaving the knot when missile `b` was at arc position `u`.
+static func _time_at(b: Dictionary, u: float) -> float:
+	var apex: float = b["apex"]
+	if u <= apex:
+		return float(b["float"]) * (1.0 - pow(maxf(1.0 - u / apex, 0.0), 1.0 / 3.0))
+	return float(b["float"]) + float(b["slam"]) * sqrt(clampf((u - apex) / (1.0 - apex), 0.0, 1.0))
 
 
 ## Where missile `b` is at arc position `u` (0 = the knot, 1 = its circle): a ballistic arc,
@@ -243,8 +254,8 @@ func _draw_smoke() -> void:
 			_fx.draw_circle(pos.snapped(Vector2(0.5, 0.5)), r, Color(SMOKE.r, SMOKE.g, SMOKE.b, 0.4 * (1.0 - k)))
 
 
-## A missile: its whole trail, from the knot to the bright head, stays drawn until the
-## spell ends (fading out at the very end).
+## A missile: its trail from the knot to the bright head. Each part fades a while after the
+## missile passed it, so the trail disappears from the knot end first.
 func _draw_missile(b: Dictionary, r: float) -> void:
 	var head := _progress(b, r)
 	if head <= 0.001:
@@ -253,8 +264,10 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 	var n := 28
 	var prev := _path(b, 0.0)
 	for j in range(1, n + 1):
-		var p := _path(b, head * float(j) / float(n))
-		var a := (0.55 + 0.45 * float(j) / float(n)) * fade      # a little brighter toward the head
+		var u := head * float(j) / float(n)
+		var p := _path(b, u)
+		var age := r - _time_at(b, u)                             # how long ago the missile was here
+		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / TRAIL_LIFE, 0.0, 1.0), 2.0))
 		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.5 * a), 2.0)
 		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, a), 1.0)
 		prev = p
