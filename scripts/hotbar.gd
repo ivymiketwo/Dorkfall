@@ -9,6 +9,10 @@ signal changed
 const PER_BAR := 7
 const BARS := 4
 const SLOT_COUNT := PER_BAR * BARS
+## Spells every player knows (shown in the spellbook).
+const ALWAYS_KNOWN := ["res://abilities/home_teleport.tres", "res://abilities/crimson_swarm.tres"]
+## New spells put on the first free slot of bar 1 once, for saves made before they existed.
+const GRANT_ONCE := ["res://abilities/crimson_swarm.tres"]
 
 @export var slots: Array[Ability] = []
 
@@ -29,6 +33,11 @@ var fail_flash: Array[float] = []
 @onready var stats: Stats = get_parent().get_node("Stats")
 @onready var inventory: Inventory = get_parent().get_node_or_null("Inventory")
 var _cast_snd: AudioStreamPlayer2D
+## The summoning circle drawn under the caster while some spells charge (Ability.cast_circle).
+var _circle: Node2D
+var _circle_colors: Array = SummonCircle.RED
+var _circle_t := 0.0
+var _circle_fade := 0.0
 @onready var cast_orb: Sprite2D = get_parent().get_node_or_null("CastOrb")
 
 
@@ -41,10 +50,17 @@ func _ready() -> void:
 	for ab in slots:
 		if ab != null and not known.has(ab):
 			known.append(ab)
-	var home := load("res://abilities/home_teleport.tres") as Ability
-	if not known.has(home):
-		known.append(home)
+	for path in ALWAYS_KNOWN:
+		var ab := load(path) as Ability
+		if not known.has(ab):
+			known.append(ab)
 	_load_layout()
+	_grant_new_spells()
+	_circle = Node2D.new()
+	_circle.draw.connect(func() -> void: SummonCircle.draw(_circle, 16.0, _circle_t, _circle_fade, 10, _circle_colors))
+	_circle.hide()
+	caster.add_child.call_deferred(_circle)
+	(func() -> void: caster.move_child(_circle, 0)).call_deferred()     # under the character
 	active_bar = clampi(int(SaveGame.get_value("hotbar_bar", 0)), 0, BARS - 1)
 	if inventory:
 		inventory.changed.connect(func(): changed.emit())
@@ -122,6 +138,26 @@ func _load_layout() -> void:
 				slots[i] = load(d["ability"]) as Ability
 			elif d.has("item"):
 				item_slots[i] = SaveGame.item_from_path(d["item"])
+
+
+func _grant_new_spells() -> void:
+	var granted: Array = SaveGame.get_value("granted_spells", [])
+	var changed_any := false
+	for path in GRANT_ONCE:
+		if granted.has(path):
+			continue
+		granted.append(path)
+		changed_any = true
+		var ab := load(path) as Ability
+		if slots.has(ab):
+			continue
+		for i in PER_BAR:
+			if slots[i] == null and item_slots[i] == null:
+				slots[i] = ab
+				break
+	if changed_any:
+		SaveGame.put("granted_spells", granted)
+		_layout_changed()
 
 
 func set_bar(b: int) -> void:
@@ -250,6 +286,7 @@ func _process(delta: float) -> void:
 			fail_flash[i] = maxf(fail_flash[i] - delta, 0.0)
 			dirty = true
 	_update_cast_orb()
+	_update_cast_circle(delta)
 	if dirty:
 		changed.emit()
 
@@ -286,6 +323,8 @@ func _finish(i: int) -> void:
 			_spawn_projectile(ab)
 		Ability.Kind.BEAM:
 			_fire_beam(ab)
+		Ability.Kind.SWARM:
+			_cast_swarm(ab)
 		Ability.Kind.HOME_TELEPORT:
 			var ht := caster.get_node_or_null("HomeTeleport") as HomeTeleport
 			if ht == null or ht.is_active():
@@ -317,6 +356,25 @@ func _spawn_projectile(ab: Ability) -> void:
 		p.cast_player = _cast_snd      # the projectile carries the sound it was cast with
 		_cast_snd = null
 	caster.get_parent().add_child(p)
+
+
+## Crimson Swarm: the cluster lands around the mouse (no further than `swarm_range`).
+func _cast_swarm(ab: Ability) -> void:
+	var to: Vector2 = caster.aim_world - caster.global_position
+	if to.length() > ab.swarm_range:
+		to = to.normalized() * ab.swarm_range
+	var s := CrimsonSwarm.new()
+	s.caster = caster
+	s.launch_from = HeldWeapon.beam_origin(caster)
+	s.count = ab.swarm_count
+	s.spot_radius = ab.swarm_spot_radius
+	s.damage = ab.damage * stats.magic_mult()
+	s.global_position = caster.global_position + to
+	var root := caster.get_parent().get_parent()
+	root.add_child(s)
+	var ground := root.get_node_or_null("GroundArt")
+	if ground:
+		root.move_child(s, ground.get_index() + 1)      # circles painted on the ground, under everyone
 
 
 func _fire_beam(ab: Ability) -> void:
@@ -355,6 +413,23 @@ func _cancel_cast() -> void:
 	casting_slot = -1
 	_stop_cast_sound()
 	_update_cast_orb()
+
+
+func _update_cast_circle(delta: float) -> void:
+	if _circle == null:
+		return
+	var ab := slots[casting_slot] if casting_slot != -1 else null
+	if ab != null and ab.cast_circle != "none":
+		if _circle_fade <= 0.0:
+			_circle_t = 0.0
+		_circle_colors = SummonCircle.RED if ab.cast_circle == "red" else SummonCircle.BLUE
+		_circle_fade = 1.0
+	else:
+		_circle_fade = maxf(_circle_fade - delta / 0.2, 0.0)     # fades out once the spell goes off
+	_circle_t += delta
+	_circle.visible = _circle_fade > 0.0
+	if _circle.visible:
+		_circle.queue_redraw()
 
 
 func _update_cast_orb() -> void:

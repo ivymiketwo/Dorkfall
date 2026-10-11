@@ -3,7 +3,7 @@ extends Resource
 ## One hotbar ability. Each lives in res://abilities/*.tres — open one in
 ## the Inspector to tweak costs, cast times and amounts.
 
-enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT }
+enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT, SWARM }
 
 @export var display_name := ""
 @export var kind := Kind.PROJECTILE
@@ -18,6 +18,8 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT }
 @export var cast_time := 0.0
 ## Seconds before this slot can be used again.
 @export var cooldown := 0.0
+## A summoning circle under the caster while the cast bar fills.
+@export_enum("none", "blue", "red") var cast_circle := "none"
 
 @export_group("Projectile")
 @export var projectile_scene: PackedScene
@@ -35,6 +37,14 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT }
 ## Poison left on everything the beam hits: damage per second, for this many seconds (0 = none).
 @export var poison_dps := 0.0
 @export var poison_time := 0.0
+
+@export_group("Swarm")
+## Crimson Swarm: this many beams land on non-overlapping circles around the mouse.
+## Each circle deals `damage` above to everything in it.
+@export var swarm_count := 10
+@export var swarm_spot_radius := 6.0
+## How far from the caster the cluster can be centred (world px).
+@export var swarm_range := 170.0
 
 @export_group("Transfer")
 @export_enum("health", "mana") var transfer_from: String = "health"
