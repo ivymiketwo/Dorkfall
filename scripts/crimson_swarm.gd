@@ -50,9 +50,15 @@ const PACK_15 := [Vector2(-3.457, -0.669), Vector2(1.213, -1.193), Vector2(1.541
 ## starts out over the spot this far clockwise of its own circle and twists onto it.
 const TWIST := deg_to_rad(65.0)
 ## The laser: the same as the Red Beam ability.
-const LASER_COLOR := Color(1, 0.15, 0.12, 1)
+const LASER_COLOR := Color(0.35, 0.85, 1.0, 1)
 
-const EDGE := Color(0.25, 0.01, 0.03)
+## The beams (laser, knot, missile trails) are blue: outer fringe, mid, core, head, hot centre.
+const B_EDGE := Color(0.02, 0.06, 0.25)
+const B_DARK := Color(0.06, 0.25, 0.65)
+const B_MAIN := Color(0.3, 0.72, 1.0)
+const B_HOT := Color(0.65, 0.92, 1.0)
+const B_CORE := Color(0.92, 0.98, 1.0)
+## The landing circles and fire stay red.
 const DARK := Color(0.55, 0.04, 0.05)
 const RED := Color(0.9, 0.1, 0.08)
 const HOT := Color(1.0, 0.42, 0.25)
@@ -279,9 +285,9 @@ func _draw_fx() -> void:
 	if _t < last_out + 0.2:
 		var k := 1.0 - clampf((_t - last_out) / 0.2, 0.0, 1.0)
 		var r := (2.5 + 0.5 * sin(_t * 50.0)) * k
-		_fx.draw_circle(_tip, r + 1.0, Color(DARK.r, DARK.g, DARK.b, 0.6))
-		_fx.draw_circle(_tip, r, RED)
-		_fx.draw_circle(_tip, r * 0.5, CORE)
+		_fx.draw_circle(_tip, r + 1.0, Color(B_DARK.r, B_DARK.g, B_DARK.b, 0.6))
+		_fx.draw_circle(_tip, r, B_MAIN)
+		_fx.draw_circle(_tip, r * 0.5, B_CORE)
 	for b in _beams:
 		if _t > b["delay"]:
 			_draw_missile(b, _t - b["delay"])
@@ -311,15 +317,15 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / life, 0.0, 1.0), 2.0))
 		# the fountain part is a pixel thinner, widening over the top of the arc
 		var thick := clampf((u - apex * 0.7) / (apex * 0.6), 0.0, 1.0) * 0.5
-		# feathered, darker toward the edge for contrast: dark outer fringe, deep red, bright core
-		_fx.draw_line(prev, p, Color(EDGE.r, EDGE.g, EDGE.b, 0.4 * a), 2.5 + thick)
-		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.7 * a), 1.5 + thick)
-		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, a), 0.5 + thick)
+		# feathered, darker toward the edge for contrast: dark outer fringe, deep blue, bright core
+		_fx.draw_line(prev, p, Color(B_EDGE.r, B_EDGE.g, B_EDGE.b, 0.4 * a), 2.0 + thick)
+		_fx.draw_line(prev, p, Color(B_DARK.r, B_DARK.g, B_DARK.b, 0.7 * a), 1.0 + thick)
+		_fx.draw_line(prev, p, Color(B_MAIN.r, B_MAIN.g, B_MAIN.b, a), 0.5)
 		prev = p
 	if head < 1.0:
 		var hp := _path(b, head).snapped(Vector2(0.5, 0.5))
-		_fx.draw_rect(Rect2(hp - Vector2(1.0, 1.0), Vector2(2.0, 2.0)), HOT)
-		_fx.draw_rect(Rect2(hp - Vector2(0.5, 0.5), Vector2(1.0, 1.0)), CORE)
+		_fx.draw_rect(Rect2(hp - Vector2(1.0, 1.0), Vector2(2.0, 2.0)), B_HOT)
+		_fx.draw_rect(Rect2(hp - Vector2(0.5, 0.5), Vector2(1.0, 1.0)), B_CORE)
 
 
 ## Rex's flame: bursts up, flickers, dies down. `since` = seconds since it landed.
