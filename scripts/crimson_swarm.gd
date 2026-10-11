@@ -42,7 +42,7 @@ const BURST_HEIGHT := 40.0
 ## each drifts out on its own side at the top.
 const SWARM_MIN_H := 12.0
 const SWARM_MAX_H := 18.0
-const SWARM_SPREAD := 13.8
+const SWARM_SPREAD := 19.0
 ## Crimson Barrage: the knot hovers this high above the caster's feet and moves with them.
 const KNOT_ABOVE := 38.0
 ## How far (world px) a missile drifts toward its circle while rising; the rest of the way is
@@ -64,6 +64,8 @@ const PACK_15 := [Vector2(-3.457, -0.669), Vector2(1.213, -1.193), Vector2(1.541
 		Vector2(-0.760, -1.522), Vector2(1.510, 0.784), Vector2(0.614, 3.467), Vector2(-2.535, -2.444),
 		Vector2(-0.280, 1.678), Vector2(3.487, 0.487), Vector2(-1.682, 0.253), Vector2(-3.108, 1.656),
 		Vector2(-0.432, -3.495), Vector2(-1.705, 3.081), Vector2(3.190, -1.490), Vector2(2.403, 2.574)]
+## Pulls the packed circles a touch closer than touching (a smidge of overlap).
+const PACK_SQUEEZE := 0.94
 ## As the missiles fall, the whole cluster turns counter-clockwise by this much: each missile
 ## starts out over the spot this far clockwise of its own circle and twists onto it.
 const TWIST := deg_to_rad(65.0)
@@ -208,7 +210,7 @@ func _pick_spots() -> Array:
 		var turn := Rng.randf() * TAU
 		var out: Array = []
 		for q in PACK_15:
-			out.append((q as Vector2).rotated(turn) * spot_radius * 1.001)   # (rounding: never overlap)
+			out.append((q as Vector2).rotated(turn) * spot_radius * PACK_SQUEEZE)
 		return out
 	var d := spot_radius * 2.0
 	var rot := Rng.randf() * TAU
