@@ -303,15 +303,18 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 		var u := head * float(j) / float(n)
 		var p := _path(b, u)
 		var age := r - _time_at(b, u)                             # how long ago the missile was here
-		# the rising (fountain) part fades sooner than the slam, blending over the top of the arc
+		# the fountain part fades first; the slam part carries on the same fade from its top down
+		# to the ground (the top of the slam goes with the fountain, the bottom lasts longest)
 		var apex: float = b["apex"]
-		var slam_part := clampf((u - apex * 0.7) / (apex * 0.6), 0.0, 1.0)
-		var life := lerpf(FOUNTAIN_TRAIL_LIFE, TRAIL_LIFE, slam_part)
+		var down := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
+		var life := lerpf(FOUNTAIN_TRAIL_LIFE, TRAIL_LIFE, down)
 		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / life, 0.0, 1.0), 2.0))
+		# the fountain part is a pixel thinner, widening over the top of the arc
+		var thick := clampf((u - apex * 0.7) / (apex * 0.6), 0.0, 1.0) * 0.5
 		# feathered, darker toward the edge for contrast: dark outer fringe, deep red, bright core
-		_fx.draw_line(prev, p, Color(EDGE.r, EDGE.g, EDGE.b, 0.4 * a), 3.0)
-		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.7 * a), 2.0)
-		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, a), 1.0)
+		_fx.draw_line(prev, p, Color(EDGE.r, EDGE.g, EDGE.b, 0.4 * a), 2.5 + thick)
+		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.7 * a), 1.5 + thick)
+		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, a), 0.5 + thick)
 		prev = p
 	if head < 1.0:
 		var hp := _path(b, head).snapped(Vector2(0.5, 0.5))
