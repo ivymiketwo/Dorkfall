@@ -167,6 +167,9 @@ func _launch(i: int) -> void:
 	# drifts out to the side it is heading (straight down / close by gets a random side)
 	var petal := rel.angle() if rel.length() > 4.0 else Rng.randf() * TAU
 	_aim(b, spot, petal, tip, KNOT_ABOVE)
+	# the barrage's missiles go straight up out of the knot, then slam over to the target
+	b["out"] = Vector2.ZERO
+	b["rise_reach"] = 0.0
 
 
 ## Where the knot is (local space): over the target for the swarm; above the caster (moving

@@ -124,7 +124,7 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     Placed once on bar 1 for older saves (`Hotbar.GRANT_ONCE`).
   - **Crimson Barrage** (`abilities/crimson_barrage.tres`, same script with `stream` on): instant cast.
     The laser fires to a knot 38 px above the caster that rides along with them for ~5 s, shooting one missile every
-    0.5 s (10 in all), each with the same bloom-and-slam flight onto its own circle wherever the cursor
+    0.5 s (10 in all); each shoots straight up out of the knot, then slams onto its own circle wherever the cursor
     is when it leaves (max 170 px from the caster). 20 damage per missile, 40 mana, 8 s cooldown.
     Placeholder icon (index 6).
   - **Red beam:** 60 damage.
