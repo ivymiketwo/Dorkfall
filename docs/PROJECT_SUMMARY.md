@@ -84,7 +84,7 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
 - **Village:** Luck (quest NPC), the notice board, shops (fishing, potions, pets, wizard). The default
   spawn is the crossroads just south of Luck, at (208, 256).
 - **Farmland:** wheat fields full of Mangyangs.
-- **Graveyard / cave:** skeletons, Lord Kilset (boss) in the cave.
+- **Graveyard / cave:** skeletons, Lord Placeholder (boss) in the cave.
 - **Vorly's lair** (the dragon boss, north-east of the village).
 - **West desert** (sand), then the **red-clay ravine**, a pass through the mountains made by
   `tools/gen_ravine.py` (needs about 5 GB of RAM). It funnels in from the west, runs as a long narrow
@@ -99,7 +99,7 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
 |---|---|---|
 | **Mangyang** (Rex's hopping scarecrow) | 1 | 4-direction idle and a 7-frame hop (west = east mirrored); moves only while in the air. **Crow swarm attack:** 3 crows start circling at its feet and drift up its body (extra warning); 0.25 s later a dark circle appears under the target; 0.5 s in, a swarm of ~12 crows flies from the scarecrow and hits everyone in the circle at 1.25 s, then scatters; the circling crows spiral up off screen. 50 damage, starts an attack every 3.5 s. Quests "Pest Control" (10) and "Mangyang Menace" (15). |
 | **Skeleton** | 3+ | Rex's 4-direction sprite (`art/skeleton_new.png`, 64 px cells: idle, 6-frame walk, 6-frame attack, 7-frame death; originals in `art/skeleton_src`, look `skeleton_new_look.gd`). Red lane telegraph (wind-up frames play over it), then a lunge with the punch frame. Quests "Bone Collector" (12) and "The Restless Dead" (20). |
-| **Lord Kilset** (BoneLord) | boss | Skeleton brain at boss scale; boulder rain and stone walls in the cave. Base health 280 (doubled at Rex's request). |
+| **Lord Placeholder** (BoneLord) | boss | Skeleton brain at boss scale; boulder rain and stone walls in the cave. Base health 280 (doubled at Rex's request). |
 | **Pirate Captain** | 17 | 7 along the coast; skeleton brain with the pirate look. |
 | **Skeleton Wizard** | 20 | Rex's sprite (idle, walk, throw; 4 directions). Keeps its distance, backs away if you get close (walk plays in reverse), and throws a fireball every 1.8 s. A red circle appears under the target (no aim prediction); the fireball leaves his hand from the centre of the red pixels in the last throw frame that has any, and lands after 1.0 s. 80 damage, health 630, 30-70 coins. |
 | **Vorly** (dragon, first boss) | boss | Rex's dragon sprite (idle, walk, melee, 4-direction sit, death animation). Telegraphed melee bite (100 damage), a red-orb circle attack, and a 6 s orb barrage (sits facing one way; small random scatter on each orb). Health 1000. Quest "Slay Vorly" from Luck (one time, 1000 gold reward). |

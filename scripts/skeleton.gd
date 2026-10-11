@@ -1,7 +1,7 @@
 extends CharacterBody2D
 ## Skeleton: a graveyard warrior. Shambles near its spot, chases when you get
 ## close, then telegraphs a red lane on the ground and lunges forward down it
-## with its rusty sword. Also the brain of Lord Kilset (boss version) and the Pirate Captain.
+## with its rusty sword. Also the brain of Lord Placeholder (boss version) and the Pirate Captain.
 ##
 ## This script is the BRAIN: state, targeting, attacks, loot, respawn. It draws nothing and
 ## never touches its sprite, so a server can run it headless (same pattern as vordy.gd).

@@ -1,5 +1,5 @@
 extends Node
-## Everything you SEE of a skeleton (and Lord Kilset): walk wobble, sword poses, hit flash,
+## Everything you SEE of a skeleton (and Lord Placeholder): walk wobble, sword poses, hit flash,
 ## collapsing into bones, fading out and back in. The brain (skeleton.gd) never touches this;
 ## this only reads its state and listens to it. A server simply has no Look.
 

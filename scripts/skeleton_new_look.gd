@@ -2,7 +2,7 @@ extends "res://scripts/skeleton_look.gd"
 ## The regular skeleton's look: Rex's 4-direction sheet (art/skeleton_new.png, 64 px cells,
 ## 7 columns, originals in art/skeleton_src). Rows = animation * 4 + facing (down, up,
 ## left, right). Animations: 0 idle (1 frame), 1 walk (6), 2 attack (6: wind-up, last frame
-## is the punch), 3 death (7). Lord Kilset and the pirates keep their own looks.
+## is the punch), 3 death (7). Lord Placeholder and the pirates keep their own looks.
 
 const WALK_FPS := 9.0
 const DEATH_FPS := 10.0

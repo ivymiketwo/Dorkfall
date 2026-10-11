@@ -32,7 +32,7 @@ changes in one place, and visuals are separate from logic.
 
 - **Chat commands** live in `ChatCommands` (rules, no UI). One switch, `ChatCommands.ENABLED` / `can_use(player)`, turns them all off for multiplayer; later `can_use` checks the account role (admin / GM). `ChatLog` only types and displays.
 
-- **Every monster is brain + look now.** `skeleton.gd` (also Lord Kilset and the Pirate Captain) and
+- **Every monster is brain + look now.** `skeleton.gd` (also Lord Placeholder and the Pirate Captain) and
   `mangyang.gd` draw nothing; `skeleton_look.gd`, `pirate_look.gd` and `mangyang_look.gd` do. Death and
   respawn are counted in the brain on the game tick (no tweens driving rules). Monsters target the
   nearest *living* player. Quests read each monster's `quest_kind` instead of its script name.
