@@ -72,7 +72,7 @@ func _ready() -> void:
 	_tip = Vector2(0.0, -BURST_HEIGHT)
 	# missiles fan out of the tip in every direction but straight down (left ones land on the
 	# left circles), each on a clean ballistic arc
-	spots.sort_custom(func(a, b): return a.x < b.x)
+	spots.sort_custom(func(a, b): return a.rotated(TWIST).x < b.rotated(TWIST).x)   # by where they hang
 	var n := spots.size()
 	for i in n:
 		var spot: Vector2 = spots[i]
@@ -216,11 +216,13 @@ func _path(b: Dictionary, u: float) -> Vector2:
 	var screen_y := _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u
 	var height := spot.y * u - screen_y          # height above the ground (the arc's own shape)
 	var fall := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
-	# over the ground: out to its circle's distance from the middle by the top of the arc, then
-	# swung round at that distance while falling, so each trail draws a twisting spiral
-	var reach := clampf(u / maxf(apex, 0.01), 0.0, 1.0)
-	reach = 1.0 - (1.0 - reach) * (1.0 - reach)
-	var ground := (spot * reach).rotated(TWIST * (1.0 - fall)) + Vector2(drift, 0.0)
+	# over the ground: while rising it heads out toward the spot it hangs over (its circle
+	# turned TWIST clockwise), so the fountain keeps its arch; once the slam starts it swings
+	# round counter-clockwise onto its circle, easing in so the trail bends smoothly. It never
+	# stops moving sideways at the top, so the trail has no sharp corner there.
+	var reach := sqrt(u)               # keeps moving outward through the top: no corner there
+	var turn := fall * fall * (3.0 - 2.0 * fall)
+	var ground := (spot * reach).rotated(TWIST * (1.0 - turn)) + Vector2(drift, 0.0)
 	return Vector2(ground.x, ground.y - height)
 
 

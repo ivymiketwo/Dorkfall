@@ -6,6 +6,7 @@ colour of the pixels it covers, so it stays crisp pixel art), then turned into f
   0-2   burst up from the ground
   3-8   flicker loop (tongues lick up and down, shades shimmer, sparks rise)
   9-11  die down
+Every frame gets a 1 px half-opacity dark outline.
 Run: python3 tools/gen_crimson_flame.py
 """
 from collections import Counter
@@ -127,6 +128,26 @@ def die(k):
 frames = [squash(0.35), squash(0.7), squash(1.15)]
 frames += [flicker(i / 6.0) for i in range(6)]
 frames += [die(0.7), die(0.45), die(0.22)]
+OUTLINE = (40, 0, 6, 128)          # half-opacity dark outline round every frame
+
+
+def outline(f):
+    """Adds a 1 px half-opacity outline around the flame (and its sparks)."""
+    out = f.copy()
+    fp, op = f.load(), out.load()
+    for y in range(FH):
+        for x in range(FW):
+            if fp[x, y][3]:
+                continue
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < FW and 0 <= ny < FH and fp[nx, ny][3] == 255:
+                    op[x, y] = OUTLINE
+                    break
+    return out
+
+
+frames = [outline(f) for f in frames]
 sheet = Image.new("RGBA", (FW * len(frames), FH), (0, 0, 0, 0))
 for i, f in enumerate(frames):
     sheet.paste(f, (FW * i, 0), f)
