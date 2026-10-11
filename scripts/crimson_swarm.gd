@@ -35,6 +35,8 @@ const EMIT_AT := 0.05
 ## Each bit of a missile's trail fades out this long after the missile passed it, so the
 ## start of a trail (by the knot) is gone by the time the spell ends and the rest follows.
 const TRAIL_LIFE := 1.6
+## The fountain part of a trail (drawn while rising) fades sooner than the slam part.
+const FOUNTAIN_TRAIL_LIFE := 0.9
 ## Everything left fades over this long at the very end.
 const TRAIL_FADE := 0.25
 ## The tightest known way to fit 15 circles (radius 1) inside one circle (its radius: 4.52).
@@ -81,7 +83,7 @@ func _ready() -> void:
 		# a fountain: every missile is thrown up out of the knot to its own height, then falls
 		# onto its circle. The arc is a parabola: y = tip.y + vy*u + ay*u*u, x straight across.
 		var drop := spot.y - _tip.y                       # how far below the knot it lands
-		var h := Rng.randf_range(24.0, 36.0)             # how high above the knot it climbs
+		var h := Rng.randf_range(14.0, 30.0)             # how high above the knot it climbs
 		var vy := -2.0 * h - 2.0 * sqrt(h * h + h * drop)
 		var ay := drop - vy
 		var delay := EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015)
@@ -301,7 +303,11 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 		var u := head * float(j) / float(n)
 		var p := _path(b, u)
 		var age := r - _time_at(b, u)                             # how long ago the missile was here
-		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / TRAIL_LIFE, 0.0, 1.0), 2.0))
+		# the rising (fountain) part fades sooner than the slam, blending over the top of the arc
+		var apex: float = b["apex"]
+		var slam_part := clampf((u - apex * 0.7) / (apex * 0.6), 0.0, 1.0)
+		var life := lerpf(FOUNTAIN_TRAIL_LIFE, TRAIL_LIFE, slam_part)
+		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / life, 0.0, 1.0), 2.0))
 		# feathered, darker toward the edge for contrast: dark outer fringe, deep red, bright core
 		_fx.draw_line(prev, p, Color(EDGE.r, EDGE.g, EDGE.b, 0.4 * a), 3.0)
 		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.7 * a), 2.0)
