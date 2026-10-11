@@ -1,11 +1,11 @@
 [gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/skeleton.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://art/skeleton.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://art/skeleton_new.png" id="2_tex"]
 [ext_resource type="Script" path="res://scripts/stats.gd" id="3_stats"]
 [ext_resource type="Script" path="res://scripts/nameplate.gd" id="4_nameplate"]
 [ext_resource type="Resource" path="res://items/coins.tres" id="5_coins"]
-[ext_resource type="Script" path="res://scripts/skeleton_look.gd" id="9_look"]
+[ext_resource type="Script" path="res://scripts/skeleton_new_look.gd" id="9_look"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 4.5
@@ -21,9 +21,10 @@ drop_item = ExtResource("5_coins")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 physics_interpolation_mode = 2
 texture = ExtResource("2_tex")
-offset = Vector2(0, -20)
+offset = Vector2(0, -22)
 scale = Vector2(0.5, 0.5)
-hframes = 4
+hframes = 7
+vframes = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -7)
