@@ -81,6 +81,8 @@ func _ready() -> void:
 		var flight := float_t + slam
 		var b := {"spot": spot,
 				"vy": vy, "ay": ay, "apex": -vy / (2.0 * ay),
+				# drifts out to its side on the way up, falls back in onto its circle
+				"out": (float(i) / float(maxi(n - 1, 1)) * 2.0 - 1.0) * Rng.randf_range(18.0, 28.0),
 				"delay": delay, "float": float_t, "slam": slam, "flight": flight, "land": delay + flight,
 				"flick": randf() * 10.0}
 		_beams.append(b)
@@ -187,11 +189,15 @@ static func _time_at(b: Dictionary, u: float) -> float:
 	return float(b["float"]) + float(b["slam"]) * sqrt(clampf((u - apex) / (1.0 - apex), 0.0, 1.0))
 
 
-## Where missile `b` is at arc position `u` (0 = the knot, 1 = its circle): a ballistic arc,
-## straight across sideways and a parabola up and down.
+## Where missile `b` is at arc position `u` (0 = the knot, 1 = its circle): a parabola up and
+## down, swinging out to its side near the top and back in as it falls.
 func _path(b: Dictionary, u: float) -> Vector2:
 	var spot: Vector2 = b["spot"]
-	return Vector2(lerpf(_tip.x, spot.x, u), _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u)
+	# the sideways drift peaks around the top of the arc and is gone at both ends
+	var apex: float = b["apex"]
+	var shape := log(0.5) / log(clampf(apex + 0.1, 0.2, 0.8))
+	var drift := float(b["out"]) * sin(PI * pow(u, shape))
+	return Vector2(lerpf(_tip.x, spot.x, u) + drift, _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u)
 
 
 func _process(_delta: float) -> void:
