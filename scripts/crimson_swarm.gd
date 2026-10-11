@@ -40,6 +40,8 @@ const TRAIL_FADE := 0.25
 ## Smoke left behind by each missile: a puff every SMOKE_STEP seconds, lasting SMOKE_LIFE.
 const SMOKE_STEP := 0.02
 const SMOKE_LIFE := 0.5
+## Smallest distance between two puffs (world px).
+const SMOKE_GAP := 3.0
 const SMOKE := Color(0.62, 0.58, 0.58)
 ## The tightest known way to fit 15 circles (radius 1) inside one circle (its radius: 4.52).
 ## The cluster uses this, turned to a random angle, so the target area is as small and round
@@ -217,9 +219,13 @@ func _path(b: Dictionary, u: float) -> Vector2:
 	# split into where it is over the ground and how high it is, so the twist turns only the
 	# ground position (round the cluster's middle, right under the knot)
 	var screen_y := _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u
-	var height := spot.y * u - screen_y
+	var height := spot.y * u - screen_y          # height above the ground (the arc's own shape)
 	var fall := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
-	var ground := (spot * u).rotated(TWIST * (1.0 - fall * fall * (3.0 - 2.0 * fall))) + Vector2(drift, 0.0)
+	# over the ground: out to its circle's distance from the middle by the top of the arc, then
+	# swung round at that distance while falling, so each trail draws a twisting spiral
+	var reach := clampf(u / maxf(apex, 0.01), 0.0, 1.0)
+	reach = 1.0 - (1.0 - reach) * (1.0 - reach)
+	var ground := (spot * reach).rotated(TWIST * (1.0 - fall)) + Vector2(drift, 0.0)
 	return Vector2(ground.x, ground.y - height)
 
 
@@ -271,14 +277,20 @@ func _draw_smoke() -> void:
 		var t0: float = b["delay"]
 		var end: float = minf(_t, b["land"])
 		var j := 0
+		var last := Vector2.INF
 		while t0 + float(j) * SMOKE_STEP <= end:
 			var at := t0 + float(j) * SMOKE_STEP
 			var age := _t - at
 			j += 1
+			var spot := _path(b, _progress(b, at - t0))
+			# puffs are spaced by distance, so a missile hanging at the top doesn't pile them up
+			if last != Vector2.INF and spot.distance_to(last) < SMOKE_GAP:
+				continue
+			last = spot
 			if age > SMOKE_LIFE:
 				continue
 			var k := age / SMOKE_LIFE
-			var pos := _path(b, _progress(b, at - t0)) + Vector2(0, -k * 3.0)
+			var pos := spot + Vector2(0, -k * 3.0)
 			var r := 0.7 + k * 2.6
 			_fx.draw_circle(pos.snapped(Vector2(0.5, 0.5)), r, Color(SMOKE.r, SMOKE.g, SMOKE.b, 0.4 * (1.0 - k)))
 
