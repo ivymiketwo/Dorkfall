@@ -42,10 +42,13 @@ const BURST_HEIGHT := 40.0
 ## each drifts out on its own side at the top.
 const SWARM_MIN_H := 12.0
 const SWARM_MAX_H := 18.0
-const SWARM_SPREAD := 14.0
+const SWARM_SPREAD := 24.0
 ## Crimson Swarm's mushroom shape: the cap's overhang peaks this far into the fall, and by
 ## STEM_AT the missiles are over their circles and drop straight down (the stem).
 const CAP_PEAK := 0.2
+## Share of the cap's spread already reached at the top of the fountain (keeps the fountain
+## itself small; the rest of the fan-out happens as the slam begins).
+const CAP_RISE := 0.35
 const STEM_AT := 0.55
 ## Crimson Barrage: the knot hovers this high above the caster's feet and moves with them.
 const KNOT_ABOVE := 38.0
@@ -326,9 +329,9 @@ func _path(b: Dictionary, u: float) -> Vector2:
 		# a mushroom: the drift keeps growing into the start of the slam (the cap overhangs),
 		# then pulls back in so the missiles drop nearly straight into their circles (the stem)
 		if u < apex:
-			bump = 0.6 * _ease(u / maxf(apex, 0.01))
+			bump = CAP_RISE * _ease(u / maxf(apex, 0.01))
 		elif fall < CAP_PEAK:
-			bump = 0.6 + 0.4 * _ease(fall / CAP_PEAK)
+			bump = CAP_RISE + (1.0 - CAP_RISE) * _ease(fall / CAP_PEAK)
 		else:
 			bump = 1.0 - _ease(clampf((fall - CAP_PEAK) / (STEM_AT - CAP_PEAK), 0.0, 1.0))
 	elif u < apex:
