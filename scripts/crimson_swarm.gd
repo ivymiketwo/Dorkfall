@@ -42,7 +42,11 @@ const BURST_HEIGHT := 40.0
 ## each drifts out on its own side at the top.
 const SWARM_MIN_H := 12.0
 const SWARM_MAX_H := 18.0
-const SWARM_SPREAD := 9.5
+const SWARM_SPREAD := 14.0
+## Crimson Swarm's mushroom shape: the cap's overhang peaks this far into the fall, and by
+## STEM_AT the missiles are over their circles and drop straight down (the stem).
+const CAP_PEAK := 0.2
+const STEM_AT := 0.55
 ## Crimson Barrage: the knot hovers this high above the caster's feet and moves with them.
 const KNOT_ABOVE := 38.0
 ## How far (world px) a missile drifts toward its circle while rising; the rest of the way is
@@ -117,6 +121,7 @@ func _ready() -> void:
 			# in the same order as where they hang), none straight up, then curls back in
 			_aim(b, spots[i], _petal_angle(spots[i], i, n, petal0), _tip, BURST_HEIGHT,
 					SWARM_MIN_H, SWARM_MAX_H, SWARM_SPREAD)
+			b["mushroom"] = true
 			_beams.append(b)
 			_timeline.at(b["land"], _land.bind(i))
 			last = maxf(last, b["land"])
@@ -242,6 +247,10 @@ static func _petal_angle(spot: Vector2, i: int, n: int, start: float) -> float:
 	return even + angle_difference(even, hang.angle()) * 0.5
 
 
+static func _ease(x: float) -> float:
+	return x * x * (3.0 - 2.0 * x)
+
+
 func _physics_process(delta: float) -> void:
 	var over := _timeline.tick(delta)
 	_t = _timeline.t
@@ -311,25 +320,35 @@ func _path(b: Dictionary, u: float) -> Vector2:
 	var apex: float = b["apex"]
 	# the petal drift eases in from nothing (so every missile leaves the knot going up), peaks
 	# at the top of the arc, and eases out again by the time it lands
+	var fall := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
 	var bump: float
-	if u < apex:
-		var x := u / maxf(apex, 0.01)
-		bump = x * x * (3.0 - 2.0 * x)
+	if b.get("mushroom", false):
+		# a mushroom: the drift keeps growing into the start of the slam (the cap overhangs),
+		# then pulls back in so the missiles drop nearly straight into their circles (the stem)
+		if u < apex:
+			bump = 0.6 * _ease(u / maxf(apex, 0.01))
+		elif fall < CAP_PEAK:
+			bump = 0.6 + 0.4 * _ease(fall / CAP_PEAK)
+		else:
+			bump = 1.0 - _ease(clampf((fall - CAP_PEAK) / (STEM_AT - CAP_PEAK), 0.0, 1.0))
+	elif u < apex:
+		bump = _ease(u / maxf(apex, 0.01))
 	else:
-		var x := (u - apex) / maxf(1.0 - apex, 0.01)
-		bump = 1.0 - x * x * (3.0 - 2.0 * x)
+		bump = 1.0 - _ease(fall)
 	var drift: Vector2 = (b["out"] as Vector2) * bump
 	# split into where it is over the ground and how high it is, so the twist turns only the
 	# ground position (round the point under the knot)
 	var screen_y := tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u
 	var height := (g.y + rel.y * u) - screen_y   # height above the ground (the arc's own shape)
-	var fall := clampf((u - apex) / maxf(1.0 - apex, 0.01), 0.0, 1.0)
 	# over the ground: while rising it only edges a little way toward its circle (keeping the
 	# fountain short); the slam covers the rest, swinging round counter-clockwise as it goes
 	var rise_reach: float = b["rise_reach"]
 	var reach: float
 	if u < apex:
 		reach = rise_reach * sin(0.5 * PI * u / maxf(apex, 0.01))
+	elif b.get("mushroom", false):
+		# over its circle early in the fall, so the stem comes straight down
+		reach = rise_reach + (1.0 - rise_reach) * _ease(clampf(fall / STEM_AT, 0.0, 1.0))
 	else:
 		reach = rise_reach + (1.0 - rise_reach) * fall
 	var turn := fall * fall * (3.0 - 2.0 * fall)
