@@ -297,7 +297,9 @@ func _draw_missile(b: Dictionary, r: float) -> void:
 		var p := _path(b, u)
 		var age := r - _time_at(b, u)                             # how long ago the missile was here
 		var a := (0.55 + 0.45 * float(j) / float(n)) * fade * (1.0 - pow(clampf(age / TRAIL_LIFE, 0.0, 1.0), 2.0))
-		_fx.draw_line(prev, p, Color(DARK.r, DARK.g, DARK.b, 0.5 * a), 2.0)
+		# feathered: soft wide glow, a narrower glow, then the solid core
+		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, 0.12 * a), 3.0)
+		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, 0.28 * a), 2.0)
 		_fx.draw_line(prev, p, Color(RED.r, RED.g, RED.b, a), 1.0)
 		prev = p
 	if head < 1.0:
