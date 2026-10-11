@@ -72,14 +72,16 @@ func _ready() -> void:
 	_tip = Vector2(0.0, -BURST_HEIGHT)
 	# missiles fan out of the tip in every direction but straight down (left ones land on the
 	# left circles), each on a clean ballistic arc
-	spots.sort_custom(func(a, b): return a.rotated(TWIST).x < b.rotated(TWIST).x)   # by where they hang
+	# round the clock by where they hang, so each petal heads out on its own side
+	spots.sort_custom(func(a, b): return a.rotated(TWIST).angle() < b.rotated(TWIST).angle())
+	var petal0: float = (spots[0] as Vector2).rotated(TWIST).angle() if not spots.is_empty() else 0.0
 	var n := spots.size()
 	for i in n:
 		var spot: Vector2 = spots[i]
 		# a fountain: every missile is thrown up out of the knot to its own height, then falls
 		# onto its circle. The arc is a parabola: y = tip.y + vy*u + ay*u*u, x straight across.
 		var drop := spot.y - _tip.y                       # how far below the knot it lands
-		var h := Rng.randf_range(14.0, 30.0)             # how high above the knot it climbs
+		var h := Rng.randf_range(24.0, 36.0)             # how high above the knot it climbs
 		var vy := -2.0 * h - 2.0 * sqrt(h * h + h * drop)
 		var ay := drop - vy
 		var delay := EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015)
@@ -89,7 +91,9 @@ func _ready() -> void:
 		var b := {"spot": spot,
 				"vy": vy, "ay": ay, "apex": -vy / (2.0 * ay),
 				# drifts out to its side on the way up, falls back in onto its circle
-				"out": (float(i) / float(maxi(n - 1, 1)) * 2.0 - 1.0) * Rng.randf_range(18.0, 28.0),
+				# like a flower: every missile spreads out on its own side (evenly round the clock,
+				# in the same order as where they hang), none straight up, then curls back in
+				"out": Vector2.from_angle(_petal_angle(spots[i], i, n, petal0)) * Rng.randf_range(20.0, 26.0) * Vector2(1.0, 0.5),
 				"delay": delay, "float": float_t, "slam": slam, "flight": flight, "land": delay + flight,
 				"flick": randf() * 10.0}
 		_beams.append(b)
@@ -144,6 +148,16 @@ func _pick_spots() -> Array:
 	for k in spots.size():
 		spots[k] -= mid                 # the blob's middle lands on the mouse
 	return spots
+
+
+## Which way petal `i` of `n` spreads: evenly round the clock, nudged toward where its missile
+## hangs so neighbours don't cross.
+static func _petal_angle(spot: Vector2, i: int, n: int, start: float) -> float:
+	var even := start + TAU * float(i) / float(n)
+	var hang := spot.rotated(TWIST)
+	if hang.length() < 1.0:
+		return even
+	return even + angle_difference(even, hang.angle()) * 0.5
 
 
 func _physics_process(delta: float) -> void:
@@ -208,9 +222,16 @@ static func _time_at(b: Dictionary, u: float) -> float:
 func _path(b: Dictionary, u: float) -> Vector2:
 	var spot: Vector2 = b["spot"]
 	var apex: float = b["apex"]
-	# the sideways drift peaks around the top of the arc and is gone at both ends
-	var shape := log(0.5) / log(clampf(apex + 0.1, 0.2, 0.8))
-	var drift := float(b["out"]) * sin(PI * pow(u, shape))
+	# the petal drift eases in from nothing (so every missile leaves the knot going up), peaks
+	# at the top of the arc, and eases out again by the time it lands
+	var bump: float
+	if u < apex:
+		var x := u / maxf(apex, 0.01)
+		bump = x * x * (3.0 - 2.0 * x)
+	else:
+		var x := (u - apex) / maxf(1.0 - apex, 0.01)
+		bump = 1.0 - x * x * (3.0 - 2.0 * x)
+	var drift: Vector2 = (b["out"] as Vector2) * bump
 	# split into where it is over the ground and how high it is, so the twist turns only the
 	# ground position (round the cluster's middle, right under the knot)
 	var screen_y := _tip.y + float(b["vy"]) * u + float(b["ay"]) * u * u
@@ -222,7 +243,7 @@ func _path(b: Dictionary, u: float) -> Vector2:
 	# stops moving sideways at the top, so the trail has no sharp corner there.
 	var reach := sqrt(u)               # keeps moving outward through the top: no corner there
 	var turn := fall * fall * (3.0 - 2.0 * fall)
-	var ground := (spot * reach).rotated(TWIST * (1.0 - turn)) + Vector2(drift, 0.0)
+	var ground := (spot * reach).rotated(TWIST * (1.0 - turn)) + drift
 	return Vector2(ground.x, ground.y - height)
 
 
