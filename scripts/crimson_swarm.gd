@@ -50,7 +50,7 @@ const PACK_15 := [Vector2(-3.457, -0.669), Vector2(1.213, -1.193), Vector2(1.541
 		Vector2(-0.432, -3.495), Vector2(-1.705, 3.081), Vector2(3.190, -1.490), Vector2(2.403, 2.574)]
 ## As the missiles fall, the whole cluster turns counter-clockwise by this much: each missile
 ## starts out over the spot this far clockwise of its own circle and twists onto it.
-const TWIST := deg_to_rad(30.0)
+const TWIST := deg_to_rad(65.0)
 ## The laser: the same as the Red Beam ability.
 const LASER_COLOR := Color(1, 0.15, 0.12, 1)
 
