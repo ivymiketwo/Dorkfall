@@ -38,6 +38,11 @@ const DIE_FPS := 16.0
 const FLAME_TIME := 0.75
 ## The beam's tip (where the missiles burst out) is this high above the target.
 const BURST_HEIGHT := 40.0
+## Crimson Swarm's fountain: how high above the knot the missiles climb, and how far (about)
+## each drifts out on its own side at the top.
+const SWARM_MIN_H := 12.0
+const SWARM_MAX_H := 18.0
+const SWARM_SPREAD := 13.8
 ## Crimson Barrage: the knot hovers this high above the caster's feet and moves with them.
 const KNOT_ABOVE := 38.0
 ## How far (world px) a missile drifts toward its circle while rising; the rest of the way is
@@ -108,7 +113,8 @@ func _ready() -> void:
 			var b := _new_missile(EMIT_AT + float(i) * 0.012 + Rng.randf_range(0.0, 0.015))
 			# like a flower: every missile spreads out on its own side (evenly round the clock,
 			# in the same order as where they hang), none straight up, then curls back in
-			_aim(b, spots[i], _petal_angle(spots[i], i, n, petal0), _tip, BURST_HEIGHT)
+			_aim(b, spots[i], _petal_angle(spots[i], i, n, petal0), _tip, BURST_HEIGHT,
+					SWARM_MIN_H, SWARM_MAX_H, SWARM_SPREAD)
 			_beams.append(b)
 			_timeline.at(b["land"], _land.bind(i))
 			last = maxf(last, b["land"])
@@ -131,18 +137,19 @@ func _new_missile(delay: float) -> Dictionary:
 ## Gives missile `b` its circle (local space) and its arc: thrown up out of the knot to its own
 ## height, then falling onto the circle (a parabola: y = tip.y + vy*u + ay*u*u), drifting out
 ## toward `petal` (an angle) near the top.
-func _aim(b: Dictionary, spot: Vector2, petal: float, tip: Vector2, knot_height: float) -> void:
+func _aim(b: Dictionary, spot: Vector2, petal: float, tip: Vector2, knot_height: float,
+		min_h: float, max_h: float, spread: float) -> void:
 	b["tip"] = tip                                    # where it leaves the knot (local space)
 	b["g"] = tip + Vector2(0.0, knot_height)          # the ground right under the knot
 	var drop := spot.y - tip.y                        # how far below the knot it lands
-	var h := Rng.randf_range(14.0, 24.0)             # how high above the knot it climbs
+	var h := Rng.randf_range(min_h, max_h)           # how high above the knot it climbs
 	var vy := -2.0 * h - 2.0 * sqrt(h * h + h * maxf(drop, 0.0))
 	var ay := drop - vy
 	b["spot"] = spot
 	b["vy"] = vy
 	b["ay"] = ay
 	b["apex"] = -vy / (2.0 * ay)
-	b["out"] = Vector2.from_angle(petal) * Rng.randf_range(20.0, 26.0) * Vector2(1.0, 0.5)
+	b["out"] = Vector2.from_angle(petal) * Rng.randf_range(spread * 0.87, spread * 1.13) * Vector2(1.0, 0.5)
 	# the twist sweeps at most about as far as it does across the swarm's cluster, however far
 	# from the knot this circle is
 	var rel: Vector2 = spot - b["g"]
@@ -166,7 +173,7 @@ func _launch(i: int) -> void:
 	var rel := spot - (tip + Vector2(0.0, KNOT_ABOVE))
 	# drifts out to the side it is heading (straight down / close by gets a random side)
 	var petal := rel.angle() if rel.length() > 4.0 else Rng.randf() * TAU
-	_aim(b, spot, petal, tip, KNOT_ABOVE)
+	_aim(b, spot, petal, tip, KNOT_ABOVE, 14.0, 24.0, 0.0)
 	# the barrage's missiles go straight up out of the knot, then slam over to the target
 	b["out"] = Vector2.ZERO
 	b["rise_reach"] = 0.0
