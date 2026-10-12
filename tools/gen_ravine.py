@@ -502,7 +502,7 @@ def paint_strip(a, b, level_all, out, n):
     wx = (X0 + cols / 2.0).astype(np.float32) + np.zeros((H, 1), np.float32)
     wy = (Y0 + rows / 2.0).astype(np.float32)
 
-    # ---- floor: the desert sand turns into dark red clay going into the ravine, then grey
+    # ---- floor: the grass turns into dark red clay going into the ravine, then grey
     edge, _, _ = voronoi(cols, rows, 34, 25)
     crack_on = n["crack_on"][sl]
     clay = CLAY[np.digitize(tone, [0.36, 0.5, 0.64])].copy()
@@ -510,7 +510,7 @@ def paint_strip(a, b, level_all, out, n):
     clay[(grain > 0.994)] = CLAY[0]
     clay[(grain < 0.004)] = CLAY[3]
     clay_edge = np.float32(CLAY_FROM) + wave(wy, [(30, 160, 2.0), (12, 71, 0.4)]).astype(np.float32) + 70 * (Q - 0.5)
-    clay_t = (wx - clay_edge) / 36.0 + 0.5 + 0.45 * (grain - 0.5) + 0.4 * (R - 0.5)
+    clay_t = (wx - clay_edge) / 90.0 + 0.5 + 0.22 * (grain - 0.5) + 1.1 * (R - 0.5)    # grass -> clay: wide, blotchy
     is_west = (clay_t > 0.5) | (wx >= OLD_EDGE - 16)
     del clay_edge, clay_t
     grey_edge = np.float32(GREY_FROM) + wave(wy, [(30, 150, 0.7), (12, 67, 2.4)]).astype(np.float32) + 70 * (Q - 0.5)

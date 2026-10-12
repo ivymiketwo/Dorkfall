@@ -86,7 +86,8 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
 - **Farmland:** wheat fields full of Mangyangs.
 - **Graveyard / cave:** skeletons, Lord Placeholder (boss) in the cave.
 - **Vorly's lair** (the dragon boss, north-east of the village).
-- **West desert** (sand), then the **red-clay ravine**, a pass through the mountains made by
+- **Grass straight into the red clay** (the old west desert strip was removed and the original grass
+  restored; the grass-to-clay edge is the same blotchy blend as clay-to-grey), then the **red-clay ravine**, a pass through the mountains made by
   `tools/gen_ravine.py` (paints in strips, about 3 GB of RAM). It funnels in from the west and runs
   as a long narrow canyon. The unreachable inside of the mountains is left black on purpose. Five
   **Skeleton Wizards** stand in the ravine.
