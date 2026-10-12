@@ -1,14 +1,14 @@
 extends Node
-## Everything you SEE of a troll: idle, walk, throw and death in 4 directions, hit flash and
-## fading out after death. Reads troll.gd, never changes it.
-## Sheet: art/troll.png, 80px cells, 7 columns x 16 rows; rows = anim*4 + facing
-## (down, up, left, right). Anims: idle (1 frame), walk (6), throw (7), death (7).
-## Originals in art/troll_src.
+## Everything you SEE of a troll: idle, walk, club swing and death in 4 directions, hit flash
+## and fading out after death. Reads troll.gd, never changes it.
+## Sheet: art/troll.png (built by tools/gen_troll_club.py from Rex's frames in art/troll_src,
+## with the stone club drawn in), 96x92 cells, 7 columns x 16 rows; rows = anim*4 + facing
+## (down, up, left, right). Anims: idle (1 frame), walk (6), swing (7, Rex's throw), death (7).
 
 const WALK_FPS := 8.0
 const IDLE := 0
 const WALK := 4
-const THROW := 8
+const SWING := 8
 const DEATH := 12
 
 var _t := 0.0
@@ -36,8 +36,7 @@ func _process(delta: float) -> void:
 		return
 	_t += delta
 	if brain.is_casting():
-		var col := mini(int(brain.cast_t * brain.CAST_FPS), brain.CAST_FRAMES - 1)
-		sprite.frame_coords = Vector2i(col, THROW + f)
+		sprite.frame_coords = Vector2i(brain.swing_frame(brain.cast_t), SWING + f)
 	elif brain.velocity != Vector2.ZERO:
 		var step := int(_t * WALK_FPS) % 6
 		if brain.backing:

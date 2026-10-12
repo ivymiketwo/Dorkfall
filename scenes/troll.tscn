@@ -24,7 +24,6 @@ wander_speed = 8.0
 chase_speed = 26.0
 cast_range = 95.0
 keep_away = 0.0
-rock_warn = 0.9
 drop_item = ExtResource("5_coins")
 drop_min = 40
 drop_max = 90

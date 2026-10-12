@@ -101,7 +101,7 @@ func _physics_process(delta: float) -> void:
 	_cast_timer -= delta
 	if cast_t >= 0.0:
 		cast_t += delta
-		if cast_t >= CAST_FRAMES / CAST_FPS:
+		if cast_t >= _cast_length():
 			cast_t = -1.0
 
 	var player := Players.nearest(get_tree(), global_position, true)
@@ -135,14 +135,9 @@ func _physics_process(delta: float) -> void:
 		State.CHASE:
 			speed = chase_speed
 			if not is_casting():
-				if dist <= cast_range and _cast_timer <= 0.0:
-					_start_cast(player)
-				elif dist > cast_range * 0.85:
-					move = to_player / dist
-				elif dist < keep_away:
-					move = -to_player / dist
+				move = _chase(player, to_player, dist)
+				if backing:
 					speed = chase_speed * 0.7
-					backing = true
 		State.RETURN:
 			speed = chase_speed
 			move = position.direction_to(_home)
@@ -155,6 +150,24 @@ func _physics_process(delta: float) -> void:
 		face = _face_of(-move if backing else move)     # backing up: keeps facing the player
 	velocity = move * speed
 	move_and_slide()
+
+
+## How long one throw lasts (seconds). Trolls change this.
+func _cast_length() -> float:
+	return CAST_FRAMES / CAST_FPS
+
+
+## While chasing and not mid-throw: maybe start a throw, and return which way to walk
+## (set `backing` when stepping away). Trolls change this.
+func _chase(player: Node2D, to_player: Vector2, dist: float) -> Vector2:
+	if dist <= cast_range and _cast_timer <= 0.0:
+		_start_cast(player)
+	elif dist > cast_range * 0.85:
+		return to_player / dist
+	elif dist < keep_away:
+		backing = true
+		return -to_player / dist
+	return Vector2.ZERO
 
 
 static func _face_of(dir: Vector2) -> int:
