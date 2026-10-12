@@ -87,11 +87,14 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
 - **Graveyard / cave:** skeletons, Lord Placeholder (boss) in the cave.
 - **Vorly's lair** (the dragon boss, north-east of the village).
 - **West desert** (sand), then the **red-clay ravine**, a pass through the mountains made by
-  `tools/gen_ravine.py` (needs about 5 GB of RAM). It funnels in from the west, runs as a long narrow
-  canyon, and funnels out again on the east (a mirror of the west side). The unreachable inside of the
-  mountains is left black on purpose. Five **Skeleton Wizards** stand in the ravine.
-- **East desert:** open sand (same recipe as the west desert, see `docs/desert_texture.md`) with
-  34 cacti, out to the map edge at x 6512. It has no monsters yet.
+  `tools/gen_ravine.py` (paints in strips, about 3 GB of RAM). It funnels in from the west and runs
+  as a long narrow canyon. The unreachable inside of the mountains is left black on purpose. Five
+  **Skeleton Wizards** stand in the ravine.
+- **Grey valley** (replaced the east desert): east of x ~4470 the ravine widens into a wide valley
+  (walls traced from Rex's sketch, `VALLEY_TOP` / `VALLEY_BOTTOM`) of the same cracked ground in grey,
+  out to the map edge at x 6512, with 10 rock outcrops (`OUTCROPS`, sizes from Rex's sketch; the
+  ravine's pillar cliffs, one or two ledges) and dead trees, rocks and bones. Meant for trolls; no
+  monsters yet.
 
 ## 5. Monsters and bosses (current state)
 
@@ -160,7 +163,7 @@ exists.
 ## 8. Open items / ideas not done yet
 
 - Bunnyhop health cost is off for testing; restore it later (it was 35 per chained hop).
-- The east desert has no monsters, road or landmarks yet.
+- The grey valley has no monsters (trolls planned) or landmarks yet.
 - The pet could also get a shorter "loot must sit for 1 s" delay if wanted.
 - Aim prediction is ready for future monsters Rex picks.
 - Older items: the "Build Windows release" GitHub Action is untested; armour and helmet icons

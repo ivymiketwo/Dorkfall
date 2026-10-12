@@ -1,13 +1,14 @@
-"""Paints the east mountains and the red-clay ravine (a pass through the mountains), the open
-desert beyond it, grows the map east to make room, and writes the walls (data/mountains.json),
-the minimap and the props.
+"""Paints the east mountains and the red-clay ravine (a pass through the mountains), the wide
+grey rocky valley it opens into (with rock outcrops scattered over it), and writes the walls
+(data/mountains.json), the minimap and the props.
 
     python3 tools/gen_ravine.py
 
 How it works (plain version):
   - Two curved lines (FUNNEL / RAVINE settings below) mark where you can walk: they start in the
-    desert, bend toward the road, run east side by side as the ravine, then open out again
-    (a mirror of the west funnel) into the east desert. Everything outside them is mountain.
+    desert, bend toward the road, run east side by side as the ravine, then open out
+    into a wide valley that runs to the map's east edge (VALLEY_TOP / VALLEY_BOTTOM).
+    Everything outside them is mountain; OUTCROPS are islands of mountain inside the valley.
   - The mountain gets a height: low right at the edge, higher further in, with bumpy peaks.
     Heights come in steps (terraces), so the rock is drawn as stacked ledges.
   - It is drawn like a 3/4 view: higher ground is shifted up the screen, so the south-facing
@@ -31,7 +32,7 @@ from ground_tiles import assemble, split, ORIGIN, VOID   # noqa: E402
 
 SEED = 21
 X0, X1 = 2400, 6512          # world x: the mountains start at X0; X1 is the map's east edge
-XM = 5280                    # world x where the mountain work ends (all open desert east of it)
+XM = X1                      # world x where the mountain work ends (the map's east edge)
 Y0, Y1 = -992, 1696          # world y (the whole height of the map)
 OLD_EDGE = 3120              # the old east edge of the map
 ROAD_Y = 256                 # middle of the east-west road
@@ -39,9 +40,19 @@ FUNNEL_TOP_X = 2500          # where the north mountain line leaves the top of t
 FUNNEL_BOTTOM_X = 2520       # where the south mountain line leaves the bottom of the map
 RAVINE_X = 3060              # where the funnel has narrowed into the ravine
 RAVINE_END = 4470            # the ravine starts opening out again here (east funnel)
-FUNNEL_E_TOP_X = 5030        # where the north mountain line reaches the top of the map again
-FUNNEL_E_BOTTOM_X = 5010     # where the south mountain line reaches the bottom of the map again
-CLAY_TO = 4970               # world x where the clay turns back into sand (east desert)
+# the east valley past the ravine: where its walls are drawn (world x, world y of the visible
+# edge), traced from Rex's sketch; the walls bend smoothly through these points
+VALLEY_TOP = [(4726, 65), (5100, -55), (5566, -163), (6024, -213), (6600, -171)]
+VALLEY_BOTTOM = [(4601, 468), (5026, 605), (5500, 668), (5982, 696), (6600, 522)]
+VALLEY_FROM = 4470           # the ravine starts widening into the valley here
+VALLEY_WIGGLE = 55           # world px the valley walls wander (random bends)
+GREY_FROM = 4760             # world x where the red clay turns into grey cracked ground
+# rock outcrops in the valley ("mountains" for trolls): world centre and the size Rex drew them
+# (visible width, height, world px). Their cliff faces are drawn like the ravine's.
+OUTCROPS = [(5138, 231, 145, 166), (5408, 285, 75, 58), (5932, 148, 208, 145), (5845, 451, 160, 150),
+            (5616, -34, 100, 104), (6423, 7, 83, 120), (5290, 520, 120, 110), (6230, 330, 130, 120),
+            (6350, 600, 95, 90), (5000, 405, 70, 60)]
+OUTCROP_MAX_LEVEL = 2        # outcrops stay low (one or two ledges), not full mountains
 BEFORE = "art/ground_src/east_before_ravine.png"   # the desert as it was (each run starts from it)
 STEP = 64                    # (old fixed step; heights are now LEVEL_Z)
 # how high each terrace is drawn, in art px: one tall cliff first, then smaller steps behind it
@@ -67,6 +78,8 @@ ROCK = {
 CLAY = np.array([(96, 44, 34), (112, 54, 41), (128, 64, 47), (146, 78, 56)], np.uint8)
 CRACK = (78, 36, 29)
 CLAY_FROM = 2560             # world x where the sand turns to clay (the funnel into the ravine)
+GREY = np.array([(88, 90, 95), (99, 101, 106), (110, 112, 117), (122, 124, 128)], np.uint8)
+GREY_CRACK = (66, 68, 74)
 
 rng = np.random.default_rng(SEED)
 W, H = (XM - X0) * 2, (Y1 - Y0) * 2          # art size of the mountain part
@@ -131,12 +144,25 @@ def walls_y(wx):
     top = np.where(wx < FUNNEL_TOP_X, -1e5, top - (top - (Y0 - 60)) * (1 - t) ** 2)
     t = np.clip((wx - FUNNEL_BOTTOM_X) / (RAVINE_X - FUNNEL_BOTTOM_X), 0.0, 1.0)
     bottom = np.where(wx < FUNNEL_BOTTOM_X, 1e5, bottom + ((Y1 + 60) - bottom) * (1 - t) ** 2)
-    # ...and the mirror of it at the east end: the lines go back up / down to the map edges
-    t = np.clip((FUNNEL_E_TOP_X - wx) / (FUNNEL_E_TOP_X - RAVINE_END), 0.0, 1.0)
-    top = np.where(wx > FUNNEL_E_TOP_X, -1e5, top - (top - (Y0 - 60)) * (1 - t) ** 2)
-    t = np.clip((FUNNEL_E_BOTTOM_X - wx) / (FUNNEL_E_BOTTOM_X - RAVINE_END), 0.0, 1.0)
-    bottom = np.where(wx > FUNNEL_E_BOTTOM_X, 1e5, bottom + ((Y1 + 60) - bottom) * (1 - t) ** 2)
+    # ...and at the east end the ravine widens into the valley, whose walls follow Rex's sketch
+    # (the south wall's foot sits 88 px further south, like the ravine's, so its drawn rim lands
+    # on the line)
+    k = np.clip((wx - VALLEY_FROM) / 330.0, 0.0, 1.0)
+    k = k * k * (3 - 2 * k)
+    top = top * (1 - k) + _valley(VALLEY_TOP, wx) * k
+    bottom = bottom * (1 - k) + (_valley(VALLEY_BOTTOM, wx) + 88) * k
     return top, bottom
+
+
+def _valley(points, wx):
+    """A smooth curve through (x, y) points (flat beyond the ends), starting from the ravine."""
+    from scipy.interpolate import PchipInterpolator
+    xs = [VALLEY_FROM] + [p[0] for p in points]
+    ys = [None] + [p[1] for p in points]
+    ys[0] = ys[1]                                          # (blended in from the ravine anyway)
+    f = PchipInterpolator(xs, ys, extrapolate=False)
+    out = f(np.clip(wx, xs[0], xs[-1]))
+    return np.nan_to_num(out, nan=ys[-1])
 
 
 def distance(inside, step):
@@ -334,20 +360,15 @@ def desert(w, h, wx0):
     return sand
 
 
-SAND_ART = None
-
 
 def main():
-    global SAND_ART
     whole = assemble()
-    # the east desert's sand, from X0 to the map's east edge (used in and past the mountains)
-    SAND_ART = desert((X1 - X0) * 2, H, X0)
     if not os.path.exists(BEFORE):
         os.makedirs(os.path.dirname(BEFORE), exist_ok=True)
         whole.crop((AX0, 0, AX0 + (OLD_EDGE - X0) * 2, H)).save(BEFORE, optimize=True)
-    art = np.zeros((H, W, 3), np.uint8)
-    art[:] = VOID
-    art[:, :(OLD_EDGE - X0) * 2] = np.asarray(Image.open(BEFORE).convert("RGB"))
+    out = np.zeros((H, W, 3), np.uint8)
+    out[:] = VOID
+    out[:, :(OLD_EDGE - X0) * 2] = np.asarray(Image.open(BEFORE).convert("RGB"))
 
     # ---- where you can walk, before the 3/4 view: a 4-world-px grid
     G = 4
@@ -356,54 +377,134 @@ def main():
     # bend the lines at random (strongly in the funnel, gently along the ravine so it stays open)
     gh_, gw_ = len(gy), len(gx)
     amp = np.interp(gx, [2950, 3150, RAVINE_END - 90, RAVINE_END + 110],
-                    [WIGGLE, WIGGLE * 0.25, WIGGLE * 0.25, WIGGLE])[None, :]
+                    [WIGGLE, WIGGLE * 0.25, WIGGLE * 0.25, VALLEY_WIGGLE])[None, :]
     wx_ = gx[None, :] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
     wy_ = gy[:, None] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
     top, bottom = walls_y(wx_)
     floor = (wy_ > top) & (wy_ < bottom)
-    sd = upscale(distance(floor, G) - distance(~floor, G), W, H)      # >0 in the mountain
+    del wx_
+    # outcrops: islands of rock in the valley. Footprint = the drawn size minus the part the 3/4
+    # view lifts up the screen; edges made lumpy with noise so they aren't plain ovals. (Own
+    # random numbers, so everything else comes out as it always did.)
+    lump = _smooth_noise(gw_, gh_, 14, 2, np.random.default_rng(SEED + 11))
+    crop = np.zeros_like(floor)
+    crop_cap = np.zeros(floor.shape, np.uint8)            # how many ledges each outcrop may have
+    for cx, cy, vw, vh in OUTCROPS:
+        lift = 60 if vh < 100 else 98                     # small ones: one ledge; big ones: two
+        fh = max(vh * 0.95 - lift + 20, 34)
+        fw = vw * 1.1
+        fcy = cy + vh / 2 - fh / 2                         # foot of the drawing = foot of the rock
+        e = ((gx[None, :] - cx) / (fw / 2)) ** 2 + ((gy[:, None] - fcy) / (fh / 2)) ** 2
+        here = e < 0.55 + 0.9 * lump
+        crop |= here
+        crop_cap[here] = 1 if vh < 100 else OUTCROP_MAX_LEVEL
+    del lump
+    floor &= ~crop
+    grow = lambda a: np.asarray(Image.fromarray(a).resize((W, H), Image.NEAREST).filter(ImageFilter.MaxFilter(9)))
+    crop_art = grow(crop_cap)
+    sd = np.array(upscale(distance(floor, G) - distance(~floor, G), W, H))      # >0 in the mountain
 
-    P = smooth_noise(W, H, 300)
-    Q = smooth_noise(W, H, 110)
-    R = smooth_noise(W, H, 24, 2)
-    B = smooth_noise(W, H, 150, 2)
-    sd = sd + 10 * (R - 0.5) + 10 * (Q - 0.5)
-    peaks = np.clip((P - 0.32) / 0.36, 0, 1)
-    E = 1 + 1.4 * np.clip(sd / 26, 0, 1) + np.clip((sd - 60) / 200, 0, 1) * 2.6 * peaks \
-        + 1.6 * np.clip((sd - 40) / 60, 0, 1) * np.clip(B - 0.42, -0.3, 0.3) + 0.4 * (Q - 0.5) * np.clip(sd / 30, 0, 1)
-    level = np.where(sd > 0, np.clip(np.floor(E), 1, None), 0).astype(np.uint8)
-    del P, E, B
+    # all the random patterns for the whole picture, in the order they were always made (so the
+    # old part keeps its exact shapes); kept small (float16) and painted in strips below
+    f16 = lambda a: a             # (kept full precision: the old part then matches exactly)
+    P = f16(smooth_noise(W, H, 300))
+    Q = f16(smooth_noise(W, H, 110))
+    R = f16(smooth_noise(W, H, 24, 2))
+    B = f16(smooth_noise(W, H, 150, 2))
+    for r0 in range(0, H, 512):
+        sd[r0:r0 + 512] += 10 * (R[r0:r0 + 512].astype(np.float32) - 0.5) + 10 * (Q[r0:r0 + 512].astype(np.float32) - 0.5)
+    level = np.zeros((H, W), np.uint8)
+    for r0 in range(0, H, 512):
+        b = slice(r0, r0 + 512)
+        sdb, Pb, Bb, Qb = sd[b], P[b].astype(np.float32), B[b].astype(np.float32), Q[b].astype(np.float32)
+        peaks = np.clip((Pb - 0.32) / 0.36, 0, 1)
+        E = 1 + 1.4 * np.clip(sdb / 26, 0, 1) + np.clip((sdb - 60) / 200, 0, 1) * 2.6 * peaks \
+            + 1.6 * np.clip((sdb - 40) / 60, 0, 1) * np.clip(Bb - 0.42, -0.3, 0.3) + 0.4 * (Qb - 0.5) * np.clip(sdb / 30, 0, 1)
+        level[b] = np.where(sdb > 0, np.clip(np.floor(E), 1, None), 0)
+    del P, B, E, peaks
     # tidy the terraces: no one-pixel spikes or pinholes (they'd draw as thin towers)
     im = Image.fromarray(level)
     for flt in (ImageFilter.MaxFilter(11), ImageFilter.MinFilter(11), ImageFilter.MinFilter(11), ImageFilter.MaxFilter(11)):
         im = im.filter(flt)
-    level = np.where(sd > 0, np.maximum(np.asarray(im), 1), 0).astype(np.int32)
+    level = np.where(sd > 0, np.maximum(np.asarray(im), 1), 0).astype(np.uint8)
+    del im
+    level = np.where(crop_art > 0, np.minimum(level, crop_art), level).astype(np.uint8)
+    del crop_art
+
+    grain = split_random(H, W)
+    tone = f16(smooth_noise(W, H, 80))
+    crack_on = smooth_noise(W, H, 40) > 0.5
+    stone_n = f16(smooth_noise(W, H, 9, 1))
+    clump = f16(smooth_noise(W, H, 110, 2))
+    noise = dict(sd=sd, Q=Q, R=R, grain=grain, tone=tone, crack_on=crack_on, stone_n=stone_n, clump=clump)
+
+    walk = np.zeros((H, W), bool)
+    lv_all = np.zeros((H, W), np.uint8)
+    STRIP, M = 1024, 16
+    for c0 in range(0, W, STRIP):
+        c1 = min(c0 + STRIP, W)
+        a, b = max(c0 - M, 0), min(c1 + M, W)
+        o, wk, lvs = paint_strip(a, b, level, out[:, a:b].copy(), noise)
+        out[:, c0:c1] = o[:, c0 - a:c1 - a]
+        walk[:, c0:c1] = wk[:, c0 - a:c1 - a]
+        lv_all[:, c0:c1] = lvs[:, c0 - a:c1 - a]
+        print("strip", c0, "/", W, flush=True)
+    del noise, sd, Q, R, grain, tone, crack_on, stone_n, clump, level
+
+    # ---- land the camera never sees: left unpainted (east of the old map edge only)
+    near = walk[::2 * G, ::2 * G].copy()
+    rx_, ry_ = VIEW_HALF[0] // G, VIEW_HALF[1] // G
+    a = near
+    for _ in range(rx_):
+        a = a | shifted(a, 0, 1, False) | shifted(a, 0, -1, False)
+    for _ in range(ry_):
+        a = a | shifted(a, 1, 0, False) | shifted(a, -1, 0, False)
+    seen = np.repeat(np.repeat(a, 2 * G, axis=0), 2 * G, axis=1)[:H, :W]
+    unseen = (~seen) & ((X0 + np.arange(W) / 2.0)[None, :] >= OLD_EDGE)
+    del seen
+    out[unseen] = VOID
+
+    whole.paste(Image.fromarray(out), (AX0, 0))
+    split(whole)
+    del whole
+    walls(walk)
+    minimap(out, lv_all, walk, unseen)
+    clear_props(walk)
+    add_props(walk)
+    print("ravine painted")
+
+
+def paint_strip(a, b, level_all, out, n):
+    """Paints art columns a..b (global art columns; the caller keeps the middle and drops a small
+    margin at each side). Returns (colours, walkable, visible terrace level) for the strip."""
+    level = level_all[:, a:b].astype(np.int32)
+    Wn = b - a
     z = LEVEL_Z[level]
+    sl = (slice(None), slice(a, b))
+    sd, Q, R = n["sd"][sl], n["Q"][sl].astype(np.float32), n["R"][sl].astype(np.float32)
+    grain, tone = n["grain"][sl], n["tone"][sl].astype(np.float32)
 
     # ---- 3/4 view: for each screen pixel, which ground point shows there
     rows = np.arange(H, dtype=np.int32)[:, None]
     topy = rows - z                                        # where each ground point's top is drawn
     sufmin = np.minimum.accumulate(topy[::-1], axis=0)[::-1]
-    g = np.empty((H, W), np.int32)
+    g = np.empty((H, Wn), np.int32)
     ys = np.arange(H)
-    for c in range(W):
+    for c in range(Wn):
         g[:, c] = np.searchsorted(sufmin[:, c], ys, side="right") - 1
     del sufmin
-    cols = np.arange(W)[None, :]
-    lv = level[g, cols]                                    # visible terrace level
-    f = rows - topy[g, cols]                               # 0 = on top, >0 = down a cliff face
+    lc = np.arange(Wn)[None, :]
+    cols = lc + a                                          # global art columns
+    lv = level[g, lc]                                      # visible terrace level
+    f = rows - topy[g, lc]                                 # 0 = on top, >0 = down a cliff face
+    del topy
     walk = lv == 0
     wx = (X0 + cols / 2.0).astype(np.float32) + np.zeros((H, 1), np.float32)
     wy = (Y0 + rows / 2.0).astype(np.float32)
 
-    out = art.copy()
-    grain = split_random(H, W)
-    tone = smooth_noise(W, H, 80)
-
-    # ---- floor: the desert sand turns into dark red clay going into the ravine
-    edge, rx, ry = voronoi(cols, rows, 34, 25)
-    del rx, ry
-    crack_on = smooth_noise(W, H, 40) > 0.5
+    # ---- floor: the desert sand turns into dark red clay going into the ravine, then grey
+    edge, _, _ = voronoi(cols, rows, 34, 25)
+    crack_on = n["crack_on"][sl]
     clay = CLAY[np.digitize(tone, [0.36, 0.5, 0.64])].copy()
     clay[(edge < 1.6) & crack_on] = CRACK
     clay[(grain > 0.994)] = CLAY[0]
@@ -412,49 +513,55 @@ def main():
     clay_t = (wx - clay_edge) / 36.0 + 0.5 + 0.45 * (grain - 0.5) + 0.4 * (R - 0.5)
     is_west = (clay_t > 0.5) | (wx >= OLD_EDGE - 16)
     del clay_edge, clay_t
-    clay_edge_e = np.float32(CLAY_TO) + wave(wy, [(30, 150, 0.7), (12, 67, 2.4)]).astype(np.float32) + 70 * (Q - 0.5)
-    clay_te = (clay_edge_e - wx) / 36.0 + 0.5 + 0.45 * (grain - 0.5) + 0.4 * (R - 0.5)
-    is_clay = walk & is_west & (clay_te > 0.5)
-    del clay_edge_e, clay_te, is_west
+    grey_edge = np.float32(GREY_FROM) + wave(wy, [(30, 150, 0.7), (12, 67, 2.4)]).astype(np.float32) + 70 * (Q - 0.5)
+    grey_t = (wx - grey_edge) / 90.0 + 0.5 + 0.22 * (grain - 0.5) + 1.1 * (R - 0.5)    # a wide, blotchy blend
+    is_grey = walk & is_west & (grey_t > 0.5)
+    is_clay = walk & is_west & ~is_grey
+    del grey_edge, grey_t, is_west
     out[is_clay] = clay[is_clay]
-    is_sand = walk & ~is_clay & (wx >= OLD_EDGE - 16)        # the east desert, past the clay
-    out[is_sand] = SAND_ART[:, :W][is_sand]
+    # the valley: the same cracked ground, in grey
+    clay[:] = GREY[np.digitize(tone, [0.36, 0.5, 0.64])]
+    clay[(edge < 1.6) & crack_on] = GREY_CRACK
+    clay[(grain > 0.994)] = GREY[0]
+    clay[(grain < 0.004)] = GREY[3]
+    out[is_grey] = clay[is_grey]
+    is_clay |= is_grey                                       # (stones go on both)
     del edge, clay
 
     # ---- small stones on the clay, mostly near the foot of the cliffs (like the boulders, smaller)
     near_wall = (sd > -40 + 30 * R) & walk
-    e3, px, py = voronoi(cols, rows, 18, 14)
-    del e3
-    lucky = (smooth_noise(W, H, 9, 1) > np.where(near_wall, 0.76, 0.92)) & is_clay
+    _, px, py = voronoi(cols, rows, 18, 14)
+    lucky = (n["stone_n"][sl].astype(np.float32) > np.where(near_wall, 0.76, 0.92)) & is_clay
+    lucky &= ~is_grey | near_wall                            # on the grey ground only by the cliffs
     sz = np.maximum(np.abs(px) * 0.9, np.abs(py))
     stone = lucky & (sz < 0.6)
     out[stone] = boulder_colours(px[stone] / 0.6, py[stone] / 0.6, np.where(sz[stone] > 0.5, 0.0, 9.0))
-    del px, py, lucky, stone, near_wall, sz
+    del px, py, lucky, stone, near_wall, sz, is_clay, is_grey
 
     # ---- mountain tops: flat pale rock, a few lumps, and chunky boulders piled along the edges
     m_top = (~walk) & (f == 0)
     ty, tx = np.nonzero(m_top)
     gyy = g[ty, tx]
+    txg = tx + a
     col = np.where((tone[ty, tx] > 0.6)[:, None], ROCK["top2"], ROCK["top"]).astype(np.uint8)
     # the same dried-mud cracks as the ravine floor, in the rock's own colours
-    ce, _, _ = voronoi(tx.astype(np.float32), gyy.astype(np.float32), 34, 25)
-    cracked = (ce < 1.6) & (crack_on[gyy, tx])
+    ce, _, _ = voronoi(txg.astype(np.float32), gyy.astype(np.float32), 34, 25)
+    cracked = (ce < 1.6) & (n["crack_on"][gyy, txg])
     col[cracked] = ROCK["top_crack"]
     del ce, cracked
-    e2, bx, by = voronoi(tx.astype(np.float32), gyy.astype(np.float32), 34, 26)
+    e2, bx, by = voronoi(txg.astype(np.float32), gyy.astype(np.float32), 34, 26)
     sx = np.clip(voronoi.seeds[:, 0].astype(np.int64), 0, W - 1)
     sy = np.clip(voronoi.seeds[:, 1].astype(np.int64), 0, H - 1)
-    clump = smooth_noise(W, H, 110, 2)
     # a whole rock where its middle is near an edge or inside a clump (so rocks are never cut)
     # rocks piled on the edge only where the edge faces the ravine from the south (seen from
     # above); on top of a cliff face the pillars' own rounded tops are the edge
     floor_above = np.zeros(len(ty), bool)
     for k in range(4, 200, 6):
         floor_above |= walk[np.maximum(ty - k, 0), tx]
-    boulder = ((sd[sy, sx] < 30) & floor_above) | (clump[sy, sx] > 0.68)
+    boulder = ((n["sd"][sy, sx] < 30) & floor_above) | (n["clump"][sy, sx].astype(np.float32) > 0.68)
     col[boulder] = boulder_colours(bx[boulder], by[boulder], e2[boulder])
     out[ty, tx] = col
-    del ty, tx, gyy, col, e2, bx, by, sx, sy, clump, boulder
+    del ty, tx, txg, gyy, col, e2, bx, by, sx, sy, boulder
 
     # ---- cliff faces: stacked blocks in columns, like the reference cliff
     m_face = (~walk) & (f > 0)
@@ -465,10 +572,9 @@ def main():
     for i in range(0, len(fy), 2_000_000):
         j = slice(i, i + 2_000_000)
         mm = m[j].astype(np.int64)
-        out[fy[j], fx[j]] = cliff_blocks(fx[j].astype(np.int64), (LEVEL_Z[mm] - zat[j]).astype(np.int64),
+        out[fy[j], fx[j]] = cliff_blocks((fx[j] + a).astype(np.int64), (LEVEL_Z[mm] - zat[j]).astype(np.int64),
                                          (LEVEL_Z[mm] - LEVEL_Z[mm - 1]).astype(np.int64), mm + L[j].astype(np.int64) * 16)
-    del L, zat, m
-    del fy, fx
+    del L, zat, m, fy, fx
 
     # ---- dark cracks where a higher terrace meets lower ground (sides, back edges, cliff feet)
     def lower(dy, dx):
@@ -482,31 +588,12 @@ def main():
     out[back] = ROCK["rim"]
 
     # ---- shadow on the floor at the foot of the cliffs (solid, 3 world px)
-    shade = np.zeros((H, W), bool)
+    shade = np.zeros((H, Wn), bool)
     for k in range(1, 7):
         shade |= shifted(~walk, k, 0, False)
     shade &= walk
     out[shade] = (out[shade].astype(np.float32) * 0.8).astype(np.uint8)
-    # ---- land the camera never sees: left unpainted (east of the old map edge only)
-    near = walk[::2 * G, ::2 * G].copy()
-    rx_, ry_ = VIEW_HALF[0] // G, VIEW_HALF[1] // G
-    a = near
-    for _ in range(rx_):
-        a = a | shifted(a, 0, 1, False) | shifted(a, 0, -1, False)
-    for _ in range(ry_):
-        a = a | shifted(a, 1, 0, False) | shifted(a, -1, 0, False)
-    seen = np.repeat(np.repeat(a, 2 * G, axis=0), 2 * G, axis=1)[:H, :W]
-    unseen = (~seen) & (wx >= OLD_EDGE)
-    out[unseen] = VOID
-
-    whole.paste(Image.fromarray(out), (AX0, 0))
-    whole.paste(Image.fromarray(np.ascontiguousarray(SAND_ART[:, W:])), (AX0 + W, 0))   # open desert past the mountains
-    split(whole)
-    walls(walk)
-    minimap(out, lv, walk, unseen)
-    clear_props(walk)
-    add_props(walk)
-    print("ravine painted")
+    return out, walk, lv.astype(np.uint8)
 
 
 def walls(walk):
@@ -546,14 +633,6 @@ def minimap(out, lv, walk, unseen):
             elif X0 + tx * 16 >= CLAY_FROM - 60 or a[ty, X, 3] == 0:
                 r, gg, b = clay_c[ty, tx]
                 a[ty, X] = (int(r), int(gg), int(b), 255)
-    # the open desert past the mountains
-    east = SAND_ART[:, W:].astype(np.float32)
-    ew = east.shape[1] // T
-    em = east[:th * T, :ew * T].reshape(th, T, ew, T, 3).mean(axis=(1, 3))
-    for X in range(tx0 + tw, min(new_w, tx0 + tw + ew)):
-        for ty in range(th):
-            r, gg, b = em[ty, X - tx0 - tw]
-            a[ty, X] = (int(r), int(gg), int(b), 255)
     Image.fromarray(a).save("art/world_map.png")
 
 
@@ -607,25 +686,26 @@ def add_props(walk):
         res = "50_decor" if kind == "cave_bones" else "4_tree"
         nodes.append('[node name="Ravine%d" parent="Entities" instance=ExtResource("%s")]\n'
                      'position = Vector2(%d, %d)\nkind = "%s"\n' % (n, res, x, y, kind))
-    # cacti scattered over the east desert (not right on the way out of the pass)
-    s = "\n".join(b for b in re.split(r"\n(?=\[)", s) if not re.match(r'\[node name="DesertE\d+"', b))
-    cacti = []
+    # the east desert's cacti are gone; the valley gets dead trees, rocks and bones instead
+    s = "\n".join(b for b in re.split(r"\n(?=\[)", s) if not re.match(r'\[node name="(DesertE|Valley)\d+"', b))
+    kinds = ["dead", "dead2", "dead3"] * 3 + ["cave_rock1", "cave_rock2"] * 5 + ["cave_bones"] * 6
+    spots = []
     tries = 0
-    while len(cacti) < 34 and tries < 5000:
+    while kinds and tries < 20000:
         tries += 1
-        x, y = r.uniform(CLAY_TO + 120, X1 - 40), r.uniform(Y0 + 50, Y1 - 30)
-        if x < XM:
-            ax, ay = int((x - X0) * 2), int((y - Y0) * 2)
-            if not walk[max(ay - 40, 0):ay + 12, ax - 30:ax + 30].all():
-                continue
-        if abs(y - ROAD_Y) < 60 and x < CLAY_TO + 400:
+        x, y = r.uniform(4750, X1 - 40), r.uniform(-260, 760)
+        ax, ay = int((x - X0) * 2), int((y - Y0) * 2)
+        if ax + 30 >= W or not walk[max(ay - 40, 0):ay + 12, max(ax - 30, 0):ax + 30].all():
             continue
-        if any((x - a) ** 2 + (y - b) ** 2 < 150 ** 2 for a, b in cacti):
+        if abs(y - ROAD_Y) < 40 and x < 5000:
+            continue                                   # keep the way out of the ravine clear
+        if any((x - a) ** 2 + (y - b) ** 2 < 120 ** 2 for a, b, _ in spots):
             continue
-        cacti.append((x, y))
-    for i, (x, y) in enumerate(cacti):
-        nodes.append('[node name="DesertE%d" parent="Entities" instance=ExtResource("50_decor")]\n'
-                     'position = Vector2(%d, %d)\nkind = "%s"\n' % (i + 1, x, y, r.choice(["cactus_a", "cactus_b", "cactus_b", "cactus_c"])))
+        spots.append((x, y, kinds.pop()))
+    for i, (x, y, kind) in enumerate(spots):
+        res = "4_tree" if kind.startswith("dead") else "50_decor"
+        nodes.append('[node name="Valley%d" parent="Entities" instance=ExtResource("%s")]\n'
+                     'position = Vector2(%d, %d)\nkind = "%s"\n' % (i + 1, res, x, y, kind))
     open(path, "w").write(s.rstrip("\n") + "\n\n" + "\n".join(nodes))
 
 
