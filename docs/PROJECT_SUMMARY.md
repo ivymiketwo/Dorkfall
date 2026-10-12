@@ -94,8 +94,8 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
 - **Grey valley** (replaced the east desert): east of x ~4470 the ravine widens into a wide valley
   (walls traced from Rex's sketch, `VALLEY_TOP` / `VALLEY_BOTTOM`) of the same cracked ground in grey,
   out to the map edge at x 6512, with 10 rock outcrops (`OUTCROPS`, sizes from Rex's sketch; the
-  ravine's pillar cliffs, one or two ledges) and dead trees, rocks and bones. Meant for trolls; no
-  monsters yet.
+  ravine's pillar cliffs, one or two ledges) and dead trees, rocks and bones. 14 **Trolls** are
+  spread across it (`Troll1..14` in `main.tscn`, kept clear of walls and props).
 
 ## 5. Monsters and bosses (current state)
 
@@ -106,6 +106,7 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
 | **Lord Placeholder** (BoneLord) | boss | Skeleton brain at boss scale; boulder rain and stone walls in the cave. Base health 280 (doubled at Rex's request). |
 | **Pirate Captain** | 17 | 7 along the coast; skeleton brain with the pirate look. |
 | **Skeleton Wizard** | 20 | Rex's sprite (idle, walk, throw; 4 directions). Keeps its distance, backs away if you get close (walk plays in reverse), and throws a fireball every 1.8 s. A red circle appears under the target (no aim prediction); the fireball leaves his hand from the centre of the red pixels in the last throw frame that has any, and lands after 1.0 s. 80 damage, health 630, 30-70 coins. |
+| **Troll** | 22 | Rex's sprite (`art/troll.png`, 80 px cells, 7 x 16: idle 1 frame, 6-frame walk, 7-frame throw, 7-frame death; originals in `art/troll_src`). Brain `troll.gd` reuses the skeleton wizard's (chase, leash, loot, respawn) but walks right up instead of backing off, and lobs a rock every 2.4 s from 95 px: red circle under the target (no aim prediction), the rock (`art/troll_rock.png`, from `tools/gen_troll_rock.py`) leaves the fist at the end of throw frame 4, flies in a high tumbling arc with a ground shadow and lands after 0.9 s with a dust ring. Radius 22, 100 damage (+10% per level above 20), health 690, 40-90 coins. 14 in the grey valley. |
 | **Vorly** (dragon, first boss) | boss | Rex's dragon sprite (idle, walk, melee, 4-direction sit, death animation). Telegraphed melee bite (100 damage), a red-orb circle attack, and a 6 s orb barrage (sits facing one way; small random scatter on each orb). Health 1000. Quest "Slay Vorly" from Luck (one time, 1000 gold reward). |
 
 ## 6. Player, abilities, items, pets
@@ -164,7 +165,7 @@ exists.
 ## 8. Open items / ideas not done yet
 
 - Bunnyhop health cost is off for testing; restore it later (it was 35 per chained hop).
-- The grey valley has no monsters (trolls planned) or landmarks yet.
+- The grey valley has trolls but no landmarks yet.
 - The pet could also get a shorter "loot must sit for 1 s" delay if wanted.
 - Aim prediction is ready for future monsters Rex picks.
 - Older items: the "Build Windows release" GitHub Action is untested; armour and helmet icons

@@ -1,0 +1,57 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/troll.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://art/troll.png" id="2_tex"]
+[ext_resource type="Script" path="res://scripts/stats.gd" id="3_stats"]
+[ext_resource type="Script" path="res://scripts/nameplate.gd" id="4_nameplate"]
+[ext_resource type="Resource" path="res://items/coins.tres" id="5_coins"]
+[ext_resource type="Script" path="res://scripts/troll_look.gd" id="9_look"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 6.0
+height = 14.0
+
+[node name="Troll" type="CharacterBody2D"]
+physics_interpolation_mode = 1
+collision_mask = 3
+motion_mode = 1
+script = ExtResource("1_script")
+display_name = "Troll"
+quest_kind = "troll"
+level = 22
+xp_reward = 45
+wander_speed = 8.0
+chase_speed = 26.0
+cast_range = 95.0
+keep_away = 0.0
+rock_warn = 0.9
+drop_item = ExtResource("5_coins")
+drop_min = 40
+drop_max = 90
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+physics_interpolation_mode = 2
+texture = ExtResource("2_tex")
+offset = Vector2(0, -22)
+scale = Vector2(0.5, 0.5)
+hframes = 7
+vframes = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -7)
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="Stats" type="Node" parent="."]
+script = ExtResource("3_stats")
+max_health = 120.0
+max_mana = 50.0
+health_regen = 1.0
+
+[node name="Nameplate" type="Node2D" parent="."]
+z_index = 10
+position = Vector2(0, -27)
+script = ExtResource("4_nameplate")
+bar_width = 28
+
+[node name="Look" type="Node" parent="."]
+script = ExtResource("9_look")

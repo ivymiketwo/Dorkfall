@@ -37,6 +37,7 @@
 [ext_resource type="PackedScene" path="res://scenes/bulletin_board.tscn" id="302_board"]
 [ext_resource type="PackedScene" path="res://scenes/luck.tscn" id="303_luck"]
 [ext_resource type="PackedScene" path="res://scenes/skeleton_wizard.tscn" id="310_wizard"]
+[ext_resource type="PackedScene" path="res://scenes/troll.tscn" id="311_troll"]
 [ext_resource type="Texture2D" path="res://art/dock.png" id="dock_tex"]
 [ext_resource type="Script" path="res://scripts/ground_stream.gd" id="gstream"]
 [ext_resource type="Script" path="res://scripts/sleep_regions.gd" id="sleepreg"]
@@ -5194,6 +5195,48 @@ position = Vector2(4050, 200)
 
 [node name="SkeletonWizard5" parent="Entities" instance=ExtResource("310_wizard")]
 position = Vector2(4300, 300)
+
+[node name="Troll1" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(5000, 250)
+
+[node name="Troll2" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(5176, 574)
+
+[node name="Troll3" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(5296, -42)
+
+[node name="Troll4" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(5504, 342)
+
+[node name="Troll5" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(5696, -138)
+
+[node name="Troll6" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(5888, 686)
+
+[node name="Troll7" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(6056, -154)
+
+[node name="Troll8" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(6080, 206)
+
+[node name="Troll9" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(6416, 206)
+
+[node name="Troll10" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(6456, -122)
+
+[node name="Troll11" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(6456, 534)
+
+[node name="Troll12" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(5770, 168)
+
+[node name="Troll13" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(6146, 512)
+
+[node name="Troll14" parent="Entities" instance=ExtResource("311_troll")]
+position = Vector2(5586, 632)
 
 [node name="TreeN12" parent="Entities" unique_id=653490004 instance=ExtResource("4_tree")]
 position = Vector2(2359, 1586)

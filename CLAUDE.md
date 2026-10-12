@@ -38,6 +38,7 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   memory, ~3.5 minutes). Re-run it to change them (it starts from `art/ground_src/east_before_ravine.png`).
   Unreachable land there is left unpainted and its ground squares don't exist (GroundStream skips them).
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
+  Trolls (grey valley) reuse the skeleton wizard brain (`scripts/troll.gd` extends it).
 
 ## The player
 - Always a wizard: no classes, no melee swing, no shields, no iron armour. Left click fires
