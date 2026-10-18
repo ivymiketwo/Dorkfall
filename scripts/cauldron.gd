@@ -7,6 +7,14 @@ extends Node2D
 @export var steam_color := Color(0.75, 1.0, 0.75)
 @export var size_scale := 1.0           # 1.0 = full size; use a smaller texture_override with a matching scale
 @export var texture_override: Texture2D   # e.g. a purple-brew version for the wizard shop
+## Off when the pot is already painted into the room picture: then only the firelight, the
+## flames, bubbles and steam are drawn, on the painted brew described below.
+@export var draw_pot := true
+@export var draw_flames := true
+## Painted pot only: centre of the brew relative to this node (which sits on the fire), and
+## the brew's half width / half height (world px).
+@export var surface_offset := Vector2(0, -17.5)
+@export var surface_size := Vector2(8.5, 1.6)
 
 const P := 0.5                         # one art pixel in world units
 const TEX := preload("res://art/cauldron.png")
@@ -22,6 +30,11 @@ var _steam_cd := 0.0
 
 
 func _ready() -> void:
+	if not draw_pot:
+		_surf = surface_offset
+		_rx = surface_size.x
+		_ry = surface_size.y
+		return
 	_surf *= size_scale
 	_rx *= size_scale
 	_ry = maxf(1.0, _ry * size_scale)
@@ -39,7 +52,7 @@ func _process(delta: float) -> void:
 	_steam_cd -= delta
 	if _steam_cd <= 0.0:
 		_steam_cd = randf_range(0.12, 0.3)
-		_steam.append({"p": _surf + Vector2(randf_range(-6.0, 6.0) * size_scale, -1.0), "age": 0.0,
+		_steam.append({"p": _surf + Vector2(randf_range(-0.7, 0.7) * _rx, -1.0), "age": 0.0,
 				"life": randf_range(1.2, 2.0), "drift": randf_range(-1.5, 1.5)})
 	for i in range(_bubbles.size() - 1, -1, -1):
 		_bubbles[i].age += delta
@@ -65,11 +78,12 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, 16.0 * size_scale, Color(1.0, 0.55, 0.2, 0.10 * flick))
 	draw_circle(Vector2.ZERO, 11.0 * size_scale, Color(1.0, 0.62, 0.25, 0.12 * flick))
 	draw_set_transform(Vector2.ZERO)
-	var tex: Texture2D = texture_override if texture_override else TEX
-	var tsz := tex.get_size() * P
-	draw_texture_rect(tex, Rect2(Vector2(-tsz.x / 2.0, -tsz.y), tsz), false)
+	if draw_pot:
+		var tex: Texture2D = texture_override if texture_override else TEX
+		var tsz := tex.get_size() * P
+		draw_texture_rect(tex, Rect2(Vector2(-tsz.x / 2.0, -tsz.y), tsz), false)
 	# flames licking up around the bottom of the pot: little tapered tongues
-	for i in 7:
+	for i in (7 if draw_flames else 0):
 		var bx := (-9.0 + i * 3.0) * size_scale + sin(_t * 3.0 + i) * 0.5
 		var hn := int((4.0 + 7.0 * absf(sin(_t * (6.0 + i * 0.9) + i * 2.1))) * (1.0 - absf(bx) / (14.0 * size_scale)) * size_scale)
 		for j in hn:

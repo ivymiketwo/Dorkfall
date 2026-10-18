@@ -83,6 +83,11 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
   of the road (walkable, fishable).
 - **Village:** Luck (quest NPC), the notice board, shops (fishing, potions, pets, wizard). The default
   spawn is the crossroads just south of Luck, at (208, 256).
+  - Shop interiors are one room picture plus invisible solid rectangles (`scripts/interior.gd`). The
+    potion shop is Rex's generated room (128x128 world px, smaller than the other shops), built by
+    `tools/gen_potion_interior.py`, which lays the old shop's floorboards under its transparent floor
+    (sources in `art/interior_src`). Its painted cauldron gets live bubbles and steam from
+    `cauldron.gd` with `draw_pot` off.
 - **Farmland:** wheat fields full of Mangyangs.
 - **Graveyard / cave:** skeletons, Lord Placeholder (boss) in the cave.
 - **Vorly's lair** (the dragon boss, north-east of the village).

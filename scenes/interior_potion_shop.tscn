@@ -9,11 +9,12 @@
 [ext_resource type="Script" path="res://scripts/cauldron.gd" id="6_cauldron"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
-size = Vector2(24, 6)
+size = Vector2(18, 6)
 
 [node name="PotionShop" type="Node2D"]
 script = ExtResource("1_script")
-solids = Array[Rect2]([Rect2(0, 0, 224, 32), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(176, 34, 36, 30), Rect2(20, 52, 28, 20), Rect2(64, 96, 96, 14), Rect2(22, 126, 28, 18), Rect2(166, 152, 38, 12), Rect2(11, 144, 22, 17)])
+solids = Array[Rect2]([Rect2(0, 0, 128, 45), Rect2(0, 0, 8, 128), Rect2(120, 0, 8, 128), Rect2(0, 116, 54, 12), Rect2(74, 116, 54, 12), Rect2(54, 128, 20, 8), Rect2(8, 44, 25, 8), Rect2(8, 52, 10, 12), Rect2(32, 44, 11, 7), Rect2(41, 56, 45, 13), Rect2(36, 59, 7, 9), Rect2(88, 44, 21, 8), Rect2(109, 44, 11, 7), Rect2(108, 51, 12, 36), Rect2(91, 88, 23, 17), Rect2(90, 108, 17, 8), Rect2(108, 103, 12, 13), Rect2(8, 76, 12, 14), Rect2(20, 88, 11, 9), Rect2(8, 100, 13, 16), Rect2(22, 104, 15, 9)])
+room_size = Vector2(128, 128)
 
 [node name="Room" type="Sprite2D" parent="."]
 texture = ExtResource("2_tex")
@@ -21,20 +22,27 @@ centered = false
 scale = Vector2(0.5, 0.5)
 
 [node name="Cauldron" type="Node2D" parent="."]
-position = Vector2(34, 72)
+position = Vector2(102, 97)
 script = ExtResource("6_cauldron")
+brew_color = Color(0.98, 0.62, 0.18, 1)
+steam_color = Color(1, 0.88, 0.7, 1)
+size_scale = 0.6
+draw_pot = false
+draw_flames = false
+surface_offset = Vector2(0, -10)
+surface_size = Vector2(3.2, 1.2)
 
 [node name="Entry" type="Marker2D" parent="."]
-position = Vector2(112, 152)
+position = Vector2(64, 108)
 
 [node name="Exit" type="Area2D" parent="."]
-position = Vector2(112, 171)
+position = Vector2(64, 125)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
 shape = SubResource("RectangleShape2D_exit")
 
 [node name="Mirelle" parent="." instance=ExtResource("3_npc")]
-position = Vector2(112, 88)
+position = Vector2(64, 51)
 display_name = "Mirelle"
 shop = ExtResource("4_shop")
 sprite_texture = ExtResource("5_keeper")
