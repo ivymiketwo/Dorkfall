@@ -42,34 +42,34 @@ def _lum(c):
     return c[0] + c[1] + c[2]
 
 
-def planks(old):
+def planks(old, band0=OLD_BAND0, bands=OLD_BANDS, xr=OLD_X, blocked=OLD_BLOCKED):
     """Whole planks (a joint line on the left, then the board) cut from the old floor."""
     px = old.load()
     out = []
-    for b in range(OLD_BANDS):
-        y0 = OLD_BAND0 + b * BAND
+    for b in range(bands):
+        y0 = band0 + b * BAND
         mid = range(y0 + 2, y0 + BAND - 2)
         col = [sum(_lum(px[x, y]) for y in mid) / len(mid) for x in range(old.width)]
-        joints = [x for x in range(OLD_X[0], OLD_X[1])
+        joints = [x for x in range(xr[0], xr[1])
                   if col[x] < 0.8 * min(col[x - 2], col[x + 2])]
         for a, z in zip(joints, joints[1:]):
             if z - a < 12:
                 continue
             if any(not (z <= bx0 or a >= bx1 or y0 + BAND <= by0 or y0 >= by1)
-                   for bx0, by0, bx1, by1 in OLD_BLOCKED):
+                   for bx0, by0, bx1, by1 in blocked):
                 continue
             out.append(old.crop((a, y0, z, y0 + BAND)))
     return out
 
 
-def floor_layer(w, h, top, pieces, seed=7):
+def floor_layer(w, h, top, pieces, seed=7, x0=FLOOR[0], x1=FLOOR[2]):
     rnd = random.Random(seed)
     floor = Image.new("RGBA", (w, h))
     y = top
     last = None
     while y < h:
-        x = FLOOR[0] - rnd.randrange(0, 40)
-        while x <= FLOOR[2] + 1:
+        x = x0 - rnd.randrange(0, 40)
+        while x <= x1 + 1:
             p = rnd.choice(pieces)
             while p is last and len(pieces) > 1:
                 p = rnd.choice(pieces)
@@ -80,7 +80,7 @@ def floor_layer(w, h, top, pieces, seed=7):
     return floor
 
 
-def shade(floor, wall_bottom):
+def shade(floor, wall_bottom, x0=FLOOR[0], x1=FLOOR[2]):
     """Darker near the walls, like the old room: a shadow under the back wall and a soft
     edge along the side walls."""
     px = floor.load()
@@ -93,7 +93,7 @@ def shade(floor, wall_bottom):
             d_top = y - wall_bottom
             if d_top < 12:
                 k *= 0.55 + 0.45 * max(0, d_top) / 12
-            d_side = min(x - FLOOR[0], FLOOR[2] - x)
+            d_side = min(x - x0, x1 - x)
             if d_side < 10:
                 k *= 0.6 + 0.4 * d_side / 10
             px[x, y] = (int(r * k), int(g * k), int(b * k), a)

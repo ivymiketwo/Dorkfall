@@ -87,7 +87,10 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     potion shop is Rex's generated room (128x128 world px, smaller than the other shops), built by
     `tools/gen_potion_interior.py`, which lays the old shop's floorboards under its transparent floor
     (sources in `art/interior_src`). Its painted cauldron gets live bubbles and steam from
-    `cauldron.gd` with `draw_pot` off.
+    `cauldron.gd` with `draw_pot` off. The wizard shop is built the same way
+    (`tools/gen_wizard_interior.py`: old stone bricks for the floor and back wall; its arched window
+    is left see-through so the animated night sky `wiz_window.png` shows from behind). In both,
+    the counter is also a separate y-sorted sprite (group `y_sorted`) that hides the keeper's feet.
 - **Farmland:** wheat fields full of Mangyangs.
 - **Graveyard / cave:** skeletons, Lord Placeholder (boss) in the cave.
 - **Vorly's lair** (the dragon boss, north-east of the village).
