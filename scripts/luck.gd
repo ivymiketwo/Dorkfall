@@ -9,7 +9,7 @@ const PX := 0.5
 const QUEST := "vorly"
 
 const BOB_PERIOD := 0.6        ## seconds per up/down step
-const SPLIT_ROW := 34          ## art row where the upper body ends (below the hands and their outlines)
+const SPLIT_ROW := 33          ## art row where the upper body ends (below the hands and their outlines)
 const OVERLAP := 0             ## rows shared by both halves (none: the upper body only ever moves down over the legs, so no seam opens)
 
 var _near := false
@@ -115,9 +115,14 @@ func choose(id: String, player: Node2D) -> Dictionary:
 	return {}
 
 
+## Top of the picture (world px above the feet): the labels go just above his head.
+func _top() -> float:
+	return -$Sprite2D.texture.get_height() * 0.5
+
+
 func _draw() -> void:
 	var name_text := display_name.to_upper()
-	HiFont.draw(self, Vector2(-floorf(HiFont.text_width(name_text, PX) / 2.0), -27), name_text, Color("9ad0ff"), PX)
+	HiFont.draw(self, Vector2(-floorf(HiFont.text_width(name_text, PX) / 2.0), _top() - 14.0), name_text, Color("9ad0ff"), PX)
 	if _near:
 		var t := "F  TALK"
-		HiFont.draw(self, Vector2(-floorf(HiFont.text_width(t, PX) / 2.0), -20), t, Color("f0d040"), PX)
+		HiFont.draw(self, Vector2(-floorf(HiFont.text_width(t, PX) / 2.0), _top() - 7.0), t, Color("f0d040"), PX)
