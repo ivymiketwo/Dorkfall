@@ -135,6 +135,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if mb.button_index != MOUSE_BUTTON_WHEEL_UP and mb.button_index != MOUSE_BUTTON_WHEEL_DOWN:
 		return
 	# not while the mouse is over a window or panel of the interface
+	if _in_shop():
+		return                  # shops are always at normal zoom
 	var hovered := get_tree().root.gui_get_hovered_control()
 	if hovered != null and not hovered is SubViewportContainer:
 		return
@@ -152,7 +154,8 @@ func _apply_zoom() -> void:
 	var box := view.get_parent() as SubViewportContainer if view else null
 	if box == null:
 		return                  # running main.tscn on its own: no window wrapper to resize
-	if _zoom_i == ZOOM_NORMAL:
+	var zi := ZOOM_NORMAL if _in_shop() else _zoom_i
+	if zi == ZOOM_NORMAL:
 		view.size_2d_override = Vector2i.ZERO
 		box.scale = Vector2.ONE
 		box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -169,9 +172,15 @@ func _apply_zoom() -> void:
 		view.size_2d_override_stretch = true
 		box.size = Vector2(win)
 		box.scale = Vector2(640.0 / win.x, 360.0 / win.y)
-	camera.zoom = Vector2.ONE * BASE_ZOOM * float(ZOOMS[_zoom_i])
+	camera.zoom = Vector2.ONE * BASE_ZOOM * float(ZOOMS[zi])
 	if _inside:
 		_set_camera_limits(_inside.camera_rect(_view_world()))
+
+
+## Inside a shop (a small room the camera is pinned on) the zoom is locked to normal; the cave
+## and the outside use the player's zoom.
+func _in_shop() -> bool:
+	return _inside != null and float(_inside.get("scroll_margin")) < 0.0
 
 
 ## How much of the world the screen shows (world px).
@@ -226,6 +235,7 @@ func go_home() -> void:
 func _on_player_died() -> void:
 	# The player script respawns outside; just put the camera back.
 	_inside = null
+	_apply_zoom()
 	_set_camera_limits(_outside_limits)
 
 
@@ -243,7 +253,8 @@ func _travel(to_pos: Vector2, limits: Rect2i, new_inside: Node2D) -> void:
 		pet.global_position = to_pos + Vector2(14, 6)
 		pet.reset_physics_interpolation()
 	_inside = new_inside
-	_set_camera_limits(limits)
+	_apply_zoom()                       # back to normal zoom in shops, the player's zoom outside
+	_set_camera_limits(limits if _inside == null else _inside.camera_rect(_view_world()))
 	camera.reset_smoothing()
 	tw = create_tween()
 	tw.tween_property(_fade, "color:a", 0.0, 0.15)

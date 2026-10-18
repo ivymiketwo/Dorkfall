@@ -199,7 +199,7 @@ position = Vector2(121, 143)
 position = Vector2(-5, 143)
 
 [node name="PotionShop" parent="Entities" unique_id=1191390107 instance=ExtResource("8_potion")]
-position = Vector2(270, 143)
+position = Vector2(293, 143)
 
 [node name="WizardShop" parent="Entities" unique_id=602742060 instance=ExtResource("60_wizshop")]
 position = Vector2(418, 144)
