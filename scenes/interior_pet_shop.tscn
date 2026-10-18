@@ -61,7 +61,10 @@ position = Vector2(64, 59)
 display_name = "Petra"
 shop = ExtResource("4_shop")
 sprite_texture = ExtResource("5_keeper")
-idle_split_row = 27
+idle_split_row = 36
+
+[node name="Sprite2D" parent="Petra"]
+offset = Vector2(0, -23)
 
 [node name="CounterFront" type="Sprite2D" parent="." groups=["y_sorted"]]
 position = Vector2(43, 66)
