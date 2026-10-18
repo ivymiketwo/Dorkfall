@@ -78,15 +78,15 @@ func _pick_tile(x: int, y: int, rng: RandomNumberGenerator) -> Vector2i:
 	# West ocean
 	if x - MAP_ORIGIN.x < OCEAN_SHORE[y - MAP_ORIGIN.y]:
 		return WATER
-	# Pond (ellipse)
-	var d := Vector2((x - 33) / 5.0, (y - 8) / 3.0)
+	# Pond (ellipse); moved 2 tiles east in Oct 2026 for the wizard tower (tools/move_pond.py)
+	var d := Vector2((x - 35) / 5.0, (y - 8) / 3.0)
 	if d.length() <= 1.0:
 		return WATER
 	# Second pond, out in the south
 	if Vector2((x - 62) / 7.0, (y - 46) / 4.0).length() <= 1.0:
 		return WATER
 	# Village street in front of the shops (north of the crossroads)
-	if (y == 9 or y == 10) and x >= 1 and x <= 24:
+	if (y == 9 or y == 10) and x >= 1 and x <= 27:
 		return PATH
 	# Crossroads
 	if y == 15 or y == 16 or x == 12 or x == 13 or ((x == 90 or x == 91) and y >= 15):

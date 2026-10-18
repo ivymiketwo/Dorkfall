@@ -97,7 +97,7 @@ centered = false
 
 [node name="WaterPond1" type="Sprite2D" parent="GroundArt" unique_id=1196589986]
 material = SubResource("water_mat")
-position = Vector2(449, 79.5)
+position = Vector2(481, 79.5)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("winfo1")
 centered = false
@@ -158,10 +158,6 @@ position = Vector2(208, 256)
 position = Vector2(56, 236)
 kind = "oak2"
 
-[node name="Tree3" parent="Entities" unique_id=2103192858 instance=ExtResource("4_tree")]
-position = Vector2(420, 82)
-kind = "cherry"
-
 [node name="Tree4" parent="Entities" unique_id=1531586052 instance=ExtResource("4_tree")]
 position = Vector2(24, 206)
 kind = "pine"
@@ -206,7 +202,7 @@ position = Vector2(-5, 143)
 position = Vector2(270, 143)
 
 [node name="WizardShop" parent="Entities" unique_id=602742060 instance=ExtResource("60_wizshop")]
-position = Vector2(392, 144)
+position = Vector2(418, 144)
 
 [node name="Coins3" parent="Entities" unique_id=1160737373 instance=ExtResource("12_pickup")]
 position = Vector2(208, 168)
@@ -1254,7 +1250,7 @@ position = Vector2(553, 292)
 kind = "cherry"
 
 [node name="Tree134" parent="Entities" unique_id=1147703219 instance=ExtResource("4_tree")]
-position = Vector2(662, 118)
+position = Vector2(688, 112)
 
 [node name="Bush102" parent="Entities" unique_id=1353870940 instance=ExtResource("50_decor")]
 position = Vector2(783, 220)

@@ -82,7 +82,10 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
 - **West coast:** ocean, beach, Pirate Captains along the coast, and a **wooden dock** at the west end
   of the road (walkable, fishable).
 - **Village:** Luck (quest NPC), the notice board, shops (fishing, potions, pets, wizard). The default
-  spawn is the crossroads just south of Luck, at (208, 256).
+  spawn is the crossroads just south of Luck, at (208, 256). The wizard shop is Rex's stone tower
+  (`art/bld_wizard_tower.png`, at the same scale as the other buildings, so bigger than them);
+  to make room the village pond was moved 32 px east (`tools/move_pond.py`) and the cobbled street
+  extended to its door (`tools/extend_village_street.py`), both one-off edits of the ground.
   - Shop interiors are one room picture plus invisible solid rectangles (`scripts/interior.gd`). The
     potion shop is Rex's generated room (128x128 world px, smaller than the other shops), built by
     `tools/gen_potion_interior.py`, which lays the old shop's floorboards under its transparent floor

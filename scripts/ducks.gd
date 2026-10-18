@@ -4,7 +4,7 @@ extends Node2D
 ## read the pond's water map so they never leave the water.
 
 const PONDS := [
-	{"tex": "res://art/water_info_1.png", "pos": Vector2(449, 79.5), "ducks": 3},
+	{"tex": "res://art/water_info_1.png", "pos": Vector2(481, 79.5), "ducks": 3},
 	{"tex": "res://art/water_info_2.png", "pos": Vector2(879.5, 671), "ducks": 4},
 ]
 const MIN_DEPTH := 7            ## water-map value needed (distance from the bank)
