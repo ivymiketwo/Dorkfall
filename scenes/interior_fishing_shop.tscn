@@ -30,11 +30,11 @@ position = Vector2(64, 125)
 shape = SubResource("RectangleShape2D_exit")
 
 [node name="Marlow" parent="." instance=ExtResource("3_npc")]
-position = Vector2(64, 54)
+position = Vector2(64, 55.5)
 display_name = "Old Marlow"
 shop = ExtResource("4_shop")
 sprite_texture = ExtResource("5_keeper")
-idle_split_row = 27
+idle_split_row = 30
 
 [node name="CounterFront" type="Sprite2D" parent="." groups=["y_sorted"]]
 position = Vector2(41, 73)
