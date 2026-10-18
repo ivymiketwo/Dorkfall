@@ -23,11 +23,12 @@ func _ready() -> void:
 		cs.shape = shape
 		cs.position = r.position + r.size / 2.0
 		body.add_child(cs)
-	# NPCs join the y-sorted Entities layer so the player can walk in front of and behind them
+	# NPCs (and pieces of furniture in group "y_sorted", like a counter drawn over the shopkeeper)
+	# join the y-sorted Entities layer so the player can walk in front of and behind them
 	var entities := get_parent().get_parent().get_node_or_null("Entities")
 	if entities:
 		for c in get_children():
-			if c is Npc:
+			if c is Npc or c.is_in_group("y_sorted"):
 				c.reparent.call_deferred(entities, true)
 	$Exit.body_entered.connect(func(b: Node2D) -> void:
 		if b.is_in_group("player"):

@@ -8,6 +8,8 @@ floorboards of the old potion shop (art/interior_src/potion_shop_old.png) laid u
 - A few pixels of the wall trim came out transparent in the generated picture; they are filled
   with the wall colour around them.
 
+Also writes art/interior_potion_counter.png: just the counter, drawn in front of the shopkeeper.
+
 Run from the repo root:  python3 tools/gen_potion_interior.py
 """
 import random
@@ -17,6 +19,9 @@ from PIL import Image
 GEN = "art/interior_src/potion_shop_generated.png"
 OLD = "art/interior_src/potion_shop_old.png"
 OUT = "art/interior_potion_shop.png"
+# the counter on its own (floor left see-through), drawn over Mirelle so it hides her feet
+COUNTER_OUT = "art/interior_potion_counter.png"
+COUNTER = (82, 98, 172, 140)
 
 # the room in the generated picture (art px)
 FLOOR = (16, 14, 239, 231)          # inner floor rectangle, inclusive
@@ -117,6 +122,7 @@ def fill_holes(img, holes):
 
 def main():
     gen = Image.open(GEN).convert("RGBA")
+    gen.crop(COUNTER).save(COUNTER_OUT)
     old = Image.open(OLD).convert("RGBA")
     gp = gen.load()
 
