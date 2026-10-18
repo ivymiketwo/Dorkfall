@@ -101,9 +101,6 @@ func _pick_tile(x: int, y: int, rng: RandomNumberGenerator) -> Vector2i:
 	# Second pond, out in the south
 	if Vector2((x - 62) / 7.0, (y - 46) / 4.0).length() <= 1.0:
 		return WATER
-	# Village street in front of the shops (north of the crossroads)
-	if (y == 9 or y == 10) and x >= 1 and x <= 33:
-		return PATH
 	# Crossroads
 	if y == 15 or y == 16 or x == 12 or x == 13 or ((x == 90 or x == 91) and y >= 15):
 		return PATH

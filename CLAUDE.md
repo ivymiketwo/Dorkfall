@@ -32,6 +32,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - The ground is a painting cut into 512 px squares (`art/ground/`, streamed by `GroundStream`).
   Edit with `tools/ground_tiles.py` (`assemble()` / `split()`); the invisible tile layer from
   `scripts/world.gd` only does collision.
+- Village: dirt lanes painted by `tools/paint_village_roads.py` (LANES / CORNERS; re-run from
+  `art/ground_src/village_before_roads.png`). Move a building -> adjust the lanes and re-run.
 - East mountains + red-clay ravine (world x ~2500..4470): a pass through the mountains that widens
   into a grey rocky valley (cracked grey ground, rock outcrops for trolls) out to the map edge at
   x 6512. Made by `tools/gen_ravine.py`, which paints the ground, writes the wall tiles

@@ -86,11 +86,14 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
   (`art/bld_wizard_tower.png`, at the same scale as the other buildings, so bigger than them), and
   the potion shop is Rex's cottage (`art/bld_potion_cottage.png`), the pet shop his mossy stone
   cottage (`art/bld_pet_cottage.png`) and the fishing shop his slate-roofed shack
-  (`art/bld_fish_shack.png`). The blacksmith (`art/bld_blacksmith.png`, painted smoke) and the two
-  houses on the back lane (`bld_house_red.png`, `bld_house_shutters.png`, no interiors) are his too. To make room for both, the village
-  pond was moved 176 px east in total (`tools/move_pond.py`) and the cobbled street extended to
-  x ~544 (`tools/extend_village_street.py`); both tools edit the ground painting in place. Moving the
-  pond also means moving its collision ellipse (`world.gd`), WaterPond1, the ducks and the minimap.
+  (`art/bld_fish_shack.png`). The blacksmith (`art/bld_blacksmith.png`, painted smoke) and two
+  houses (`bld_house_red.png`, `bld_house_shutters.png`, no interiors) are his too. The buildings
+  are scattered loosely (Rex's layout, Oct 2026) along winding dirt lanes with rounded "desire path"
+  corners and wheel ruts at every right-angle junction; there are no cobblestones any more. The
+  lanes are painted by `tools/paint_village_roads.py` (edit its LANES / CORNERS and re-run; it starts
+  from `art/ground_src/village_before_roads.png` and also marks the lanes on the minimap).
+  The village pond was moved 176 px east (`tools/move_pond.py`); moving it means moving its
+  collision ellipse (`world.gd`), WaterPond1, the ducks and the minimap too.
   - Shop interiors are one room picture plus invisible solid rectangles (`scripts/interior.gd`). The
     potion shop is Rex's generated room (128x128 world px, smaller than the other shops), built by
     `tools/gen_potion_interior.py`, which lays the old shop's floorboards under its transparent floor

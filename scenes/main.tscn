@@ -193,16 +193,16 @@ position = Vector2(2372, 226)
 kind = "warn_sign_skull"
 
 [node name="Blacksmith" parent="Entities" unique_id=1982115937 instance=ExtResource("7_smith")]
-position = Vector2(124, 143)
+position = Vector2(-68, -8)
 
 [node name="PetShop" parent="Entities" unique_id=718581792 instance=ExtResource("14_petshop")]
-position = Vector2(-12, 143)
+position = Vector2(86, 148)
 
 [node name="PotionShop" parent="Entities" unique_id=1191390107 instance=ExtResource("8_potion")]
-position = Vector2(328, 143)
+position = Vector2(374, 153)
 
 [node name="WizardShop" parent="Entities" unique_id=602742060 instance=ExtResource("60_wizshop")]
-position = Vector2(458, 144)
+position = Vector2(540, 74)
 
 [node name="Coins3" parent="Entities" unique_id=1160737373 instance=ExtResource("12_pickup")]
 position = Vector2(208, 168)
@@ -321,7 +321,7 @@ position = Vector2(91, 182)
 position = Vector2(188, 183)
 
 [node name="Lamp4" parent="Entities" unique_id=1087706898 instance=ExtResource("32_lamp")]
-position = Vector2(231, 183)
+position = Vector2(238, 186)
 
 [node name="Lamp5" parent="Entities" unique_id=686405631 instance=ExtResource("32_lamp")]
 position = Vector2(338, 184)
@@ -812,7 +812,7 @@ position = Vector2(432, -266)
 kind = "pine"
 
 [node name="TreeW17" parent="Entities" unique_id=616640441 instance=ExtResource("4_tree")]
-position = Vector2(-112, -71)
+position = Vector2(-195, -70)
 kind = "pine"
 
 [node name="TreeW20" parent="Entities" unique_id=1067836954 instance=ExtResource("4_tree")]
@@ -826,7 +826,7 @@ position = Vector2(-291, 131)
 kind = "pine"
 
 [node name="TreeW25" parent="Entities" unique_id=1038900539 instance=ExtResource("4_tree")]
-position = Vector2(373, -114)
+position = Vector2(262, -110)
 kind = "pine"
 
 [node name="TreeW26" parent="Entities" unique_id=1720969605 instance=ExtResource("4_tree")]
@@ -1040,7 +1040,7 @@ position = Vector2(594, -107)
 kind = "bush_yellow"
 
 [node name="BushW5" parent="Entities" unique_id=1687207236 instance=ExtResource("50_decor")]
-position = Vector2(-29, -152)
+position = Vector2(-29, -180)
 kind = "bush_pink"
 
 [node name="BushW6" parent="Entities" unique_id=804814768 instance=ExtResource("50_decor")]
@@ -1062,7 +1062,7 @@ position = Vector2(667, -44)
 kind = "bush_yellow"
 
 [node name="BushW15" parent="Entities" unique_id=1162774822 instance=ExtResource("50_decor")]
-position = Vector2(122, -144)
+position = Vector2(170, -125)
 kind = "bush_yellow"
 
 [node name="BushW18" parent="Entities" unique_id=1358964175 instance=ExtResource("50_decor")]
@@ -1106,7 +1106,7 @@ position = Vector2(108, -277)
 position = Vector2(1081, -251)
 
 [node name="BushW36" parent="Entities" unique_id=2015164529 instance=ExtResource("50_decor")]
-position = Vector2(-156, 42)
+position = Vector2(-185, 42)
 
 [node name="BushW38" parent="Entities" unique_id=1219967778 instance=ExtResource("50_decor")]
 position = Vector2(-285, 490)
@@ -1201,7 +1201,7 @@ position = Vector2(161, 279)
 kind = "sign"
 
 [node name="Sacks1" parent="Entities" unique_id=1781271546 instance=ExtResource("50_decor")]
-position = Vector2(444, 178)
+position = Vector2(452, 190)
 kind = "sacks"
 
 [node name="Bench1" parent="Entities" unique_id=268240635 instance=ExtResource("50_decor")]
@@ -1225,7 +1225,7 @@ position = Vector2(1129, 206)
 kind = "pine"
 
 [node name="Tree119" parent="Entities" unique_id=812160649 instance=ExtResource("4_tree")]
-position = Vector2(581, 68)
+position = Vector2(612, 30)
 kind = "cherry"
 
 [node name="Tree123" parent="Entities" unique_id=969407638 instance=ExtResource("4_tree")]
@@ -1275,7 +1275,7 @@ position = Vector2(124, 295)
 kind = "bush_pink"
 
 [node name="Bush110" parent="Entities" unique_id=1736242988 instance=ExtResource("50_decor")]
-position = Vector2(539, 69)
+position = Vector2(476, 96)
 
 [node name="Bush111" parent="Entities" unique_id=717703779 instance=ExtResource("50_decor")]
 position = Vector2(161, 380)
@@ -4341,13 +4341,13 @@ position = Vector2(1360, 676)
 kind = "haybale"
 
 [node name="HouseBrick" parent="Entities" unique_id=1945921123 instance=ExtResource("201_bh")]
-position = Vector2(2, 24)
+position = Vector2(100, -6)
 
 [node name="HousePink" parent="Entities" unique_id=769539735 instance=ExtResource("202_bw")]
-position = Vector2(125, 24)
+position = Vector2(70, -164)
 
 [node name="FishingShop" parent="Entities" unique_id=1932270750 instance=ExtResource("203_bs")]
-position = Vector2(293, 0)
+position = Vector2(375, -64)
 
 [node name="WFenceN0" parent="Entities" unique_id=560723709 instance=ExtResource("50_decor")]
 position = Vector2(232, 272)
