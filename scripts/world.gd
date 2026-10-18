@@ -25,6 +25,16 @@ var _mountains := {}
 
 const ARRIVAL_LOCK := 0.1   # seconds the player can't move after going through a door
 
+## Mouse-wheel zoom, up to 25% closer or further (ZOOMS: 1.0 = normal). At normal zoom nothing
+## changes: the world draws on its 640x360 screen, blown up to the window. Zoomed, that screen is
+## drawn at the window's full resolution instead (same 640x360 layout, so the interface and the
+## mouse work exactly the same) and the camera zooms, so no art pixel is ever dropped; at
+## in-between sizes some art pixels just come out one window pixel wider than others.
+const ZOOMS := [0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
+const ZOOM_NORMAL := 4
+const BASE_ZOOM := 2.0
+var _zoom_i := ZOOM_NORMAL
+
 var _outside_limits := Rect2i()
 var _inside: Node2D = null       # the interior the player is in, if any
 var _return_pos := Vector2.ZERO  # where to put the player back outside
@@ -37,6 +47,12 @@ func _ready() -> void:
 		_generate_map()
 	ground.self_modulate = Color(1, 1, 1, 0)   # the tiles are only for collision; GroundArt is what you see
 	_fit_camera_to_map()
+	_zoom_i = clampi(int(SaveGame.get_value("view_zoom", ZOOM_NORMAL)), 0, ZOOMS.size() - 1)
+	if _zoom_i != ZOOM_NORMAL:
+		_apply_zoom.call_deferred()
+	get_tree().root.size_changed.connect(func() -> void:
+		if _zoom_i != ZOOM_NORMAL:
+			_apply_zoom())
 	$HUD/Bars.stats = $Entities/Player.stats
 	$HUD/Bars.xp = $Entities/Player/Experience
 	Gravestone.restore($Entities)
@@ -112,6 +128,57 @@ func _fit_camera_to_map() -> void:
 	_set_camera_limits(_outside_limits)
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	var mb := event as InputEventMouseButton
+	if mb == null or not mb.pressed:
+		return
+	if mb.button_index != MOUSE_BUTTON_WHEEL_UP and mb.button_index != MOUSE_BUTTON_WHEEL_DOWN:
+		return
+	# not while the mouse is over a window or panel of the interface
+	var hovered := get_tree().root.gui_get_hovered_control()
+	if hovered != null and not hovered is SubViewportContainer:
+		return
+	var i := clampi(_zoom_i + (1 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else -1), 0, ZOOMS.size() - 1)
+	get_viewport().set_input_as_handled()
+	if i == _zoom_i:
+		return
+	_zoom_i = i
+	SaveGame.put("view_zoom", _zoom_i)
+	_apply_zoom()
+
+
+func _apply_zoom() -> void:
+	var view := get_viewport() as SubViewport
+	var box := view.get_parent() as SubViewportContainer if view else null
+	if box == null:
+		return                  # running main.tscn on its own: no window wrapper to resize
+	if _zoom_i == ZOOM_NORMAL:
+		view.size_2d_override = Vector2i.ZERO
+		box.scale = Vector2.ONE
+		box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		box.stretch = true
+	else:
+		# the window's real pixels per screen pixel (2 in a 1280x720 window)
+		var k := get_tree().root.get_final_transform().get_scale().x
+		var win := Vector2i(roundi(640 * k), roundi(360 * k))
+		box.stretch = false
+		box.set_anchors_preset(Control.PRESET_TOP_LEFT)
+		box.position = Vector2.ZERO
+		view.size = win
+		view.size_2d_override = Vector2i(640, 360)
+		view.size_2d_override_stretch = true
+		box.size = Vector2(win)
+		box.scale = Vector2(640.0 / win.x, 360.0 / win.y)
+	camera.zoom = Vector2.ONE * BASE_ZOOM * float(ZOOMS[_zoom_i])
+	if _inside:
+		_set_camera_limits(_inside.camera_rect(_view_world()))
+
+
+## How much of the world the screen shows (world px).
+func _view_world() -> Vector2:
+	return Vector2(640, 360) / camera.zoom
+
+
 func _set_camera_limits(r: Rect2i) -> void:
 	camera.limit_left = r.position.x
 	camera.limit_top = r.position.y
@@ -140,7 +207,7 @@ func _on_door_entered(door: Area2D) -> void:
 		return
 	_return_pos = door.global_position + Vector2(0, 14)
 	# small shops are smaller than the screen, so the camera is pinned on the room
-	_travel(interior.entry_position() as Vector2, interior.camera_rect(), interior)
+	_travel(interior.entry_position() as Vector2, interior.camera_rect(_view_world()), interior)
 
 
 func _on_exit_requested(_interior: Node2D) -> void:

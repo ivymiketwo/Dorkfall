@@ -43,10 +43,17 @@ func room_center() -> Vector2:
 	return to_global(room_size / 2.0)
 
 
-## Camera limits while inside.
-func camera_rect() -> Rect2i:
+## Camera limits while inside. `view` is how much of the world the screen shows right now
+## (it changes with the mouse-wheel zoom, see world.gd); the limits are never smaller than that,
+## so a small shop stays centred when zoomed out, and the camera can follow you around it when
+## zoomed in.
+func camera_rect(view := Vector2(320, 180)) -> Rect2i:
+	var r: Rect2
 	if scroll_margin >= 0.0:
 		var o := to_global(Vector2.ZERO)
-		return Rect2i(Vector2i(o - Vector2(scroll_margin, scroll_margin)), Vector2i(room_size + Vector2(scroll_margin, scroll_margin) * 2.0))
-	var c := room_center()
-	return Rect2i(Vector2i(c - Vector2(160, 90)), Vector2i(320, 180))
+		r = Rect2(o - Vector2(scroll_margin, scroll_margin), room_size + Vector2(scroll_margin, scroll_margin) * 2.0)
+	else:
+		r = Rect2(room_center() - Vector2(160, 90), Vector2(320, 180))
+	var grow := (view - r.size).max(Vector2.ZERO) / 2.0
+	r = r.grow_individual(grow.x, grow.y, grow.x, grow.y)
+	return Rect2i(Vector2i(r.position.floor()), Vector2i(r.size.ceil()))

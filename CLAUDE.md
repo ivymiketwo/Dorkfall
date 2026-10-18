@@ -24,7 +24,9 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   SubViewports ignore the project setting and default to Linear (blurry).
 
 ## Art and world facts
-- Viewport 640x360, camera zoom 2. Tiles are 32 px art drawn at half scale (16 world px), so
+- Viewport 640x360, camera zoom 2 (the mouse wheel zooms 0.8x-1.25x around that, see `world.gd`
+  `_apply_zoom`: zoomed, the world's SubViewport renders at window resolution with a 640x360
+  `size_2d_override`, so the layout, the interface and the mouse coordinates never change). Tiles are 32 px art drawn at half scale (16 world px), so
   1 art pixel = 0.5 world px. Player sheet: 48x48 frames, 9 x 12 (rows = anim*4 + facing
   down/up/left/right; anims idle 4 frames, run 4, jump 9).
 - The ground is a painting cut into 512 px squares (`art/ground/`, streamed by `GroundStream`).
