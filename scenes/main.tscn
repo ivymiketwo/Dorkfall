@@ -4347,7 +4347,7 @@ position = Vector2(41, 24)
 position = Vector2(128, 24)
 
 [node name="FishingShop" parent="Entities" unique_id=1932270750 instance=ExtResource("203_bs")]
-position = Vector2(276, 24)
+position = Vector2(290, 24)
 
 [node name="WFenceN0" parent="Entities" unique_id=560723709 instance=ExtResource("50_decor")]
 position = Vector2(232, 272)

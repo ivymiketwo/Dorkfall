@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d27hn34img6j6"
-path="res://.godot/imported/bld_shack.png-4c7236fe18d83c624cadeb5876120e27.ctex"
+uid="uid://dvt75kmur4b76"
+path="res://.godot/imported/bld_fish_shack.png-5f28e437aeaa690dc11d63e207ea0e5f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/bld_shack.png"
-dest_files=["res://.godot/imported/bld_shack.png-4c7236fe18d83c624cadeb5876120e27.ctex"]
+source_file="res://art/bld_fish_shack.png"
+dest_files=["res://.godot/imported/bld_fish_shack.png-5f28e437aeaa690dc11d63e207ea0e5f.ctex"]
 
 [params]
 
