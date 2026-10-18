@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/interior.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://art/interior_pet_shop.png" id="2_tex"]
@@ -6,79 +6,39 @@
 [ext_resource type="Resource" path="res://shops/pet_shop.tres" id="4_shop"]
 [ext_resource type="Texture2D" path="res://art/pet_keeper.png" id="5_keeper"]
 [ext_resource type="Script" path="res://scripts/critter.gd" id="6_critter"]
-[ext_resource type="Texture2D" path="res://art/pet_nest_red.png" id="7_red"]
-[ext_resource type="Texture2D" path="res://art/pet_nest_blue.png" id="8_blue"]
-[ext_resource type="Texture2D" path="res://art/pet_nest_yellow.png" id="9_yellow"]
-[ext_resource type="Texture2D" path="res://art/pet_nest_eggs.png" id="10_eggs"]
-[ext_resource type="Texture2D" path="res://art/pet_nest_egg.png" id="11_egg"]
-[ext_resource type="Texture2D" path="res://art/pet_pen.png" id="12_pen"]
+[ext_resource type="Texture2D" path="res://art/pet_dragon_idle.png" id="7_dragon"]
+[ext_resource type="Texture2D" path="res://art/pet_fat_dragon.png" id="8_fat"]
+[ext_resource type="Texture2D" path="res://art/interior_pet_counter.png" id="9_counter"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
-size = Vector2(24, 6)
+size = Vector2(16, 6)
 
 [node name="PetShop" type="Node2D"]
 script = ExtResource("1_script")
-solids = Array[Rect2]([Rect2(0, 0, 224, 34), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(72, 94, 80, 14), Rect2(14, 126, 36, 18), Rect2(12, 148, 38, 15), Rect2(176, 128, 24, 14), Rect2(172, 152, 40, 14)])
+room_size = Vector2(128, 128)
+solids = Array[Rect2]([Rect2(0, 0, 128, 45), Rect2(0, 0, 7, 128), Rect2(121, 0, 7, 128), Rect2(0, 120, 54, 8), Rect2(74, 120, 54, 8), Rect2(53, 129, 21, 8), Rect2(7, 45, 20, 12), Rect2(33, 45, 15, 6), Rect2(47, 45, 26, 6), Rect2(75, 45, 13, 7), Rect2(88, 45, 33, 22), Rect2(7, 70, 15, 11), Rect2(15, 88, 14, 10), Rect2(44, 60, 40, 14), Rect2(104, 72, 17, 14), Rect2(104, 88, 17, 19), Rect2(93, 110, 28, 10), Rect2(38, 110, 10, 9), Rect2(81, 111, 10, 8), Rect2(7, 108, 15, 12)])
 
 [node name="Room" type="Sprite2D" parent="."]
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_tex")
 centered = false
 
-[node name="NestRed" type="Sprite2D" parent="."]
-position = Vector2(10, 3)
+[node name="LittleDragon" type="Sprite2D" parent="."]
+position = Vector2(1.5, 27)
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("7_red")
+texture = ExtResource("7_dragon")
 centered = false
-hframes = 4
+hframes = 10
 script = ExtResource("6_critter")
-frames = PackedInt32Array(0, 1, 0, 1, 3, 1, 0)
-durations = PackedFloat32Array(0.9, 0.4, 0.9, 0.4, 0.16, 0.4, 1.2)
+frames = PackedInt32Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+durations = PackedFloat32Array(2.0, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12, 0.12)
+random_start = false
+speed_jitter = 0.0
 
-[node name="NestBlue" type="Sprite2D" parent="."]
-position = Vector2(54, 3)
+[node name="FatDragon" type="Sprite2D" parent="."]
+position = Vector2(87.5, 36)
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("8_blue")
-centered = false
-hframes = 4
-script = ExtResource("6_critter")
-frames = PackedInt32Array(0, 1, 2, 0, 1, 0, 3, 0)
-durations = PackedFloat32Array(1.1, 0.4, 0.16, 1.0, 0.4, 0.8, 0.16, 0.9)
-
-[node name="NestEggs" type="Sprite2D" parent="."]
-position = Vector2(131.5, 3)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("10_eggs")
-centered = false
-hframes = 4
-script = ExtResource("6_critter")
-frames = PackedInt32Array(0, 0, 1, 0, 2, 0)
-durations = PackedFloat32Array(2.4, 0.15, 0.15, 0.15, 0.15, 3.0)
-
-[node name="NestYellow" type="Sprite2D" parent="."]
-position = Vector2(175.5, 3)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("9_yellow")
-centered = false
-hframes = 4
-script = ExtResource("6_critter")
-frames = PackedInt32Array(0, 1, 0, 1, 2, 3, 0)
-durations = PackedFloat32Array(0.8, 0.4, 1.2, 0.4, 0.16, 0.4, 1.0)
-
-[node name="NestEgg" type="Sprite2D" parent="."]
-position = Vector2(27.5, 129)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("11_egg")
-centered = false
-hframes = 7
-script = ExtResource("6_critter")
-frames = PackedInt32Array(0, 1, 0, 2, 0, 1, 2, 0, 3, 4, 3, 5, 3, 4, 5, 3, 6, 3)
-durations = PackedFloat32Array(3.0, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14, 2.5, 0.2, 0.14, 0.2, 0.14, 0.2, 0.14, 0.14, 0.4, 0.5, 4.0)
-
-[node name="Pen" type="Sprite2D" parent="."]
-position = Vector2(170, 113)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("12_pen")
+texture = ExtResource("8_fat")
 centered = false
 hframes = 4
 script = ExtResource("6_critter")
@@ -88,17 +48,24 @@ random_start = false
 speed_jitter = 0.0
 
 [node name="Entry" type="Marker2D" parent="."]
-position = Vector2(112, 152)
+position = Vector2(64, 110)
 
 [node name="Exit" type="Area2D" parent="."]
-position = Vector2(112, 171)
+position = Vector2(64, 125)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
 shape = SubResource("RectangleShape2D_exit")
 
 [node name="Petra" parent="." instance=ExtResource("3_npc")]
-position = Vector2(112, 88)
+position = Vector2(64, 59)
 display_name = "Petra"
 shop = ExtResource("4_shop")
 sprite_texture = ExtResource("5_keeper")
 idle_split_row = 27
+
+[node name="CounterFront" type="Sprite2D" parent="." groups=["y_sorted"]]
+position = Vector2(43, 66)
+texture = ExtResource("9_counter")
+centered = false
+offset = Vector2(0, -28)
+scale = Vector2(0.5, 0.5)
