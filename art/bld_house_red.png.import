@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byclyemgtby78"
-path="res://.godot/imported/bld_home.png-b56926580851f4076ca276cc172710a8.ctex"
+uid="uid://d1n6t8kq7a3s3"
+path="res://.godot/imported/bld_house_red.png-5ca6a0782afa7ad296b872234cfe828b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/bld_home.png"
-dest_files=["res://.godot/imported/bld_home.png-b56926580851f4076ca276cc172710a8.ctex"]
+source_file="res://art/bld_house_red.png"
+dest_files=["res://.godot/imported/bld_house_red.png-5ca6a0782afa7ad296b872234cfe828b.ctex"]
 
 [params]
 

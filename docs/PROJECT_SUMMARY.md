@@ -86,7 +86,8 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
   (`art/bld_wizard_tower.png`, at the same scale as the other buildings, so bigger than them), and
   the potion shop is Rex's cottage (`art/bld_potion_cottage.png`), the pet shop his mossy stone
   cottage (`art/bld_pet_cottage.png`) and the fishing shop his slate-roofed shack
-  (`art/bld_fish_shack.png`). To make room for both, the village
+  (`art/bld_fish_shack.png`). The blacksmith (`art/bld_blacksmith.png`, painted smoke) and the two
+  houses on the back lane (`bld_house_red.png`, `bld_house_shutters.png`, no interiors) are his too. To make room for both, the village
   pond was moved 176 px east in total (`tools/move_pond.py`) and the cobbled street extended to
   x ~544 (`tools/extend_village_street.py`); both tools edit the ground painting in place. Moving the
   pond also means moving its collision ellipse (`world.gd`), WaterPond1, the ducks and the minimap.

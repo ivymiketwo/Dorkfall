@@ -1,11 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Texture2D" path="res://art/bld_carpenter.png" id="1_tex"]
+[ext_resource type="Texture2D" path="res://art/bld_blacksmith.png" id="1_tex"]
 [ext_resource type="Script" path="res://scripts/door.gd" id="2_door"]
 [ext_resource type="Script" path="res://scripts/night_glow.gd" id="99_glow"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(96, 44)
+size = Vector2(110, 34)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
 size = Vector2(10, 4)
@@ -15,10 +15,10 @@ size = Vector2(10, 4)
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_tex")
 centered = false
-position = Vector2(-52.0, -97.19999999999999)
+position = Vector2(-81, -131)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(8.0, -26)
+position = Vector2(4.0, -21.0)
 shape = SubResource("RectangleShape2D_body")
 
 [node name="Door" type="Area2D" parent="."]
@@ -31,9 +31,5 @@ shape = SubResource("RectangleShape2D_door")
 
 [node name="NightGlow" type="Node2D" parent="."]
 script = ExtResource("99_glow")
-rects = Array[Rect2]([Rect2(-22.0, -25.2, 12, 9), Rect2(-3.0, -21.2, 6, 6)])
+rects = Array[Rect2]([Rect2(-9.0, -19.0, 18, 16)])
 light_scale = 0.6
-
-[node name="Chimney" type="Marker2D" parent="." groups=["chimney"]]
-position = Vector2(80, -86)
-metadata/smoke = Color(0.86, 0.86, 0.9, 1)

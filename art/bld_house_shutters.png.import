@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bsyxxfte0abe2"
-path="res://.godot/imported/bld_carpenter.png-e98e1da270c3cceee8769db4637b5b9b.ctex"
+uid="uid://ba7s8a416dyko"
+path="res://.godot/imported/bld_house_shutters.png-86fd1588c5edff52d89cac77eb70f017.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/bld_carpenter.png"
-dest_files=["res://.godot/imported/bld_carpenter.png-e98e1da270c3cceee8769db4637b5b9b.ctex"]
+source_file="res://art/bld_house_shutters.png"
+dest_files=["res://.godot/imported/bld_house_shutters.png-86fd1588c5edff52d89cac77eb70f017.ctex"]
 
 [params]
 

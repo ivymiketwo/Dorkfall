@@ -193,7 +193,7 @@ position = Vector2(2372, 226)
 kind = "warn_sign_skull"
 
 [node name="Blacksmith" parent="Entities" unique_id=1982115937 instance=ExtResource("7_smith")]
-position = Vector2(121, 143)
+position = Vector2(124, 143)
 
 [node name="PetShop" parent="Entities" unique_id=718581792 instance=ExtResource("14_petshop")]
 position = Vector2(-12, 143)
@@ -890,7 +890,7 @@ kind = "pine"
 position = Vector2(1616, -263)
 
 [node name="TreeW45" parent="Entities" unique_id=1966632044 instance=ExtResource("4_tree")]
-position = Vector2(22, -103)
+position = Vector2(18, -122)
 kind = "pine"
 
 [node name="TreeW46" parent="Entities" unique_id=476450488 instance=ExtResource("4_tree")]
@@ -970,7 +970,7 @@ position = Vector2(880, -49)
 kind = "pine"
 
 [node name="TreeW73" parent="Entities" unique_id=1693673825 instance=ExtResource("4_tree")]
-position = Vector2(64, -108)
+position = Vector2(66, -126)
 kind = "pine"
 
 [node name="TreeW74" parent="Entities" unique_id=95535578 instance=ExtResource("4_tree")]
@@ -4341,10 +4341,10 @@ position = Vector2(1360, 676)
 kind = "haybale"
 
 [node name="HouseBrick" parent="Entities" unique_id=1945921123 instance=ExtResource("201_bh")]
-position = Vector2(41, 24)
+position = Vector2(2, 24)
 
 [node name="HousePink" parent="Entities" unique_id=769539735 instance=ExtResource("202_bw")]
-position = Vector2(128, 24)
+position = Vector2(125, 24)
 
 [node name="FishingShop" parent="Entities" unique_id=1932270750 instance=ExtResource("203_bs")]
 position = Vector2(293, 0)
