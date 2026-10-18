@@ -15,10 +15,10 @@ size = Vector2(10, 4)
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_tex")
 centered = false
-position = Vector2(-75, -141)
+position = Vector2(-77, -141)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(15.0, -21.0)
+position = Vector2(13.0, -21.0)
 shape = SubResource("RectangleShape2D_body")
 
 [node name="Door" type="Area2D" parent="."]
@@ -31,5 +31,5 @@ shape = SubResource("RectangleShape2D_door")
 
 [node name="NightGlow" type="Node2D" parent="."]
 script = ExtResource("99_glow")
-rects = Array[Rect2]([Rect2(22.0, -39.0, 34, 24), Rect2(-6.0, -73.0, 12, 12)])
+rects = Array[Rect2]([Rect2(20.0, -39.0, 34, 24), Rect2(-8.0, -73.0, 12, 12)])
 light_scale = 0.6
