@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cmv77oqnbcva0"
-path="res://.godot/imported/bld_store.png-51a0abc6be1633e2fc7732b3d2527f01.ctex"
+uid="uid://contkphippfmw"
+path="res://.godot/imported/bld_pet_cottage.png-496d3447c2d7c22fff5724391b9b4a04.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/bld_store.png"
-dest_files=["res://.godot/imported/bld_store.png-51a0abc6be1633e2fc7732b3d2527f01.ctex"]
+source_file="res://art/bld_pet_cottage.png"
+dest_files=["res://.godot/imported/bld_pet_cottage.png-496d3447c2d7c22fff5724391b9b4a04.ctex"]
 
 [params]
 

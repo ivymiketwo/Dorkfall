@@ -196,7 +196,7 @@ kind = "warn_sign_skull"
 position = Vector2(121, 143)
 
 [node name="PetShop" parent="Entities" unique_id=718581792 instance=ExtResource("14_petshop")]
-position = Vector2(-5, 143)
+position = Vector2(-14, 143)
 
 [node name="PotionShop" parent="Entities" unique_id=1191390107 instance=ExtResource("8_potion")]
 position = Vector2(325, 143)
