@@ -18,12 +18,15 @@ const BOB_PERIOD := 0.6
 var _near := false
 var _upper: Sprite2D
 var _bob := 0.0
+var _top := -20.0      # where the top of the picture is (world px above the feet); labels go above it
 
 
 func _ready() -> void:
 	add_to_group("interactables")
 	if sprite_texture:
 		$Sprite2D.texture = sprite_texture
+	var spr: Sprite2D = $Sprite2D
+	_top = (spr.offset.y - spr.texture.get_height() / 2.0) * spr.scale.y
 	if idle_split_row > 0:
 		_split_sprite()
 
@@ -65,7 +68,8 @@ func interact(player: Node2D) -> void:
 
 func _draw() -> void:
 	var name_text := display_name.to_upper()
-	HiFont.draw(self, Vector2(-floorf(HiFont.text_width(name_text, PX) / 2.0), -27), name_text, Color("9ad0ff"), PX)
+	# above the head (the picture is drawn over this node, so anything lower would be hidden)
+	HiFont.draw(self, Vector2(-floorf(HiFont.text_width(name_text, PX) / 2.0), _top - 14.0), name_text, Color("9ad0ff"), PX)
 	if _near:
 		var t := "F  TRADE"
-		HiFont.draw(self, Vector2(-floorf(HiFont.text_width(t, PX) / 2.0), -20), t, Color("f0d040"), PX)
+		HiFont.draw(self, Vector2(-floorf(HiFont.text_width(t, PX) / 2.0), _top - 7.0), t, Color("f0d040"), PX)

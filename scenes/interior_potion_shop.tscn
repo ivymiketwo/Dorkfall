@@ -46,4 +46,7 @@ position = Vector2(64, 51)
 display_name = "Mirelle"
 shop = ExtResource("4_shop")
 sprite_texture = ExtResource("5_keeper")
-idle_split_row = 27
+idle_split_row = 36
+
+[node name="Sprite2D" parent="Mirelle"]
+offset = Vector2(0, -22)
