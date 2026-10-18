@@ -98,6 +98,8 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     (`tools/gen_wizard_interior.py`: old stone bricks for the floor and back wall; its arched window
     is left see-through so the animated night sky `wiz_window.png` shows from behind). In both,
     the counter is also a separate y-sorted sprite (group `y_sorted`) that hides the keeper's feet.
+    The fishing shop is Rex's generated room too (`tools/gen_fishing_interior.py`): its see-through
+    floor is repainted as planks lined up with the seams left in the picture.
     The pet shop too (`tools/gen_pet_interior.py`): the little dragon idles in the left nest (Rex's
     10 frames, `art/pet_dragon_src`; the first frame holds 2 s) and the sleeping fat dragon
     (`pet_pen.png` without its straw) lies in the big nest.
