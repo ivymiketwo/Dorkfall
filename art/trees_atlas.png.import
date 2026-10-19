@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bx4lcrmjw77py"
-path="res://.godot/imported/willow_twisted.png-8bb3da710569e73cca7d910659231acc.ctex"
+uid="uid://b7o3v5506xi04"
+path="res://.godot/imported/trees_atlas.png-523f3eab8183e32ab5c63717212094f7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/trees/willow_twisted.png"
-dest_files=["res://.godot/imported/willow_twisted.png-8bb3da710569e73cca7d910659231acc.ctex"]
+source_file="res://art/trees_atlas.png"
+dest_files=["res://.godot/imported/trees_atlas.png-523f3eab8183e32ab5c63717212094f7.ctex"]
 
 [params]
 

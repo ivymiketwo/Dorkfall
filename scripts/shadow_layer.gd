@@ -39,6 +39,9 @@ var _bases := Node2D.new()
 var _trees: Array[Node2D] = []        # the casters that are trees, refreshed each frame
 var _sun_dir := Vector2.ZERO
 var _sun := 1.0
+var _forests: Array[Node] = []        # forests near the player
+var _tree_key := ""                   # what the tree shadows were last drawn for
+const SHADOW_COLOR := Color(0.04, 0.03, 0.10)
 
 
 func _ready() -> void:
@@ -57,13 +60,6 @@ func _ready() -> void:
 	ents.child_entered_tree.connect(func(n: Node):
 		if n is Pet:
 			_casters.append(n))
-	_add_forest_trees.call_deferred()
-
-
-## Trees grown by forests (forest.gd) aren't direct children of Entities: they're in a group.
-func _add_forest_trees() -> void:
-	for n in get_tree().get_nodes_in_group("forest_tree"):
-		_casters.append(n as Node2D)
 
 
 func _kind(nm: String) -> Variant:
@@ -77,8 +73,6 @@ func _process(_delta: float) -> void:
 	if _dn == null:
 		_dn = get_tree().get_first_node_in_group("day_night") as DayNight
 	queue_redraw()   # creatures move every frame; the layer is cheap
-	_crowns.queue_redraw()
-	_bases.queue_redraw()
 
 
 func _draw() -> void:
@@ -114,7 +108,7 @@ func _draw() -> void:
 			_ellipse(p + Vector2(0, -1), spec[1], spec[2], Color(0, 0, 0, blob_alpha))
 		else:
 			var hw: float = spec[1]
-			if String(n.name).begins_with("Tree") or n.is_in_group("forest_tree"):
+			if String(n.name).begins_with("Tree"):
 				_trees.append(n)         # drawn merged, see _draw_crowns / _draw_bases
 				continue
 			var flat := Vector2(dir.x, 0.10 + 0.10 * sun)      # buildings/posts: mostly sideways
@@ -126,44 +120,92 @@ func _draw() -> void:
 							p + Vector2(hw, 0) + sv * f, p + Vector2(-hw, 0) + sv * f])
 					draw_colored_polygon(q, Color(col.r, col.g, col.b, tall_alpha * 0.55))
 			_ellipse(p, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6, Color(0, 0, 0, blob_alpha * 0.6))
+	# forests (forest.gd) near the player hand over their whole shadow in one piece
+	_forests.clear()
+	for f in get_tree().get_nodes_in_group("forest"):
+		if (f as Forest).trees_near(pp, 420.0).size() > 0:
+			_forests.append(f)
+	# the tree shadows only need drawing again when something they depend on changes
+	var key := "%s|%s|%s|%s" % [snappedf(dir.x, 0.04), snappedf(sun, 0.04), _trees.size(), _forests.size()]
+	if not _trees.is_empty():
+		key += "|%s|%s" % [_trees[0].get_instance_id(), _trees[-1].get_instance_id()]
+	if key != _tree_key:
+		_tree_key = key
+		_crowns.queue_redraw()
+		_bases.queue_redraw()
 	_crown_group.self_modulate = Color(1, 1, 1, tall_alpha * 0.62)
 	_base_group.self_modulate = Color(1, 1, 1, blob_alpha * 0.6)
 
 
-## Treetop shadows: one squashed blob per tree, thrown away from the sun, all drawn solid.
+## Treetop shadows: one squashed blob per tree, thrown away from the sun, all drawn solid (the
+## group makes them see-through as a whole). Each forest's come as one batch of triangles.
 func _draw_crowns() -> void:
-	if _crown_group.self_modulate.a <= 0.005:
-		return
+	var sx := snappedf(_sun_dir.x, 0.04)
+	var sh := snappedf(_sun, 0.04)
+	var pts := PackedVector2Array()
+	var idx := PackedInt32Array()
 	for n in _trees:
-		if not is_instance_valid(n):
-			continue
-		var ts: float = n.get_meta("shadow_scale", 1.0)
-		var p := to_local(n.global_position)
-		var j := _jitter(n.global_position)
-		var c := p + Vector2(_sun_dir.x, 0.25 + 0.2 * _sun) * 16.0 * ts
-		_ellipse_on(_crowns, c, 10.5 * ts * j, 5.6 * ts * (2.0 - j), Color(0.04, 0.03, 0.10))
+		if is_instance_valid(n):
+			var ts: float = n.get_meta("shadow_scale", 1.0)
+			var j := jitter(n.global_position)
+			ellipse_tris(pts, idx, n.global_position + Vector2(sx, 0.25 + 0.2 * sh) * 16.0 * ts,
+					10.5 * ts * j, 5.6 * ts * (2.0 - j))
+	_triangles(_crowns, pts, idx)
+	for f in _forests:
+		if is_instance_valid(f):
+			var tri: Array = (f as Forest).shadow_triangles("crown", sx, sh)
+			_triangles(_crowns, tri[0], tri[1])
 
 
 ## The dark patch right at the foot of each trunk.
 func _draw_bases() -> void:
+	var pts := PackedVector2Array()
+	var idx := PackedInt32Array()
 	for n in _trees:
-		if not is_instance_valid(n):
-			continue
-		var ts: float = n.get_meta("shadow_scale", 1.0)
-		var p := to_local(n.global_position)
-		var hw := 6.0 * ts
-		_ellipse_on(_bases, p, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6 * sqrt(ts), Color(0, 0, 0))
+		if is_instance_valid(n):
+			var ts: float = n.get_meta("shadow_scale", 1.0)
+			var hw := 6.0 * ts
+			ellipse_tris(pts, idx, n.global_position, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6 * sqrt(ts))
+	_triangles(_bases, pts, idx)
+	for f in _forests:
+		if is_instance_valid(f):
+			var tri: Array = (f as Forest).shadow_triangles("base", 0.0, 0.0)
+			_triangles(_bases, tri[0], tri[1])
+
+
+## Draws a batch of triangles given in world coordinates, in one go.
+func _triangles(item: Node2D, pts: PackedVector2Array, idx: PackedInt32Array) -> void:
+	if idx.is_empty():
+		return
+	item.draw_set_transform_matrix(item.get_global_transform().affine_inverse())
+	var cols := PackedColorArray()
+	cols.resize(pts.size())
+	cols.fill(SHADOW_COLOR)
+	RenderingServer.canvas_item_add_triangle_array(item.get_canvas_item(), idx, pts, cols)
+	item.draw_set_transform_matrix(Transform2D.IDENTITY)
+
+
+## Adds an ellipse (a fan of triangles) to a triangle batch.
+static func ellipse_tris(pts: PackedVector2Array, idx: PackedInt32Array, c: Vector2, rx: float, ry: float) -> void:
+	var n := 14 if rx < 14.0 else 20
+	var first := pts.size()
+	pts.append(c)
+	for i in n:
+		var a := TAU * float(i) / float(n)
+		pts.append(c + Vector2(cos(a) * rx, sin(a) * ry))
+	for i in n:
+		idx.append(first)
+		idx.append(first + 1 + i)
+		idx.append(first + 1 + (i + 1) % n)
 
 
 ## A steady 0.85..1.15 per tree, so neighbouring shadows aren't all the same size.
-func _jitter(at: Vector2) -> float:
+static func jitter(at: Vector2) -> float:
 	var h := absi(int(at.x * 73.0) ^ int(at.y * 151.0)) % 1000
 	return 0.85 + 0.3 * float(h) / 1000.0
 
 
 func _spec(n: Node) -> Array:
-	if n.is_in_group("forest_tree"):
-		return CASTERS["Tree"]
 	var k: Variant = _kind(n.name)
 	if k != null:
 		return k

@@ -25,7 +25,7 @@ func _ready() -> void:
 		TreeArt.apply(s, kind)
 		set_meta("shadow_scale", TreeArt.shadow_scale(kind))
 		var trunk := CircleShape2D.new()
-		trunk.radius = 7.0 if s.texture.get_height() > 100 else 5.0
+		trunk.radius = 7.0 if TreeArt.size(kind).y > 100.0 else 5.0
 		($CollisionShape2D as CollisionShape2D).shape = trunk
 		return
 	s.texture = ART[kind]
