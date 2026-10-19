@@ -31,6 +31,14 @@ git checkout -- project.godot
 rem Godot also rewrites its .import files (notes about each picture/sound) on its own.
 rem They are generated, never edited by hand, so take the shared versions.
 git checkout -- "*.import" 2>nul
+rem Files that only look changed (same content with other line endings), or that already match
+rem the new version on GitHub (like scenes Claude uploaded from this PC), are safe to put back:
+rem the update brings the same content anyway. Real changes made here are left alone.
+git fetch -q
+for /f "delims=" %%F in ('git ls-files -m') do (
+  git diff --quiet -- "%%F" && git checkout -q -- "%%F"
+  git diff --quiet origin/main -- "%%F" 2>nul && git checkout -q -- "%%F"
+)
 git pull --ff-only
 if errorlevel 1 (
   rem one more try after putting back the files Godot rewrites by itself
