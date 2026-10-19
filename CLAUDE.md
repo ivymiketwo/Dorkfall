@@ -38,7 +38,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   into a grey rocky valley (cracked grey ground, rock outcrops for trolls) out to the map edge at
   x 6512. Made by `tools/gen_ravine.py`, which paints the ground, writes the wall tiles
   (`data/mountains.json`, read by `scripts/world.gd`), the minimap and the ravine / valley props.
-  Valley walls: `VALLEY_TOP` / `VALLEY_BOTTOM`; outcrops: `OUTCROPS`. It paints in strips (~3 GB of
+  Valley walls: `VALLEY_TOP` / `VALLEY_BOTTOM`; outcrops: `OUTCROPS`; the north-west cliff from the
+  mountains up to the top of the map: `NW_CLIFF` (its strip starts from `art/ground_src/north_before_cliff.png`). It paints in strips (~3 GB of
   memory, ~3.5 minutes). Re-run it to change them (it starts from `art/ground_src/east_before_ravine.png`).
   Unreachable land there is left unpainted and its ground squares don't exist (GroundStream skips them).
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).

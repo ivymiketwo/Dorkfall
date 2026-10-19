@@ -1,4 +1,5 @@
-"""Paints the east mountains and the red-clay ravine (a pass through the mountains), the wide
+"""Paints the east mountains and the red-clay ravine (a pass through the mountains), the north-west
+cliff that runs from them up to the top of the map (NW_CLIFF), the wide
 grey rocky valley it opens into (with rock outcrops scattered over it), and writes the walls
 (data/mountains.json), the minimap and the props.
 
@@ -31,7 +32,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ground_tiles import assemble, split, ORIGIN, VOID   # noqa: E402
 
 SEED = 21
-X0, X1 = 2400, 6512          # world x: the mountains start at X0; X1 is the map's east edge
+X0_ORIG = 2400               # where the mountain work started before the north-west cliff
+X0, X1 = 1600, 6512          # world x: the mountains start at X0; X1 is the map's east edge
 XM = X1                      # world x where the mountain work ends (the map's east edge)
 Y0, Y1 = -992, 1696          # world y (the whole height of the map)
 OLD_EDGE = 3120              # the old east edge of the map
@@ -45,6 +47,12 @@ RAVINE_END = 4470            # the ravine starts opening out again here (east fu
 VALLEY_TOP = [(4726, 65), (5100, -55), (5566, -163), (6024, -213), (6600, -171)]
 VALLEY_BOTTOM = [(4601, 468), (5026, 605), (5500, 668), (5982, 696), (6600, 522)]
 VALLEY_FROM = 4470           # the ravine starts widening into the valley here
+# the north-west cliff (Rex's blue line, Oct 2026): the foot of a cliff that runs from the top of the
+# map down to the mountains, closing off the north-east corner of the meadow. World (x, y) points;
+# the funnel's own north line takes over where it is further south.
+NW_CLIFF = [(1690, -1010), (1760, -880), (1850, -790), (1950, -715), (2060, -650), (2180, -600),
+            (2300, -545), (2420, -495), (2540, -455), (2650, -405), (2730, -380)]
+NW_WIGGLE = 55               # world px the north-west cliff wanders (random bends)
 VALLEY_WIGGLE = 55           # world px the valley walls wander (random bends)
 GREY_FROM = 4760             # world x where the red clay turns into grey cracked ground
 # rock outcrops in the valley ("mountains" for trolls): world centre and the size Rex drew them
@@ -54,6 +62,7 @@ OUTCROPS = [(5138, 231, 145, 166), (5408, 285, 75, 58), (5932, 148, 208, 145), (
             (6350, 600, 95, 90), (5000, 405, 70, 60)]
 OUTCROP_MAX_LEVEL = 2        # outcrops stay low (one or two ledges), not full mountains
 BEFORE = "art/ground_src/east_before_ravine.png"   # the desert as it was (each run starts from it)
+BEFORE_WEST = "art/ground_src/north_before_cliff.png"   # the meadow under the north-west cliff, as it was
 STEP = 64                    # (old fixed step; heights are now LEVEL_Z)
 # how high each terrace is drawn, in art px: one tall cliff first, then smaller steps behind it
 LEVEL_Z = np.array([0, 120, 196, 256, 316, 372, 428, 484, 540, 596, 652], np.int32)
@@ -83,19 +92,37 @@ GREY_CRACK = (66, 68, 74)
 
 rng = np.random.default_rng(SEED)
 W, H = (XM - X0) * 2, (Y1 - Y0) * 2          # art size of the mountain part
+WEST = (X0_ORIG - X0) * 2                     # art px added on the west for the north-west cliff
+W_ORIG = W - WEST
 AX0 = (X0 - ORIGIN[0]) * 2                    # its art x in the whole painting
 
 
-OLD_W = (4720 - X0) * 2      # art width the mountains had when the ravine was a dead end
+OLD_W = (4720 - X0_ORIG) * 2  # art width the mountains had when the ravine was a dead end
 _rng_ext = np.random.default_rng(SEED + 9)
+_rng_west = np.random.default_rng(SEED + 31)      # the north-west cliff's own random numbers
 SPLIT = True                 # keep the old part's random shapes exactly (see smooth_noise)
 
 
 def smooth_noise(w, h, cell, octaves=3):
-    """Blobby noise 0..1. The part of the picture that existed before the map grew east
-    (OLD_W) gets exactly the random numbers it always had, so the west funnel and the
-    ravine keep their shapes; the new east part gets its own, faded in over a short overlap."""
-    w_old = round(w * OLD_W / W)
+    """Blobby noise 0..1, for a picture w wide covering X0..X1. The strip added on the west for the
+    north-west cliff (WEST) gets its own random numbers, so everything from X0_ORIG on keeps
+    exactly the shapes it always had (see _smooth_noise_orig)."""
+    w_west = round(w * WEST / W) if SPLIT else 0
+    main = _smooth_noise_orig(w - w_west, h, cell, octaves)
+    if w_west == 0:
+        return main
+    west = _smooth_noise(w_west, h, cell, octaves, _rng_west)
+    ov = max(w_west // 8, 4)                     # fade the west strip's east end into the old part
+    t = np.clip((np.arange(w_west) - (w_west - ov)) / ov, 0.0, 1.0).astype(np.float32)[None, :]
+    west = west * (1 - t) + main[:, :1] * t
+    return np.concatenate([west, main], axis=1)
+
+
+def _smooth_noise_orig(w, h, cell, octaves=3):
+    """The part of the picture that existed before the map grew east (OLD_W) gets exactly the
+    random numbers it always had, so the west funnel and the ravine keep their shapes; the new
+    east part gets its own, faded in over a short overlap."""
+    w_old = round(w * OLD_W / W_ORIG)
     if not SPLIT or w_old >= w:
         return _smooth_noise(w, h, cell, octaves, rng)
     a = _smooth_noise(w_old, h, cell, octaves, rng)
@@ -107,12 +134,16 @@ def smooth_noise(w, h, cell, octaves=3):
 
 
 def split_random(h, w):
-    """rng.random((h, w)) with the same old-part / new-part split as smooth_noise."""
-    w_old = min(OLD_W, w)
+    """rng.random((h, w)) with the same west / old-part / new-part split as smooth_noise."""
+    w_west = round(w * WEST / W)
+    wm = w - w_west
+    w_old = min(OLD_W, wm)
     a = rng.random((h, w_old)).astype(np.float32)
-    if w_old >= w:
-        return a
-    return np.concatenate([a, _rng_ext.random((h, w - w_old), dtype=np.float32)], axis=1)
+    if w_old < wm:
+        a = np.concatenate([a, _rng_ext.random((h, wm - w_old), dtype=np.float32)], axis=1)
+    if w_west:
+        a = np.concatenate([_rng_west.random((h, w_west), dtype=np.float32), a], axis=1)
+    return a
 
 
 def _smooth_noise(w, h, cell, octaves, rng):
@@ -151,6 +182,8 @@ def walls_y(wx):
     k = k * k * (3 - 2 * k)
     top = top * (1 - k) + _valley(VALLEY_TOP, wx) * k
     bottom = bottom * (1 - k) + (_valley(VALLEY_BOTTOM, wx) + 88) * k
+    nw = np.interp(wx, [p[0] for p in NW_CLIFF], [p[1] for p in NW_CLIFF], left=-1e5, right=-1e5)
+    top = np.maximum(top, nw)
     return top, bottom
 
 
@@ -365,10 +398,13 @@ def main():
     whole = assemble()
     if not os.path.exists(BEFORE):
         os.makedirs(os.path.dirname(BEFORE), exist_ok=True)
-        whole.crop((AX0, 0, AX0 + (OLD_EDGE - X0) * 2, H)).save(BEFORE, optimize=True)
+        whole.crop((AX0 + WEST, 0, AX0 + (OLD_EDGE - X0) * 2, H)).save(BEFORE, optimize=True)
+    if not os.path.exists(BEFORE_WEST):
+        whole.crop((AX0, 0, AX0 + WEST, H)).save(BEFORE_WEST, optimize=True)
     out = np.zeros((H, W, 3), np.uint8)
     out[:] = VOID
-    out[:, :(OLD_EDGE - X0) * 2] = np.asarray(Image.open(BEFORE).convert("RGB"))
+    out[:, :WEST] = np.asarray(Image.open(BEFORE_WEST).convert("RGB"))
+    out[:, WEST:(OLD_EDGE - X0) * 2] = np.asarray(Image.open(BEFORE).convert("RGB"))
 
     # ---- where you can walk, before the 3/4 view: a 4-world-px grid
     G = 4
@@ -376,8 +412,8 @@ def main():
     gy = Y0 + (np.arange(H // (2 * G)) + 0.5) * G
     # bend the lines at random (strongly in the funnel, gently along the ravine so it stays open)
     gh_, gw_ = len(gy), len(gx)
-    amp = np.interp(gx, [2950, 3150, RAVINE_END - 90, RAVINE_END + 110],
-                    [WIGGLE, WIGGLE * 0.25, WIGGLE * 0.25, VALLEY_WIGGLE])[None, :]
+    amp = np.interp(gx, [X0_ORIG - 250, X0_ORIG, 2950, 3150, RAVINE_END - 90, RAVINE_END + 110],
+                    [NW_WIGGLE, WIGGLE, WIGGLE, WIGGLE * 0.25, WIGGLE * 0.25, VALLEY_WIGGLE])[None, :]
     wx_ = gx[None, :] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
     wy_ = gy[:, None] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
     top, bottom = walls_y(wx_)
@@ -386,7 +422,9 @@ def main():
     # outcrops: islands of rock in the valley. Footprint = the drawn size minus the part the 3/4
     # view lifts up the screen; edges made lumpy with noise so they aren't plain ovals. (Own
     # random numbers, so everything else comes out as it always did.)
-    lump = _smooth_noise(gw_, gh_, 14, 2, np.random.default_rng(SEED + 11))
+    gw_west = WEST // (2 * G)                              # (the west strip has no outcrops)
+    lump = np.concatenate([np.zeros((gh_, gw_west), np.float32),
+                           _smooth_noise(gw_ - gw_west, gh_, 14, 2, np.random.default_rng(SEED + 11))], axis=1)
     crop = np.zeros_like(floor)
     crop_cap = np.zeros(floor.shape, np.uint8)            # how many ledges each outcrop may have
     for cx, cy, vw, vh in OUTCROPS:
@@ -495,6 +533,8 @@ def paint_strip(a, b, level_all, out, n):
     del sufmin
     lc = np.arange(Wn)[None, :]
     cols = lc + a                                          # global art columns
+    pcols = cols - WEST                # columns for the patterns: counted from X0_ORIG, so the rock
+                                       # and crack patterns stay where they were before the west strip
     lv = level[g, lc]                                      # visible terrace level
     f = rows - topy[g, lc]                                 # 0 = on top, >0 = down a cliff face
     del topy
@@ -503,7 +543,7 @@ def paint_strip(a, b, level_all, out, n):
     wy = (Y0 + rows / 2.0).astype(np.float32)
 
     # ---- floor: the grass turns into dark red clay going into the ravine, then grey
-    edge, _, _ = voronoi(cols, rows, 34, 25)
+    edge, _, _ = voronoi(pcols, rows, 34, 25)
     crack_on = n["crack_on"][sl]
     clay = CLAY[np.digitize(tone, [0.36, 0.5, 0.64])].copy()
     clay[(edge < 1.6) & crack_on] = CRACK
@@ -530,7 +570,7 @@ def paint_strip(a, b, level_all, out, n):
 
     # ---- small stones on the clay, mostly near the foot of the cliffs (like the boulders, smaller)
     near_wall = (sd > -40 + 30 * R) & walk
-    _, px, py = voronoi(cols, rows, 18, 14)
+    _, px, py = voronoi(pcols, rows, 18, 14)
     lucky = (n["stone_n"][sl].astype(np.float32) > np.where(near_wall, 0.76, 0.92)) & is_clay
     lucky &= ~is_grey | near_wall                            # on the grey ground only by the cliffs
     sz = np.maximum(np.abs(px) * 0.9, np.abs(py))
@@ -545,12 +585,12 @@ def paint_strip(a, b, level_all, out, n):
     txg = tx + a
     col = np.where((tone[ty, tx] > 0.6)[:, None], ROCK["top2"], ROCK["top"]).astype(np.uint8)
     # the same dried-mud cracks as the ravine floor, in the rock's own colours
-    ce, _, _ = voronoi(txg.astype(np.float32), gyy.astype(np.float32), 34, 25)
+    ce, _, _ = voronoi((txg - WEST).astype(np.float32), gyy.astype(np.float32), 34, 25)
     cracked = (ce < 1.6) & (n["crack_on"][gyy, txg])
     col[cracked] = ROCK["top_crack"]
     del ce, cracked
-    e2, bx, by = voronoi(txg.astype(np.float32), gyy.astype(np.float32), 34, 26)
-    sx = np.clip(voronoi.seeds[:, 0].astype(np.int64), 0, W - 1)
+    e2, bx, by = voronoi((txg - WEST).astype(np.float32), gyy.astype(np.float32), 34, 26)
+    sx = np.clip(voronoi.seeds[:, 0].astype(np.int64) + WEST, 0, W - 1)
     sy = np.clip(voronoi.seeds[:, 1].astype(np.int64), 0, H - 1)
     # a whole rock where its middle is near an edge or inside a clump (so rocks are never cut)
     # rocks piled on the edge only where the edge faces the ravine from the south (seen from
@@ -572,7 +612,7 @@ def paint_strip(a, b, level_all, out, n):
     for i in range(0, len(fy), 2_000_000):
         j = slice(i, i + 2_000_000)
         mm = m[j].astype(np.int64)
-        out[fy[j], fx[j]] = cliff_blocks((fx[j] + a).astype(np.int64), (LEVEL_Z[mm] - zat[j]).astype(np.int64),
+        out[fy[j], fx[j]] = cliff_blocks((fx[j] + a - WEST).astype(np.int64), (LEVEL_Z[mm] - zat[j]).astype(np.int64),
                                          (LEVEL_Z[mm] - LEVEL_Z[mm - 1]).astype(np.int64), mm + L[j].astype(np.int64) * 16)
     del L, zat, m, fy, fx
 

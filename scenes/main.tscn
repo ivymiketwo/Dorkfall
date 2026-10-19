@@ -181,10 +181,6 @@ position = Vector2(1240, -110)
 position = Vector2(2537, 1136)
 kind = "cave_bones"
 
-[node name="Desert50" parent="Entities" instance=ExtResource("50_decor")]
-position = Vector2(2530, -592)
-kind = "cave_bones"
-
 [node name="Desert52" parent="Entities" instance=ExtResource("50_decor")]
 position = Vector2(2509, 1527)
 kind = "cave_bones"
@@ -2616,16 +2612,6 @@ kind = "pine"
 position = Vector2(-935, 630)
 kind = "pine"
 
-[node name="TreeN162" parent="Entities" unique_id=565253040 instance=ExtResource("4_tree")]
-position = Vector2(2479, -884)
-kind = "oak2"
-[node name="TreeN164" parent="Entities" unique_id=1723625091 instance=ExtResource("4_tree")]
-position = Vector2(2366, -815)
-kind = "pine"
-
-[node name="TreeN165" parent="Entities" unique_id=1775448071 instance=ExtResource("4_tree")]
-position = Vector2(2356, -775)
-
 [node name="TreeN167" parent="Entities" unique_id=353116766 instance=ExtResource("4_tree")]
 position = Vector2(1352, 1173)
 kind = "pine"
@@ -2888,41 +2874,6 @@ kind = "pine"
 [node name="TreeN391" parent="Entities" unique_id=1070272066 instance=ExtResource("4_tree")]
 position = Vector2(-937, -457)
 kind = "pine"
-
-[node name="TreeN392" parent="Entities" unique_id=1417219101 instance=ExtResource("4_tree")]
-position = Vector2(2168, -896)
-
-[node name="TreeN393" parent="Entities" unique_id=1957897688 instance=ExtResource("4_tree")]
-position = Vector2(2044, -817)
-kind = "pine"
-
-[node name="TreeN394" parent="Entities" unique_id=809915279 instance=ExtResource("4_tree")]
-position = Vector2(2054, -883)
-kind = "pine"
-
-[node name="TreeN395" parent="Entities" unique_id=2121988165 instance=ExtResource("4_tree")]
-position = Vector2(2165, -832)
-kind = "pine"
-
-[node name="TreeN396" parent="Entities" unique_id=1385431236 instance=ExtResource("4_tree")]
-position = Vector2(2132, -922)
-
-[node name="TreeN397" parent="Entities" unique_id=188338983 instance=ExtResource("4_tree")]
-position = Vector2(2235, -882)
-
-[node name="TreeN398" parent="Entities" unique_id=1156659889 instance=ExtResource("4_tree")]
-position = Vector2(2194, -803)
-kind = "oak2"
-
-[node name="TreeN399" parent="Entities" unique_id=1987442843 instance=ExtResource("4_tree")]
-position = Vector2(2145, -801)
-kind = "pine"
-
-[node name="TreeN400" parent="Entities" unique_id=58416868 instance=ExtResource("4_tree")]
-position = Vector2(2121, -857)
-
-[node name="TreeN401" parent="Entities" unique_id=1303283814 instance=ExtResource("4_tree")]
-position = Vector2(2206, -873)
 
 [node name="TreeN406" parent="Entities" unique_id=1719920625 instance=ExtResource("4_tree")]
 position = Vector2(-808, 24)
@@ -3277,14 +3228,6 @@ kind = "pine"
 
 [node name="TreeN669" parent="Entities" unique_id=2047218050 instance=ExtResource("4_tree")]
 position = Vector2(2290, 387)
-
-[node name="TreeN670" parent="Entities" unique_id=270024876 instance=ExtResource("4_tree")]
-position = Vector2(2140, -884)
-kind = "pine"
-
-[node name="TreeN674" parent="Entities" unique_id=1578535722 instance=ExtResource("4_tree")]
-position = Vector2(1757, -914)
-kind = "cherry"
 
 [node name="TreeN677" parent="Entities" unique_id=731295852 instance=ExtResource("4_tree")]
 position = Vector2(-454, -818)
@@ -4351,23 +4294,6 @@ position = Vector2(5586, 632)
 [node name="TreeN17" parent="Entities" unique_id=788600012 instance=ExtResource("4_tree")]
 position = Vector2(2392, 1543)
 kind = "pine"
-[node name="TreeN157" parent="Entities" unique_id=316955937 instance=ExtResource("4_tree")]
-position = Vector2(2534, -913)
-kind = "pine"
-[node name="TreeN158" parent="Entities" unique_id=767006350 instance=ExtResource("4_tree")]
-position = Vector2(2525, -820)
-kind = "pine"
-[node name="TreeN159" parent="Entities" unique_id=466376214 instance=ExtResource("4_tree")]
-position = Vector2(2504, -783)
-kind = "pine"
-[node name="TreeN160" parent="Entities" unique_id=1462055118 instance=ExtResource("4_tree")]
-position = Vector2(2443, -932)
-kind = "pine"
-[node name="TreeN161" parent="Entities" unique_id=315992089 instance=ExtResource("4_tree")]
-position = Vector2(2366, -898)
-[node name="TreeN163" parent="Entities" unique_id=57136615 instance=ExtResource("4_tree")]
-position = Vector2(2469, -763)
-kind = "pine"
 [node name="TreeN589" parent="Entities" unique_id=719703896 instance=ExtResource("4_tree")]
 position = Vector2(2390, 826)
 kind = "pine"
@@ -4380,9 +4306,6 @@ kind = "pine"
 [node name="TreeN620" parent="Entities" unique_id=2075432338 instance=ExtResource("4_tree")]
 position = Vector2(2303, -504)
 kind = "pine"
-[node name="TreeN642" parent="Entities" unique_id=1861760376 instance=ExtResource("4_tree")]
-position = Vector2(2438, -513)
-kind = "pine"
 [node name="TreeN657" parent="Entities" unique_id=1224013150 instance=ExtResource("4_tree")]
 position = Vector2(2516, -94)
 kind = "oak2"
@@ -4392,9 +4315,15 @@ kind = "pine"
 [node name="TreeN700" parent="Entities" unique_id=743241722 instance=ExtResource("4_tree")]
 position = Vector2(2513, 933)
 kind = "pine"
-[node name="TreeN701" parent="Entities" unique_id=2057928494 instance=ExtResource("4_tree")]
-position = Vector2(2410, -857)
-kind = "oak2"
+[node name="ForestSouth" parent="Entities" instance=ExtResource("210_forest")]
+position = Vector2(805, 1010)
+polygon = PackedVector2Array(1740, 702, 1685, 593, 1355, 568, 1300, 538, 1225, 438, 1225, 388, 1200, 333, 1200, 268, 1160, 103, 1160, -137, 1250, -307, 1300, -447, 1300, -567, 1285, -607, 1255, -637, 1085, -647, 980, -692, 890, -702, 790, -687, 745, -647, 725, -617, 715, -557, 740, -502, 745, -307, 775, -107, 750, 178, 700, 203, 590, 213, 510, 268, 420, 273, 320, 323, 90, 263, -80, 268, -175, 288, -300, 248, -525, 253, -590, 228, -730, 233, -780, 183, -850, -2, -840, -242, -895, -327, -895, -362, -860, -457, -860, -542, -895, -587, -970, -587, -1000, -557, -1010, -482, -1045, -392, -1040, -277, -1015, -217, -990, -192, -995, 48, -970, 133, -925, 213, -935, 283, -980, 363, -985, 463, -1025, 498, -1090, 523, -1250, 513, -1340, 563, -1480, 553, -1545, 463, -1545, 423, -1510, 343, -1505, -197, -1440, -352, -1355, -447, -1305, -482, -1210, -492, -1175, -532, -1175, -582, -1220, -632, -1335, -632, -1380, -617, -1605, -632, -1645, -612, -1690, -567, -1730, -382, -1730, -302, -1710, -257, -1710, -142, -1685, -72, -1680, 33, -1660, 98, -1655, 293, -1695, 378, -1685, 583, -1740, 702, -865, 702, -830, 483, -800, 428, -770, 403, -725, 403, -680, 423, -445, 428, -235, 453, 325, 463, 580, 448, 835, 363, 905, 353, 935, 323, 920, 188, 915, -182, 945, -287, 965, -472, 980, -502, 1015, -502, 1030, -472, 1010, -297, 980, -192, 970, -102, 980, 213, 1010, 388, 1085, 702)
+spacing = 32.0
+
+[node name="ForestNorth" parent="Entities" instance=ExtResource("210_forest")]
+position = Vector2(405, -514)
+polygon = PackedVector2Array(-1255, 417, -1215, 467, -1180, 477, -1180, 497, -815, 497, -815, 472, -750, 397, -720, 277, -690, 232, -690, 87, -645, -163, -640, -293, -585, -353, -460, -378, -440, -393, -340, -398, 110, -383, 195, -373, 270, -348, 330, -303, 430, -168, 435, -53, 545, 77, 575, 82, 620, 117, 735, 117, 820, 152, 925, 152, 1050, 107, 1150, 17, 1190, -78, 1205, -173, 1255, -233, 1265, -273, 1320, -333, 1320, -368, 1290, -393, 1270, -496, 1060, -496, 1065, -378, 1040, -228, 990, -128, 945, -103, 880, -93, 710, -93, 660, -168, 645, -273, 495, -438, 495, -496, -815, -496, -835, -318, -885, -188, -875, -18, -885, 107, -965, 292, -980, 307, -1010, 307, -1055, 217, -1070, 127, -1070, 22, -1100, -108, -1095, -223, -1020, -496, -1240, -496, -1255, -348, -1315, -153, -1320, -13, -1285, 222, -1255, 297)
+spacing = 32.0
 
 [node name="Ravine1" parent="Entities" instance=ExtResource("50_decor")]
 position = Vector2(2985, 214)
@@ -4567,13 +4496,3 @@ kind = "dead2"
 [node name="Valley25" parent="Entities" instance=ExtResource("4_tree")]
 position = Vector2(6458, 488)
 kind = "dead"
-
-[node name="ForestSouth" parent="Entities" instance=ExtResource("210_forest")]
-position = Vector2(805, 1010)
-polygon = PackedVector2Array(1740, 702, 1685, 593, 1355, 568, 1300, 538, 1225, 438, 1225, 388, 1200, 333, 1200, 268, 1160, 103, 1160, -137, 1250, -307, 1300, -447, 1300, -567, 1285, -607, 1255, -637, 1085, -647, 980, -692, 890, -702, 790, -687, 745, -647, 725, -617, 715, -557, 740, -502, 745, -307, 775, -107, 750, 178, 700, 203, 590, 213, 510, 268, 420, 273, 320, 323, 90, 263, -80, 268, -175, 288, -300, 248, -525, 253, -590, 228, -730, 233, -780, 183, -850, -2, -840, -242, -895, -327, -895, -362, -860, -457, -860, -542, -895, -587, -970, -587, -1000, -557, -1010, -482, -1045, -392, -1040, -277, -1015, -217, -990, -192, -995, 48, -970, 133, -925, 213, -935, 283, -980, 363, -985, 463, -1025, 498, -1090, 523, -1250, 513, -1340, 563, -1480, 553, -1545, 463, -1545, 423, -1510, 343, -1505, -197, -1440, -352, -1355, -447, -1305, -482, -1210, -492, -1175, -532, -1175, -582, -1220, -632, -1335, -632, -1380, -617, -1605, -632, -1645, -612, -1690, -567, -1730, -382, -1730, -302, -1710, -257, -1710, -142, -1685, -72, -1680, 33, -1660, 98, -1655, 293, -1695, 378, -1685, 583, -1740, 702, -865, 702, -830, 483, -800, 428, -770, 403, -725, 403, -680, 423, -445, 428, -235, 453, 325, 463, 580, 448, 835, 363, 905, 353, 935, 323, 920, 188, 915, -182, 945, -287, 965, -472, 980, -502, 1015, -502, 1030, -472, 1010, -297, 980, -192, 970, -102, 980, 213, 1010, 388, 1085, 702)
-spacing = 32.0
-
-[node name="ForestNorth" parent="Entities" instance=ExtResource("210_forest")]
-position = Vector2(405, -514)
-polygon = PackedVector2Array(-1255, 417, -1215, 467, -1180, 477, -1180, 497, -815, 497, -815, 472, -750, 397, -720, 277, -690, 232, -690, 87, -645, -163, -640, -293, -585, -353, -460, -378, -440, -393, -340, -398, 110, -383, 195, -373, 270, -348, 330, -303, 430, -168, 435, -53, 545, 77, 575, 82, 620, 117, 735, 117, 820, 152, 925, 152, 1050, 107, 1150, 17, 1190, -78, 1205, -173, 1255, -233, 1265, -273, 1320, -333, 1320, -368, 1290, -393, 1270, -496, 1060, -496, 1065, -378, 1040, -228, 990, -128, 945, -103, 880, -93, 710, -93, 660, -168, 645, -273, 495, -438, 495, -496, -815, -496, -835, -318, -885, -188, -875, -18, -885, 107, -965, 292, -980, 307, -1010, 307, -1055, 217, -1070, 127, -1070, 22, -1100, -108, -1095, -223, -1020, -496, -1240, -496, -1255, -348, -1315, -153, -1320, -13, -1285, 222, -1255, 297)
-spacing = 32.0
