@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/forest.gd" id="1_forest"]
+
+[node name="Forest" type="Polygon2D"]
+y_sort_enabled = true
+color = Color(0.25, 0.6, 0.3, 0.35)
+polygon = PackedVector2Array(-120, -60, 120, -60, 140, 40, -100, 60)
+script = ExtResource("1_forest")

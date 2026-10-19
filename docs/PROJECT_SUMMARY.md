@@ -94,6 +94,12 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
   from `art/ground_src/village_before_roads.png` and also marks the lanes on the minimap).
   The village pond was moved 176 px east (`tools/move_pond.py`); moving it means moving its
   collision ellipse (`world.gd`), WaterPond1, the ducks and the minimap too.
+- **Forests:** Rex's big trees (`art/trees/`, listed in `scripts/tree_art.gd`) can be placed one by
+  one (tree.tscn, the new kinds) or as a thick forest: `scenes/forest.tscn` / `scripts/forest.gd`, a
+  Polygon2D outline drawn in the editor that fills itself with trees (also in the editor) and is
+  solid in the game, swept up by `canopy_block` so you can't walk far in behind the treetops. Trees
+  in front of you fade see-through; deeper trees are darker. Their shadows come from ShadowLayer
+  (group `forest_tree`, scaled by the `shadow_scale` meta).
   - Shop interiors are one room picture plus invisible solid rectangles (`scripts/interior.gd`). The
     potion shop is Rex's generated room (128x128 world px, smaller than the other shops), built by
     `tools/gen_potion_interior.py`, which lays the old shop's floorboards under its transparent floor

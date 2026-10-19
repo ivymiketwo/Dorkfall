@@ -42,6 +42,13 @@ func _ready() -> void:
 	ents.child_entered_tree.connect(func(n: Node):
 		if n is Pet:
 			_casters.append(n))
+	_add_forest_trees.call_deferred()
+
+
+## Trees grown by forests (forest.gd) aren't direct children of Entities: they're in a group.
+func _add_forest_trees() -> void:
+	for n in get_tree().get_nodes_in_group("forest_tree"):
+		_casters.append(n as Node2D)
 
 
 func _kind(nm: String) -> Variant:
@@ -87,25 +94,30 @@ func _draw() -> void:
 			_ellipse(p + Vector2(0, -1), spec[1], spec[2], Color(0, 0, 0, blob_alpha))
 		else:
 			var hw: float = spec[1]
-			var is_tree := String(n.name).begins_with("Tree")
+			var is_tree := String(n.name).begins_with("Tree") or n.is_in_group("forest_tree")
+			var ts: float = n.get_meta("shadow_scale", 1.0)
 			var flat := Vector2(dir.x, 0.10 + 0.10 * sun)      # buildings/posts: mostly sideways
 			if tall_alpha > 0.01:
 				var col := Color(0.04, 0.03, 0.10, tall_alpha)
 				if is_tree:
 					# crown shadow: a soft blob thrown away from the sun, plus the trunk's
-					var c := p + Vector2(dir.x, 0.25 + 0.2 * sun) * 16.0
-					_ellipse(c, 11.0, 6.0, Color(col.r, col.g, col.b, tall_alpha * 0.55))
-					_ellipse(c, 8.0, 4.2, Color(col.r, col.g, col.b, tall_alpha * 0.55))
+					var c := p + Vector2(dir.x, 0.25 + 0.2 * sun) * 16.0 * ts
+					_ellipse(c, 11.0 * ts, 6.0 * ts, Color(col.r, col.g, col.b, tall_alpha * 0.55))
+					_ellipse(c, 8.0 * ts, 4.2 * ts, Color(col.r, col.g, col.b, tall_alpha * 0.55))
 				else:
 					var sv := flat * (spec[2] as float)
 					for f in [1.0, 0.78, 0.56]:
 						var q := PackedVector2Array([p + Vector2(-hw, 0), p + Vector2(hw, 0),
 								p + Vector2(hw, 0) + sv * f, p + Vector2(-hw, 0) + sv * f])
 						draw_colored_polygon(q, Color(col.r, col.g, col.b, tall_alpha * 0.55))
-			_ellipse(p, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6, Color(0, 0, 0, blob_alpha * 0.6))
+			if is_tree:
+				hw *= ts
+			_ellipse(p, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6 * sqrt(ts), Color(0, 0, 0, blob_alpha * 0.6))
 
 
 func _spec(n: Node) -> Array:
+	if n.is_in_group("forest_tree"):
+		return CASTERS["Tree"]
 	var k: Variant = _kind(n.name)
 	if k != null:
 		return k
