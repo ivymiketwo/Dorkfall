@@ -34,7 +34,7 @@ var _list: Array[Sprite2D] = []
 var _bounds := Rect2()
 var _grid := {}                  # GRID-sized cells -> trees whose trunk is in that cell
 var _faded := {}                 # trees that are (or are still turning back from) see-through
-var _shadow_cache := {}          # see shadow_triangles()
+var _shadow_cache := {}          # see shadow_crowns() / shadow_bases()
 const GRID := 40.0
 
 
@@ -82,6 +82,41 @@ func _fade(delta: float) -> void:
 			_faded.erase(t)
 
 
+## True when a world position is within r of this forest's trees (ShadowLayer uses it).
+func is_near(world_pos: Vector2, r: float) -> bool:
+	return _bounds.grow(r).has_point(to_local(world_pos))
+
+
+## This forest's tree shadows as batches of triangles in world coordinates (built once), so the
+## whole forest's shadow is a few draws instead of one per tree:
+##   shadow_crowns(): {tree size factor: [points, indices]} treetop shadows centred on the trunks;
+##     ShadowLayer slides each batch away from the sun (by the factor) when it draws it.
+##   shadow_bases(): [points, indices] the dark patch at each trunk.
+func shadow_crowns() -> Dictionary:
+	if not _shadow_cache.has("crowns"):
+		var groups := {}
+		for t in _list:
+			var ts: float = t.get_meta("shadow_scale", 1.0)
+			if not groups.has(ts):
+				groups[ts] = [PackedVector2Array(), PackedInt32Array()]
+			var at := to_global(t.position)
+			var j := ShadowLayer.jitter(at)
+			ShadowLayer.ellipse_tris(groups[ts][0], groups[ts][1], at, 10.5 * ts * j, 5.6 * ts * (2.0 - j))
+		_shadow_cache["crowns"] = groups
+	return _shadow_cache["crowns"]
+
+
+func shadow_bases() -> Array:
+	if not _shadow_cache.has("bases"):
+		var pts := PackedVector2Array()
+		var idx := PackedInt32Array()
+		for t in _list:
+			var ts: float = t.get_meta("shadow_scale", 1.0)
+			ShadowLayer.ellipse_tris(pts, idx, to_global(t.position), 6.0 * ts * 0.8, 2.6 * sqrt(ts))
+		_shadow_cache["bases"] = [pts, idx]
+	return _shadow_cache["bases"]
+
+
 ## Trees within r of a world position (used by ShadowLayer to find the shadows it needs to draw).
 func trees_near(world_pos: Vector2, r: float) -> Array[Sprite2D]:
 	var out: Array[Sprite2D] = []
@@ -94,33 +129,6 @@ func trees_near(world_pos: Vector2, r: float) -> Array[Sprite2D]:
 		for gx in range(c0.x, c1.x + 1):
 			for t: Sprite2D in _grid.get(Vector2i(gx, gy), []):
 				out.append(t)
-	return out
-
-
-## All this forest's tree shadows as one batch of triangles (world coordinates), so the whole forest's
-## shadow is one draw instead of one per tree. "crown" = treetop shadows thrown away from the sun
-## (sun_x / sun_h as in ShadowLayer, already rounded by it), "base" = the dark patch at each trunk.
-## Kept until the sun moves on.
-func shadow_triangles(part: String, sun_x: float, sun_h: float) -> Array:
-	var key := "%s|%s|%s" % [part, sun_x, sun_h] if part == "crown" else part
-	if _shadow_cache.has(key):
-		return _shadow_cache[key]
-	for k: String in _shadow_cache.keys():
-		if k.begins_with(part):
-			_shadow_cache.erase(k)             # an older sun position
-	var pts := PackedVector2Array()
-	var idx := PackedInt32Array()
-	for t in _list:
-		var ts: float = t.get_meta("shadow_scale", 1.0)
-		var at := to_global(t.position)
-		if part == "crown":
-			var j := ShadowLayer.jitter(at)
-			ShadowLayer.ellipse_tris(pts, idx, at + Vector2(sun_x, 0.25 + 0.2 * sun_h) * 16.0 * ts,
-					10.5 * ts * j, 5.6 * ts * (2.0 - j))
-		else:
-			ShadowLayer.ellipse_tris(pts, idx, at, 6.0 * ts * 0.8, 2.6 * sqrt(ts))
-	var out := [pts, idx]
-	_shadow_cache[key] = out
 	return out
 
 

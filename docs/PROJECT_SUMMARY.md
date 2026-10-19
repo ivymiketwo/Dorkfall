@@ -105,6 +105,8 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
   treetops. Trees in front of you fade see-through; deeper trees use the darker copies. Kept cheap:
   one shared picture and no tinting, so a forest draws in a few batches; each forest hands
   ShadowLayer its whole shadow as one cached batch of triangles (group `forest`).
+  Placed so far (Rex's map, Oct 2026): ForestNorth and ForestSouth in main.tscn, two big bands that
+  close off the north and south of the west half of the map (the beach strip stays open).
   - Shop interiors are one room picture plus invisible solid rectangles (`scripts/interior.gd`). The
     potion shop is Rex's generated room (128x128 world px, smaller than the other shops), built by
     `tools/gen_potion_interior.py`, which lays the old shop's floorboards under its transparent floor

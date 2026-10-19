@@ -123,10 +123,10 @@ func _draw() -> void:
 	# forests (forest.gd) near the player hand over their whole shadow in one piece
 	_forests.clear()
 	for f in get_tree().get_nodes_in_group("forest"):
-		if (f as Forest).trees_near(pp, 420.0).size() > 0:
+		if (f as Forest).is_near(pp, 420.0):
 			_forests.append(f)
 	# the tree shadows only need drawing again when something they depend on changes
-	var key := "%s|%s|%s|%s" % [snappedf(dir.x, 0.04), snappedf(sun, 0.04), _trees.size(), _forests.size()]
+	var key := "%s|%s|%s|%s" % [snappedf(dir.x, 0.01), snappedf(sun, 0.01), _trees.size(), _forests.size()]
 	if not _trees.is_empty():
 		key += "|%s|%s" % [_trees[0].get_instance_id(), _trees[-1].get_instance_id()]
 	if key != _tree_key:
@@ -140,8 +140,8 @@ func _draw() -> void:
 ## Treetop shadows: one squashed blob per tree, thrown away from the sun, all drawn solid (the
 ## group makes them see-through as a whole). Each forest's come as one batch of triangles.
 func _draw_crowns() -> void:
-	var sx := snappedf(_sun_dir.x, 0.04)
-	var sh := snappedf(_sun, 0.04)
+	var sx := snappedf(_sun_dir.x, 0.01)
+	var sh := snappedf(_sun, 0.01)
 	var pts := PackedVector2Array()
 	var idx := PackedInt32Array()
 	for n in _trees:
@@ -153,8 +153,10 @@ func _draw_crowns() -> void:
 	_triangles(_crowns, pts, idx)
 	for f in _forests:
 		if is_instance_valid(f):
-			var tri: Array = (f as Forest).shadow_triangles("crown", sx, sh)
-			_triangles(_crowns, tri[0], tri[1])
+			var groups: Dictionary = (f as Forest).shadow_crowns()
+			for ts: float in groups:
+				var tri: Array = groups[ts]
+				_triangles(_crowns, tri[0], tri[1], Vector2(sx, 0.25 + 0.2 * sh) * 16.0 * ts)
 
 
 ## The dark patch right at the foot of each trunk.
@@ -169,15 +171,15 @@ func _draw_bases() -> void:
 	_triangles(_bases, pts, idx)
 	for f in _forests:
 		if is_instance_valid(f):
-			var tri: Array = (f as Forest).shadow_triangles("base", 0.0, 0.0)
+			var tri: Array = (f as Forest).shadow_bases()
 			_triangles(_bases, tri[0], tri[1])
 
 
-## Draws a batch of triangles given in world coordinates, in one go.
-func _triangles(item: Node2D, pts: PackedVector2Array, idx: PackedInt32Array) -> void:
+## Draws a batch of triangles given in world coordinates (moved by `shift`), in one go.
+func _triangles(item: Node2D, pts: PackedVector2Array, idx: PackedInt32Array, shift := Vector2.ZERO) -> void:
 	if idx.is_empty():
 		return
-	item.draw_set_transform_matrix(item.get_global_transform().affine_inverse())
+	item.draw_set_transform_matrix(item.get_global_transform().affine_inverse() * Transform2D(0.0, shift))
 	var cols := PackedColorArray()
 	cols.resize(pts.size())
 	cols.fill(SHADOW_COLOR)
