@@ -4,6 +4,8 @@ extends Node2D
 ## buildings cast long shadows that swing round with the sun (long at dawn and
 ## dusk, short at noon, gone at night). Everything else gets a small blob under
 ## its feet. Sits right above the ground and below the entities.
+## Tree shadows are drawn solid into two CanvasGroups (treetops, trunk bases) that are then laid
+## down see-through as one piece, so overlapping trees make one smooth shadow, not a pile of circles.
 
 # name prefix -> [half width, height]; height 0 = just a blob (half width, half height of the ellipse)
 const CASTERS := {
@@ -30,9 +32,22 @@ const CASTERS := {
 var _casters: Array[Node2D] = []
 var _dn: DayNight
 var _last_hour := -1.0
+var _crown_group := CanvasGroup.new()
+var _base_group := CanvasGroup.new()
+var _crowns := Node2D.new()
+var _bases := Node2D.new()
+var _trees: Array[Node2D] = []        # the casters that are trees, refreshed each frame
+var _sun_dir := Vector2.ZERO
+var _sun := 1.0
 
 
 func _ready() -> void:
+	_crown_group.add_child(_crowns)
+	_base_group.add_child(_bases)
+	add_child(_crown_group)
+	add_child(_base_group)
+	_crowns.draw.connect(_draw_crowns)
+	_bases.draw.connect(_draw_bases)
 	var ents := get_parent().get_node_or_null("Entities")
 	if ents == null:
 		return
@@ -62,6 +77,8 @@ func _process(_delta: float) -> void:
 	if _dn == null:
 		_dn = get_tree().get_first_node_in_group("day_night") as DayNight
 	queue_redraw()   # creatures move every frame; the layer is cheap
+	_crowns.queue_redraw()
+	_bases.queue_redraw()
 
 
 func _draw() -> void:
@@ -77,6 +94,9 @@ func _draw() -> void:
 	var tall_alpha := 0.42 * sun
 	var blob_alpha := lerpf(0.36, 0.18, night)
 	var pp := player.global_position
+	_trees.clear()
+	_sun_dir = dir
+	_sun = sun
 	for i in range(_casters.size() - 1, -1, -1):
 		var n := _casters[i]
 		if not is_instance_valid(n):
@@ -94,25 +114,51 @@ func _draw() -> void:
 			_ellipse(p + Vector2(0, -1), spec[1], spec[2], Color(0, 0, 0, blob_alpha))
 		else:
 			var hw: float = spec[1]
-			var is_tree := String(n.name).begins_with("Tree") or n.is_in_group("forest_tree")
-			var ts: float = n.get_meta("shadow_scale", 1.0)
+			if String(n.name).begins_with("Tree") or n.is_in_group("forest_tree"):
+				_trees.append(n)         # drawn merged, see _draw_crowns / _draw_bases
+				continue
 			var flat := Vector2(dir.x, 0.10 + 0.10 * sun)      # buildings/posts: mostly sideways
 			if tall_alpha > 0.01:
 				var col := Color(0.04, 0.03, 0.10, tall_alpha)
-				if is_tree:
-					# crown shadow: a soft blob thrown away from the sun, plus the trunk's
-					var c := p + Vector2(dir.x, 0.25 + 0.2 * sun) * 16.0 * ts
-					_ellipse(c, 11.0 * ts, 6.0 * ts, Color(col.r, col.g, col.b, tall_alpha * 0.55))
-					_ellipse(c, 8.0 * ts, 4.2 * ts, Color(col.r, col.g, col.b, tall_alpha * 0.55))
-				else:
-					var sv := flat * (spec[2] as float)
-					for f in [1.0, 0.78, 0.56]:
-						var q := PackedVector2Array([p + Vector2(-hw, 0), p + Vector2(hw, 0),
-								p + Vector2(hw, 0) + sv * f, p + Vector2(-hw, 0) + sv * f])
-						draw_colored_polygon(q, Color(col.r, col.g, col.b, tall_alpha * 0.55))
-			if is_tree:
-				hw *= ts
-			_ellipse(p, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6 * sqrt(ts), Color(0, 0, 0, blob_alpha * 0.6))
+				var sv := flat * (spec[2] as float)
+				for f in [1.0, 0.78, 0.56]:
+					var q := PackedVector2Array([p + Vector2(-hw, 0), p + Vector2(hw, 0),
+							p + Vector2(hw, 0) + sv * f, p + Vector2(-hw, 0) + sv * f])
+					draw_colored_polygon(q, Color(col.r, col.g, col.b, tall_alpha * 0.55))
+			_ellipse(p, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6, Color(0, 0, 0, blob_alpha * 0.6))
+	_crown_group.self_modulate = Color(1, 1, 1, tall_alpha * 0.62)
+	_base_group.self_modulate = Color(1, 1, 1, blob_alpha * 0.6)
+
+
+## Treetop shadows: one squashed blob per tree, thrown away from the sun, all drawn solid.
+func _draw_crowns() -> void:
+	if _crown_group.self_modulate.a <= 0.005:
+		return
+	for n in _trees:
+		if not is_instance_valid(n):
+			continue
+		var ts: float = n.get_meta("shadow_scale", 1.0)
+		var p := to_local(n.global_position)
+		var j := _jitter(n.global_position)
+		var c := p + Vector2(_sun_dir.x, 0.25 + 0.2 * _sun) * 16.0 * ts
+		_ellipse_on(_crowns, c, 10.5 * ts * j, 5.6 * ts * (2.0 - j), Color(0.04, 0.03, 0.10))
+
+
+## The dark patch right at the foot of each trunk.
+func _draw_bases() -> void:
+	for n in _trees:
+		if not is_instance_valid(n):
+			continue
+		var ts: float = n.get_meta("shadow_scale", 1.0)
+		var p := to_local(n.global_position)
+		var hw := 6.0 * ts
+		_ellipse_on(_bases, p, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6 * sqrt(ts), Color(0, 0, 0))
+
+
+## A steady 0.85..1.15 per tree, so neighbouring shadows aren't all the same size.
+func _jitter(at: Vector2) -> float:
+	var h := absi(int(at.x * 73.0) ^ int(at.y * 151.0)) % 1000
+	return 0.85 + 0.3 * float(h) / 1000.0
 
 
 func _spec(n: Node) -> Array:
@@ -127,8 +173,13 @@ func _spec(n: Node) -> Array:
 
 
 func _ellipse(c: Vector2, rx: float, ry: float, col: Color) -> void:
+	_ellipse_on(self, c, rx, ry, col)
+
+
+func _ellipse_on(item: CanvasItem, c: Vector2, rx: float, ry: float, col: Color) -> void:
 	var pts := PackedVector2Array()
-	for i in 14:
-		var a := TAU * float(i) / 14.0
+	var n := 14 if rx < 14.0 else 22
+	for i in n:
+		var a := TAU * float(i) / float(n)
 		pts.append(c + Vector2(cos(a) * rx, sin(a) * ry))
-	draw_colored_polygon(pts, col)
+	item.draw_colored_polygon(pts, col)
