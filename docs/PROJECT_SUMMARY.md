@@ -94,6 +94,9 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
   from `art/ground_src/village_before_roads.png` and also marks the lanes on the minimap).
   The village pond was moved 176 px east (`tools/move_pond.py`); moving it means moving its
   collision ellipse (`world.gd`), WaterPond1, the ducks and the minimap too.
+- **Trees:** the standard living trees (kinds oak, oak2, cherry, pine in `scripts/tree.gd`) use Rex's
+  std_* set (round trees, two pines, a gnarled tree for the old cherry spots), each spot picking
+  one look from its position; the burnt dead trees keep their old art.
 - **Forests:** Rex's big trees (`art/trees_src/`, packed with darker copies into one picture
   `art/trees_atlas.png` by `tools/pack_trees.py`, which also writes the list in `scripts/tree_art.gd`)
   can be placed one by one (tree.tscn, the new kinds) or as a thick forest: `scenes/forest.tscn` /
