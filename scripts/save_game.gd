@@ -14,9 +14,14 @@ static func _load() -> void:
 	if _loaded:
 		return
 	_loaded = true
-	if not FileAccess.file_exists(PATH):
-		return
-	var f := FileAccess.open(PATH, FileAccess.READ)
+	var path := PATH
+	if not FileAccess.file_exists(path):
+		# On Windows the swap in _write is "delete the old file, then rename the new one": if the
+		# game stopped right between the two, the save is still there under its temporary name.
+		path = PATH + ".tmp"
+		if not FileAccess.file_exists(path):
+			return
+	var f := FileAccess.open(path, FileAccess.READ)
 	if f == null:
 		return
 	var parsed = JSON.parse_string(f.get_as_text())

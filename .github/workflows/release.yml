@@ -32,7 +32,7 @@ jobs:
           mkdir -p build
           godot --headless --import || true
           godot --headless --export-release "Windows Desktop"
-          cd build && zip -9 ../Dorkfall-${{ github.event.inputs.version || github.ref_name }}-windows.zip TopdownTest.exe
+          cd build && zip -9 ../Dorkfall-${{ github.event.inputs.version || github.ref_name }}-windows.zip Dorkfall.exe
       - uses: actions/upload-artifact@v7
         with:
           name: windows-build

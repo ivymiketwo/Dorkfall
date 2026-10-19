@@ -127,17 +127,19 @@ func _say(msg: String, col := Color("f0d040")) -> void:
 
 
 ## Wears the item in inventory slot `i`; whatever was in that equipment slot goes back to the inventory.
+## Bag and gear are saved in ONE write, so a crash can't leave an item both worn and in the bag.
 func equip_from(inv: Inventory, i: int) -> void:
 	var item := inv.items[i]
 	if item == null or not item.is_equippable():
 		return
 	var slot := item.equip_slot
 	var old := get_item(slot)
-	inv.remove_at(i, 1)
-	if old:
-		inv.replace_slot(i, old)
-	items[slot] = item
-	_refresh()
+	SaveGame.batch(func() -> void:
+		inv.remove_at(i, 1)
+		if old:
+			inv.replace_slot(i, old)
+		items[slot] = item
+		_refresh())
 	_say("EQUIPPED " + item.display_name.to_upper())
 
 
@@ -149,6 +151,7 @@ func unequip(slot: String) -> void:
 	if not inv.has_room_for(it):
 		_say("INVENTORY FULL", Color("e03c3c"))
 		return
-	inv.add(it, 1)
-	items.erase(slot)
-	_refresh()
+	SaveGame.batch(func() -> void:          # bag and gear in one write (see equip_from)
+		inv.add(it, 1)
+		items.erase(slot)
+		_refresh())

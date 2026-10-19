@@ -13,6 +13,9 @@ const UI_GROUP := "ui_layer"
 
 
 func _ready() -> void:
+	# The window title. (The project itself is still called "Topdown Starter" in project.godot:
+	# renaming it would move the save file to a new folder.)
+	get_window().title = "Dorkfall"
 	for n in get_tree().get_nodes_in_group(UI_GROUP):
 		_lift(n)
 	get_tree().node_added.connect(func(n: Node) -> void:

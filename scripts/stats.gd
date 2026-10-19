@@ -119,6 +119,11 @@ func heal(amount: float) -> void:
 	changed.emit()
 
 
+func restore_mana(amount: float) -> void:
+	mana = minf(mana + amount, max_mana)
+	changed.emit()
+
+
 ## Moves `amount` from one pool to another ("health" or "mana").
 ## Fails (and changes nothing) if the target is already full or the source
 ## doesn't have enough. Transferring out of health can never kill you.

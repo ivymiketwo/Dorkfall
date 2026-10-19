@@ -191,13 +191,15 @@ static func turn_in(id: String, player: Node2D) -> Dictionary:
 	var inv := player.get_node_or_null("Inventory") as Inventory
 	if inv == null or inv.room_for(COINS, reward_of(q)) < reward_of(q):
 		return {"ok": false, "message": "INVENTORY FULL"}
-	inv.add(COINS, reward_of(q))
-	var e := player.get_node_or_null("Experience") as Experience
-	if e:
-		e.add_xp(reward_of(q))
-	if q.get("once", false):
-		_state[id] = {"s": 3, "n": int(q["count"])}
-	else:
-		_state.erase(id)
-	_save()
+	# coins, XP and "handed in" are saved in ONE write, so a crash can't pay the reward twice
+	SaveGame.batch(func() -> void:
+		inv.add(COINS, reward_of(q))
+		var e := player.get_node_or_null("Experience") as Experience
+		if e:
+			e.add_xp(reward_of(q))
+		if q.get("once", false):
+			_state[id] = {"s": 3, "n": int(q["count"])}
+		else:
+			_state.erase(id)
+		_save())
 	return {"ok": true, "message": "Reward: %d coins and %d XP" % [reward_of(q), reward_of(q)]}

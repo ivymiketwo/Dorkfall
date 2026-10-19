@@ -141,15 +141,17 @@ func has_room_for(item: Item) -> bool:
 
 
 ## All-or-nothing: runs `changes` (a Callable that edits the bag and returns true to keep
-## the result). If it returns false the bag goes back exactly as it was.
+## the result). If it returns false the bag goes back exactly as it was. Saved in ONE write at
+## the end, so a crash halfway through can't leave a half-done trade in the save file.
 func transact(changes: Callable) -> bool:
-	var before := snapshot()
-	var cd := item_cd.duplicate()
-	if changes.call():
-		return true
-	load_snapshot(before)
-	item_cd = cd
-	return false
+	return SaveGame.batch(func() -> bool:
+		var before := snapshot()
+		var cd := item_cd.duplicate()
+		if changes.call():
+			return true
+		load_snapshot(before)
+		item_cd = cd
+		return false)
 
 
 ## How many of `amount` would fit right now (nothing is changed).
@@ -265,7 +267,7 @@ func try_use(i: int) -> Dictionary:
 			msgs.append({"text": "MANA FULL", "color": Color("e0e0e0")})
 		else:
 			var before_m := stats.mana
-			stats.mana = minf(stats.mana + item.mana_amount, stats.max_mana)
+			stats.restore_mana(item.mana_amount)
 			msgs.append({"text": "+%d MP" % int(round(stats.mana - before_m)), "color": Color("5fa8ff")})
 			used = true
 	if used:

@@ -83,13 +83,13 @@ changes in one place, and visuals are separate from logic.
 6. **Owners by name / node**: gravestones belong to `display_name`, ground loot and pets to the
    player node. Switch to account ids (two players named Rex could loot each other's graves).
 7. **Save writes**: SaveGame writes the whole file on every bag change. Fine locally; a server
-   should batch or use a database.
+   should batch or use a database. Anything that moves value between two saved places is wrapped
+   in `SaveGame.batch` (one write): trades (`Inventory.transact`), equip / unequip, quest rewards,
+   pets, gravestones, chase drops. Keep doing that for new features.
 
 ## Loose ends (not server-related)
-- `project.godot` gets rewritten by the editor on Rex's PC, which blocks `git pull` in the
-  launchers. See what the editor changes and either commit it or make the launchers handle it.
-- `main.tscn` has stale UIDs for `wheat_field.png`, `water_info_1.png`, `water_info_2.png`
-  (warnings at startup, harmless).
 - Attack telegraphs now redraw on the 60/s game tick; smooth them if they look choppy on
   high-refresh screens.
 - `tools/gen_desert.py` docstring says only grass is repainted; it also repaints flower speckles.
+- (Done: the launchers now let the update through when Godot only rewrote a file, or when the
+  local file already matches GitHub; main.tscn's stale UIDs were fixed by an editor save.)

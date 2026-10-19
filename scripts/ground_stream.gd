@@ -85,7 +85,17 @@ func _update(all_sync: bool) -> void:
 			if not ResourceLoader.exists(_path(cell)):
 				continue          # land nobody can see (around the east ravine) isn't stored
 			if all_sync or on_screen.intersects(_cell_rect(cell)):
-				_show(cell, load(_path(cell)))          # on screen: load now, no hole
+				# on screen: load now, no hole. If it's already loading in the background (you
+				# jumped there through a door / teleport), wait for that load instead of starting
+				# a second one of the same picture.
+				var tex: Texture2D
+				if _pending.has(cell):
+					tex = ResourceLoader.load_threaded_get(_pending[cell])
+					_pending.erase(cell)
+				else:
+					tex = load(_path(cell))
+				if tex != null:
+					_show(cell, tex)
 			elif not _pending.has(cell):
 				_pending[cell] = _path(cell)
 				ResourceLoader.load_threaded_request(_pending[cell])
