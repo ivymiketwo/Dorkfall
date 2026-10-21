@@ -63,6 +63,7 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   script runs the whole attack (rules on the game tick via AttackTimeline, the rest is drawing)
   and gets `caster` and `damage` from BasicAttack. First one: the Sun Staff's halo beam
   (`scripts/sun_halo.gd`, timings in `scenes/spells/sun_halo.tscn`'s Inspector).
+  A spell can root its caster (`player.rooted_until`) and fill the cast bar (`Hotbar.start_channel`).
 
 ## Difficulty design (Rex's rules)
 - Stronger monsters must be *harder to play against*, not spongier: keep time-to-kill roughly flat

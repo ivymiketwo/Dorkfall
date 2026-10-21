@@ -176,7 +176,7 @@ func _draw() -> void:
 	HiFont.draw(self, ar[2], str(hotbar.active_bar + 1), UiStyle.TEXT, 0.5)
 
 	# Cast bar above the hotbar
-	if hotbar.casting_slot != -1:
+	if hotbar.is_busy():
 		var bar := Rect2(origin + Vector2(0, -6), Vector2(total_w, 4))
 		draw_rect(bar, Color("1a1a22"))
 		draw_rect(Rect2(bar.position + Vector2.ONE, Vector2((total_w - 2) * hotbar.cast_progress(), 2)), SELECTED)

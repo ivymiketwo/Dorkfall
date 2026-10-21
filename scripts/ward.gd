@@ -97,7 +97,7 @@ func can_ward() -> bool:
 	if not player.is_physics_processing() or player.get("control_locked"):
 		return false
 	var hb := player.get_node_or_null("Hotbar") as Hotbar
-	return hb == null or hb.casting_slot == -1
+	return hb == null or not hb.is_busy()
 
 
 func _start() -> void:

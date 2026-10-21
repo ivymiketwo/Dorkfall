@@ -58,6 +58,9 @@ func attack() -> void:
 		stats.warn_out_of_mana()
 		return
 	if ab.kind == Ability.Kind.SPELL:
+		var hb := caster.get_node_or_null("Hotbar") as Hotbar
+		if hb != null and hb.is_busy():      # one cast at a time
+			return
 		_cast_spell(ab)
 	else:
 		_basic_beam(ab)

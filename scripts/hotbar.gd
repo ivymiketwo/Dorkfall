@@ -26,6 +26,10 @@ var selected := 0
 var active_bar := 0
 var casting_slot := -1
 var cast_elapsed := 0.0
+## A cast run by something else (a staff's own attack, e.g. sun_halo.gd): it fills the cast bar
+## from `channel_from` to `channel_until` (GameClock times) and keeps the hotbar busy meanwhile.
+var channel_from := 0.0
+var channel_until := 0.0
 ## Per slot: GameClock time the slot can be cast again (see cooldown_left).
 var ready_at: Array[float] = []
 var fail_flash: Array[float] = []
@@ -206,7 +210,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	else:   # "bar2_slot5"
 		var parts := best.substr(3).split("_slot")
 		target = (int(parts[0]) - 1) * PER_BAR + int(parts[1]) - 1
-	if casting_slot != -1:
+	if is_busy():
 		return   # busy casting something else
 	selected = target   # highlights the last slot used
 	changed.emit()
@@ -226,7 +230,7 @@ func try_cast(i: int) -> void:
 		_use_item_slot(i)
 		return
 	var ab := slots[i]
-	if ab == null or casting_slot != -1:
+	if ab == null or is_busy():
 		return
 	if caster.has_method("is_warding") and caster.is_warding():   # no casting behind the Ward
 		_fail(i)
@@ -246,7 +250,7 @@ func try_cast(i: int) -> void:
 
 
 func _use_item_slot(i: int) -> void:
-	if casting_slot != -1:
+	if is_busy():
 		return
 	if inventory == null or inventory.cooldown_of(item_slots[i]) > 0.0 or not inventory.use_item(item_slots[i]):
 		_fail(i)
@@ -254,8 +258,31 @@ func _use_item_slot(i: int) -> void:
 	changed.emit()
 
 
+## Starts a cast bar of `seconds` for a spell that runs itself (see channel_from).
+func start_channel(seconds: float) -> void:
+	channel_from = GameClock.now
+	channel_until = GameClock.now + seconds
+	changed.emit()
+
+
+func end_channel() -> void:
+	channel_until = minf(channel_until, GameClock.now)
+	changed.emit()
+
+
+func is_channeling() -> bool:
+	return GameClock.now < channel_until
+
+
+## Casting something (a hotbar spell or a channelled staff attack): no other casts meanwhile.
+func is_busy() -> bool:
+	return casting_slot != -1 or is_channeling()
+
+
 func cast_progress() -> float:
 	if casting_slot == -1:
+		if is_channeling():
+			return clampf((GameClock.now - channel_from) / maxf(channel_until - channel_from, 0.01), 0.0, 1.0)
 		return 0.0
 	return clampf(cast_elapsed / slots[casting_slot].cast_time, 0.0, 1.0)
 
@@ -277,7 +304,7 @@ func _physics_process(delta: float) -> void:
 
 ## Only visuals here: the cast orb, the red "can't" flash, and redrawing the bar.
 func _process(delta: float) -> void:
-	var dirty := casting_slot != -1
+	var dirty := is_busy()
 	if inventory and not inventory.item_cd.is_empty():
 		dirty = true
 	for i in SLOT_COUNT:

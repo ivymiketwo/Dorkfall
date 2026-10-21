@@ -4,8 +4,9 @@ extends Node2D
 ##   1. charge: a bright orb on the staff's tip pulses `pulses` times as it grows,
 ##   2. it turns into a shining halo standing upright that floats off toward the mouse, slowing
 ##      down and wobbling like a smoke ring,
-##   3. on the way it divides into three halos in a row,
+##   3. right away it divides into three halos in a row, which drift to a stop and hover,
 ##   4. then a huge pulsing sun beam bursts from the staff through the three halos and lingers.
+## Stages 1-3 are a cast: the cast bar fills and the caster can't move until the beam fires.
 ## Only the beam hurts: everything inside it takes `damage` once, when it fires.
 ##
 ## Made by BasicAttack from the Sun Staff's ability (abilities/sun_halo.tres, which points at
@@ -25,18 +26,20 @@ extends Node2D
 @export var orb_end_radius := 3.5
 
 @export_group("Halo")
-## Seconds the halo floats before the beam.
-@export var drift_time := 2.0
+## Seconds the halo floats out before it stops.
+@export var drift_time := 0.7
 ## How far it floats (world px). It starts fast and keeps slowing down, like a smoke ring.
-@export var drift_distance := 80.0
+@export var drift_distance := 36.0
+## Seconds the three halos hover in place (bobbing a little) before they flare up.
+@export var hover_time := 0.45
 ## Half the halo's height (world px).
 @export var halo_radius := 7.5
 ## How far it sways from side to side while drifting (world px).
 @export var wobble := 1.5
-## When it starts dividing, as a fraction of the drift (0.45 = a bit before halfway).
-@export var split_at := 0.45
+## Seconds after it leaves the staff that it starts dividing.
+@export var split_after := 0.1
 ## Seconds the division takes, and how far apart the three halos end up (world px).
-@export var split_time := 0.5
+@export var split_time := 0.45
 @export var split_gap := 13.0
 ## Seconds the halos flare up before the beam.
 @export var gather_time := 0.15
@@ -47,7 +50,8 @@ extends Node2D
 ## Seconds it lingers at full strength (it then fades over `beam_fade`).
 @export var beam_time := 0.25
 @export var beam_fade := 0.12
-## How far it reaches past the farthest halo (world px).
+## How far it reaches from the staff (world px), and at least how far past the farthest halo.
+@export var beam_reach := 140.0
 @export var beam_past_halos := 25.0
 ## How many times it throbs while it lingers.
 @export var beam_pulses := 3
@@ -75,6 +79,7 @@ var _from := Vector2.ZERO           # where the halo left (global)
 var _dir := Vector2.RIGHT
 var _fired := false
 var _fizzled := false
+var _cast_over := false
 var _beam_from := Vector2.ZERO
 var _beam_dir := Vector2.RIGHT
 var _beam_len := 0.0
@@ -91,6 +96,13 @@ func _ready() -> void:
 		.at(fire_at, _fire) \
 		.lasts(fire_at + beam_time + beam_fade)
 	if caster != null:
+		_face(caster.aim_world - caster.global_position)
+		# stages 1-3 are a cast: rooted, with the cast bar filling, until the beam fires
+		if "rooted_until" in caster:
+			caster.rooted_until = GameClock.now + fire_at
+		var hb := caster.get_node_or_null("Hotbar")
+		if hb != null and hb.has_method("start_channel"):
+			hb.start_channel(fire_at)
 		_orb = Node2D.new()
 		_orb.name = "SunChargeOrb"
 		_orb.draw.connect(_draw_orb)
@@ -102,10 +114,31 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _orb != null and is_instance_valid(_orb):
 		_orb.queue_free()
+	_end_cast()
 
 
+## Lets the caster move again and empties the cast bar (when the beam fires, or if it never does).
+func _end_cast() -> void:
+	if _cast_over:
+		return
+	_cast_over = true
+	if caster == null or not is_instance_valid(caster):
+		return
+	if "rooted_until" in caster:
+		caster.rooted_until = minf(caster.rooted_until, GameClock.now)
+	var hb := caster.get_node_or_null("Hotbar")
+	if hb != null and hb.has_method("end_channel"):
+		hb.end_channel()
+
+
+## When the beam fires (and the cast ends), in seconds from the start.
 func _fire_time() -> float:
-	return charge_time + drift_time + gather_time
+	return charge_time + _hover_end() + gather_time
+
+
+## Seconds after the halo leaves the staff that the hovering ends and the flare starts.
+func _hover_end() -> float:
+	return drift_time + hover_time
 
 
 # --- rules (game tick) ---
@@ -146,30 +179,32 @@ func _facing_dir() -> Vector2:
 
 ## The middle halo's centre (global), `s` seconds after it left the staff. Only depends on time.
 func halo_spot(s: float) -> Vector2:
-	var sc := clampf(s, 0.0, drift_time)
-	var x := sc / drift_time
+	var sc := clampf(s, 0.0, _hover_end())
+	var x := clampf(sc / drift_time, 0.0, 1.0)
 	var along := drift_distance * (1.0 - pow(1.0 - x, 3.0))
 	var side := sin(sc * 4.2) * wobble * x
-	return _from + _dir * along + _dir.orthogonal() * side
+	var bob := sin(sc * 6.0) * 0.6 * x          # a gentle float up and down while hovering
+	return _from + _dir * along + _dir.orthogonal() * side + Vector2(0.0, bob)
 
 
 ## How far the halo has divided (0 = one halo, 1 = three, `split_gap` apart).
 func split_amount(s: float) -> float:
-	return smoothstep(0.0, 1.0, (minf(s, drift_time) - split_at * drift_time) / maxf(split_time, 0.01))
+	return smoothstep(0.0, 1.0, (s - split_after) / maxf(split_time, 0.01))
 
 
 func _fire() -> void:
 	_fired = true
+	_end_cast()
 	if not _caster_ok():
 		_fizzled = true        # no caster to fire it: the halos just fade away
 		return
-	var mid := halo_spot(drift_time)
+	var mid := halo_spot(_hover_end())
 	_face(mid - caster.global_position)
 	_beam_from = HeldWeapon.beam_origin(caster)
 	var to := mid - _beam_from
 	_beam_dir = to.normalized() if to.length() > 4.0 else _dir     # from the staff, through the halos
 	var far := mid + _dir * split_gap
-	_beam_len = maxf((far - _beam_from).dot(_beam_dir) + beam_past_halos, beam_width * 2.0)
+	_beam_len = maxf((far - _beam_from).dot(_beam_dir) + beam_past_halos, beam_reach)
 	var stats := caster.get_node_or_null("Stats") as Stats
 	var amount := damage * (stats.magic_mult() if stats else 1.0)
 	for body in _bodies_in_beam():
@@ -267,7 +302,7 @@ func _draw() -> void:
 			a = 1.0 - f
 			grow = 1.0 + 0.5 * f
 		var r := halo_radius * (0.35 + 0.65 * _ease_out(clampf(s / 0.3, 0.0, 1.0))) * grow
-		var flare := clampf((s - drift_time) / maxf(gather_time, 0.01), 0.0, 1.0) if t <= fire_at else 1.0
+		var flare := clampf((s - _hover_end()) / maxf(gather_time, 0.01), 0.0, 1.0) if t <= fire_at else 1.0
 		r *= 1.0 - 0.12 * flare
 		var mid := halo_spot(s)
 		var k := split_amount(s)

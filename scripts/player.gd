@@ -38,6 +38,9 @@ const TEST_GEAR := [preload("res://items/wooden_staff.tres"), preload("res://ite
 var input_dir := Vector2.ZERO
 ## Set by minigames (fishing) so the keys don't walk the character.
 var control_locked := false
+## GameClock time until which the player is rooted by a spell they are casting (can't walk,
+## hop or ward), e.g. the Sun Staff's halo beam (sun_halo.gd).
+var rooted_until := 0.0
 var input_ward := false            ## right mouse (pressed in the world) or Q: hold the Ward up
 var aim_world := Vector2.ZERO      ## where in the world the player is aiming
 ## Left / right mouse held down, counting only presses that started in the world (not on a
@@ -96,7 +99,7 @@ func _gather_input() -> void:
 	if ChatLog.typing:          # typing a message: the keys are for the chat
 		input_dir = Vector2.ZERO
 		input_ward = false
-	if control_locked:
+	if control_locked or is_rooted():
 		input_dir = Vector2.ZERO
 		input_ward = false
 	aim_world = get_global_mouse_position()
@@ -209,7 +212,7 @@ func reconcile(seq: int, server_pos: Vector2) -> float:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if control_locked and event.is_action_pressed("jump"):
+	if (control_locked or is_rooted()) and event.is_action_pressed("jump"):
 		return
 	if event.is_action_pressed("jump") and _hop_ab:
 		if _hop_t >= 0.0:
@@ -237,6 +240,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## True while the Ward (right click / Q) is up.
+func is_rooted() -> bool:
+	return not GameClock.passed(rooted_until)
+
+
 func is_warding() -> bool:
 	var w := get_node_or_null("Ward") as Ward
 	return w != null and w.warding
