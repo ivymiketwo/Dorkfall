@@ -16,6 +16,6 @@ int_bonus = 5
 equip_slot = "weapon"
 two_handed = true
 worn_texture = ExtResource("2_worn")
-hold_scale = 0.62
+hold_scale = 0.77
 weapon_kind = "staff"
 basic_attack = ExtResource("3_beam")

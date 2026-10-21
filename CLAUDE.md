@@ -52,10 +52,11 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   block (50% / 25% mana for aimed hits it faces, 30% / 50% mana for everything else) with a parry window; the orb is lit from the mouse side (`shaders/ward_orb.gdshader`). Stats are Intelligence (mana, magic damage) and Vitality (health).
   No stamina and no sprint: the Space-key bunnyhop is the fast way to move.
 - Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
-- New staffs can be a single upright picture (`art/worn_<name>.png`, trimmed, original kept in
-  `art/staff_src/`): `HeldWeapon` uses the whole picture when it isn't an old 120x160 worn sheet.
-  Size it with the item's `hold_scale` (0.77 = same pixel size as the character; the Amethyst
-  Staff uses 0.62 so it isn't taller than the wizard).
+- New staffs are a single upright picture: `tools/add_staff.py <id> <png> <icon_frame>` keeps the
+  original in `art/staff_src/`, trims it to `art/worn_<id>.png` and makes the tilted inventory
+  icon; then write `items/<id>.tres` by hand (copy `amethyst_staff.tres`). `HeldWeapon` uses the
+  whole picture when it isn't an old 120x160 worn sheet. `hold_scale` 0.77 = same pixel size as the
+  character (Rex draws them about 50 px tall in an 80x80 canvas so they don't drag on the floor).
 
 ## Difficulty design (Rex's rules)
 - Stronger monsters must be *harder to play against*, not spongier: keep time-to-kill roughly flat

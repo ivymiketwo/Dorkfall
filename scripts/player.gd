@@ -28,6 +28,8 @@ const NAKED_TEX := preload("res://art/player_new.png")   # chest gear can swap i
 const COINS := preload("res://items/coins.tres")
 const TEST_GEAR := [preload("res://items/wooden_staff.tres"), preload("res://items/vordy_staff.tres"),
 		preload("res://items/amethyst_staff.tres"),
+		preload("res://items/amber_staff.tres"),
+		preload("res://items/sun_staff.tres"),
 		preload("res://items/wizard_hat.tres"), preload("res://items/wizard_robe.tres")]
 
 ## What the player is asking for right now. Only `_gather_input` reads the keyboard and mouse;
