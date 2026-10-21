@@ -4,8 +4,10 @@ extends Node2D
 ## buildings cast long shadows that swing round with the sun (long at dawn and
 ## dusk, short at noon, gone at night). Everything else gets a small blob under
 ## its feet. Sits right above the ground and below the entities.
-## Tree shadows are drawn solid into two CanvasGroups (treetops, trunk bases) that are then laid
-## down see-through as one piece, so overlapping trees make one smooth shadow, not a pile of circles.
+## Each tree has one shadow: an oval under the tree, as wide as about half its crown, centred on
+## the trunk and nudged a little toward the side away from the sun (so it always stays attached).
+## They are drawn solid into a CanvasGroup that is then laid down see-through as one piece, so
+## overlapping trees make one smooth shadow, not a pile of circles.
 
 # name prefix -> [half width, height]; height 0 = just a blob (half width, half height of the ellipse)
 const CASTERS := {
@@ -33,9 +35,7 @@ var _casters: Array[Node2D] = []
 var _dn: DayNight
 var _last_hour := -1.0
 var _crown_group := CanvasGroup.new()
-var _base_group := CanvasGroup.new()
 var _crowns := Node2D.new()
-var _bases := Node2D.new()
 var _trees: Array[Node2D] = []        # the casters that are trees, refreshed each frame
 var _sun_dir := Vector2.ZERO
 var _sun := 1.0
@@ -46,11 +46,8 @@ const SHADOW_COLOR := Color(0.04, 0.03, 0.10)
 
 func _ready() -> void:
 	_crown_group.add_child(_crowns)
-	_base_group.add_child(_bases)
 	add_child(_crown_group)
-	add_child(_base_group)
 	_crowns.draw.connect(_draw_crowns)
-	_bases.draw.connect(_draw_bases)
 	var ents := get_parent().get_node_or_null("Entities")
 	if ents == null:
 		return
@@ -109,7 +106,7 @@ func _draw() -> void:
 		else:
 			var hw: float = spec[1]
 			if String(n.name).begins_with("Tree"):
-				_trees.append(n)         # drawn merged, see _draw_crowns / _draw_bases
+				_trees.append(n)         # drawn merged, see _draw_crowns
 				continue
 			var flat := Vector2(dir.x, 0.10 + 0.10 * sun)      # buildings/posts: mostly sideways
 			if tall_alpha > 0.01:
@@ -132,47 +129,28 @@ func _draw() -> void:
 	if key != _tree_key:
 		_tree_key = key
 		_crowns.queue_redraw()
-		_bases.queue_redraw()
-	_crown_group.self_modulate = Color(1, 1, 1, tall_alpha * 0.62)
-	_base_group.self_modulate = Color(1, 1, 1, blob_alpha * 0.6)
+	# darker in full sun, but never gone (at night they stay as faint as the other blobs)
+	_crown_group.self_modulate = Color(1, 1, 1, maxf(tall_alpha * 0.62, blob_alpha * 0.6))
 
 
-## Treetop shadows: one squashed blob per tree, thrown away from the sun, all drawn solid (the
-## group makes them see-through as a whole). Each forest's come as one batch of triangles.
+## Tree shadows: one squashed oval per tree under its trunk, nudged away from the sun, all drawn
+## solid (the group makes them see-through as a whole). Each forest's come as one batch of triangles.
 func _draw_crowns() -> void:
 	var sx := snappedf(_sun_dir.x, 0.01)
-	var sh := snappedf(_sun, 0.01)
 	var pts := PackedVector2Array()
 	var idx := PackedInt32Array()
 	for n in _trees:
 		if is_instance_valid(n):
 			var ts: float = n.get_meta("shadow_scale", 1.0)
 			var j := jitter(n.global_position)
-			ellipse_tris(pts, idx, n.global_position + Vector2(sx, 0.25 + 0.2 * sh) * 16.0 * ts,
-					10.5 * ts * j, 5.6 * ts * (2.0 - j))
+			ellipse_tris(pts, idx, n.global_position + tree_shift(sx, ts), 10.5 * ts * j, TREE_RY * ts * (2.0 - j))
 	_triangles(_crowns, pts, idx)
 	for f in _forests:
 		if is_instance_valid(f):
 			var groups: Dictionary = (f as Forest).shadow_crowns()
 			for ts: float in groups:
 				var tri: Array = groups[ts]
-				_triangles(_crowns, tri[0], tri[1], Vector2(sx, 0.25 + 0.2 * sh) * 16.0 * ts)
-
-
-## The dark patch right at the foot of each trunk.
-func _draw_bases() -> void:
-	var pts := PackedVector2Array()
-	var idx := PackedInt32Array()
-	for n in _trees:
-		if is_instance_valid(n):
-			var ts: float = n.get_meta("shadow_scale", 1.0)
-			var hw := 6.0 * ts
-			ellipse_tris(pts, idx, n.global_position, hw * 0.9 if hw < 12.0 else hw * 0.8, 2.6 * sqrt(ts))
-	_triangles(_bases, pts, idx)
-	for f in _forests:
-		if is_instance_valid(f):
-			var tri: Array = (f as Forest).shadow_bases()
-			_triangles(_bases, tri[0], tri[1])
+				_triangles(_crowns, tri[0], tri[1], tree_shift(sx, ts))
 
 
 ## Draws a batch of triangles given in world coordinates (moved by `shift`), in one go.
@@ -185,6 +163,16 @@ func _triangles(item: Node2D, pts: PackedVector2Array, idx: PackedInt32Array, sh
 	cols.fill(SHADOW_COLOR)
 	RenderingServer.canvas_item_add_triangle_array(item.get_canvas_item(), idx, pts, cols)
 	item.draw_set_transform_matrix(Transform2D.IDENTITY)
+
+
+## Half the height of a tree's shadow oval (for a tree of size factor 1).
+const TREE_RY := 4.2
+
+
+## How far a tree's shadow sits from its trunk: a little to the side away from the sun and a
+## touch in front, so it stays under the tree all day.
+static func tree_shift(sun_x: float, ts: float) -> Vector2:
+	return Vector2(sun_x * 5.0, 1.0) * ts
 
 
 ## Adds an ellipse (a fan of triangles) to a triangle batch.

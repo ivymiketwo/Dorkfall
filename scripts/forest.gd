@@ -34,7 +34,7 @@ var _list: Array[Sprite2D] = []
 var _bounds := Rect2()
 var _grid := {}                  # GRID-sized cells -> trees whose trunk is in that cell
 var _faded := {}                 # trees that are (or are still turning back from) see-through
-var _shadow_cache := {}          # see shadow_crowns() / shadow_bases()
+var _shadow_cache := {}          # see shadow_crowns()
 const GRID := 40.0
 
 
@@ -89,9 +89,8 @@ func is_near(world_pos: Vector2, r: float) -> bool:
 
 ## This forest's tree shadows as batches of triangles in world coordinates (built once), so the
 ## whole forest's shadow is a few draws instead of one per tree:
-##   shadow_crowns(): {tree size factor: [points, indices]} treetop shadows centred on the trunks;
-##     ShadowLayer slides each batch away from the sun (by the factor) when it draws it.
-##   shadow_bases(): [points, indices] the dark patch at each trunk.
+##   shadow_crowns(): {tree size factor: [points, indices]} one shadow oval per tree, centred on
+##     the trunks; ShadowLayer nudges each batch away from the sun (by the factor) when it draws it.
 func shadow_crowns() -> Dictionary:
 	if not _shadow_cache.has("crowns"):
 		var groups := {}
@@ -101,20 +100,9 @@ func shadow_crowns() -> Dictionary:
 				groups[ts] = [PackedVector2Array(), PackedInt32Array()]
 			var at := to_global(t.position)
 			var j := ShadowLayer.jitter(at)
-			ShadowLayer.ellipse_tris(groups[ts][0], groups[ts][1], at, 10.5 * ts * j, 5.6 * ts * (2.0 - j))
+			ShadowLayer.ellipse_tris(groups[ts][0], groups[ts][1], at, 10.5 * ts * j, ShadowLayer.TREE_RY * ts * (2.0 - j))
 		_shadow_cache["crowns"] = groups
 	return _shadow_cache["crowns"]
-
-
-func shadow_bases() -> Array:
-	if not _shadow_cache.has("bases"):
-		var pts := PackedVector2Array()
-		var idx := PackedInt32Array()
-		for t in _list:
-			var ts: float = t.get_meta("shadow_scale", 1.0)
-			ShadowLayer.ellipse_tris(pts, idx, to_global(t.position), 6.0 * ts * 0.8, 2.6 * sqrt(ts))
-		_shadow_cache["bases"] = [pts, idx]
-	return _shadow_cache["bases"]
 
 
 ## Trees within r of a world position (used by ShadowLayer to find the shadows it needs to draw).
