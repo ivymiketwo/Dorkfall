@@ -7,10 +7,13 @@ extends Sprite2D
 ## far side, or no hand visible). Each frame this node moves the weapon to the hand and, when needed, moves
 ## itself below the body sprite in the draw order so the body covers the part of the weapon it should.
 ##
-## Equipment sets `texture` to the item's worn sheet; this node crops the weapon out of it.
+## Equipment sets `texture` to the item's worn sheet; this node crops the weapon out of it. A worn
+## texture that isn't an old 120x160 sheet is one upright picture of the weapon (used whole); give
+## such items a Hold Scale (1 / 1.3 = 0.77 draws its pixels the size of the character's).
 
 const HANDS_PATH := "res://data/hands.json"
 const SRC_FRAME := Rect2i(96, 0, 24, 40)    # standing, facing down, in the old 24x40 worn sheets
+const OLD_SHEET := Vector2i(120, 160)
 const FRAME_PX := 48.0
 
 static var _hands: Dictionary = {}
@@ -223,14 +226,17 @@ func _rebuild(tex: Texture2D) -> void:
 		texture = null
 		return
 	var img := tex.get_image()
-	var used := img.get_region(SRC_FRAME).get_used_rect()
+	# old worn sheets (120x160, 5x4 poses of 24x40): the weapon is cut from one pose. Anything else
+	# is a single picture of the weapon standing upright (newer items): the whole picture is used.
+	var src := SRC_FRAME if img.get_size() == OLD_SHEET else Rect2i(Vector2i.ZERO, img.get_size())
+	var used := img.get_region(src).get_used_rect()
 	if used.size == Vector2i.ZERO:
 		texture = null
 		return
-	_grip_tex = _measure_grip(img.get_region(SRC_FRAME), used)
+	_grip_tex = _measure_grip(img.get_region(src), used)
 	_crop = AtlasTexture.new()
 	_crop.atlas = tex
-	_full_region = Rect2(SRC_FRAME.position + used.position, used.size)
+	_full_region = Rect2(src.position + used.position, used.size)
 	_west = false
 	_crop.region = _full_region
 	offset = Vector2(-used.size.x / 2.0, -used.size.y * style.grip)   # origin = the grip point
