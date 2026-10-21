@@ -39,21 +39,26 @@ for /f "delims=" %%F in ('git ls-files -m') do (
   git diff --quiet -- "%%F" && git checkout -q -- "%%F"
   git diff --quiet origin/main -- "%%F" 2>nul && git checkout -q -- "%%F"
 )
-git pull --ff-only
-if errorlevel 1 (
-  rem one more try after putting back the files Godot rewrites by itself
-  git checkout -- project.godot "*.import" 2>nul
-  git pull --ff-only
-)
-if errorlevel 1 (
-  echo.
-  echo Could not update. Usually this means a file here was changed by hand.
-  echo Ask Claude for help, or press a key to play the current version anyway.
-  pause
-)
+rem Update by moving straight to the version just fetched (origin/main). ("git pull" can stop
+rem with "Cannot fast-forward to multiple branches" on some setups; this never does.)
+rem The block below is read in one go, so it still runs right when the update changes this file.
+(
+  git merge --ff-only -q origin/main
+  if errorlevel 1 (
+    rem one more try after putting back the files Godot rewrites by itself
+    git checkout -- project.godot "*.import" 2>nul
+    git merge --ff-only -q origin/main
+  )
+  if errorlevel 1 (
+    echo.
+    echo Could not update. Usually this means a file here was changed by hand.
+    echo Ask Claude for help, or press a key to play the current version anyway.
+    pause
+  )
 
-echo Importing new art and sounds...
-"%GODOT%" --headless --path . --import
+  echo Importing new art and sounds...
+  "%GODOT%" --headless --path . --import
 
-echo Starting the game...
-start "" "%GODOT%" --path .
+  echo Starting the game...
+  start "" "%GODOT%" --path .
+)
