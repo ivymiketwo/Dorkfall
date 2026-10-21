@@ -1,7 +1,8 @@
 extends Node2D
-## Ducks paddling on the two ponds. They pick a spot of open water, swim there,
-## rest, sometimes dabble (tail up), and leave a little ripple behind. They
-## read the pond's water map so they never leave the water.
+## Ducks paddling on the two ponds. They pick a spot of open water, swim there and float
+## about: resting (blinking now and then), dabbling (tail up), preening, quacking, stretching
+## their wings or napping, and leave a little ripple behind. They read the pond's water map so
+## they never leave the water. Only drawing: nothing here touches game rules.
 
 const PONDS := [
 	{"tex": "res://art/water_info_1.png", "pos": Vector2(625, 79.5), "ducks": 3},
@@ -10,26 +11,17 @@ const PONDS := [
 const MIN_DEPTH := 7            ## water-map value needed (distance from the bank)
 const SPEED := 9.0
 
-const SWIM := [
-	".....GG...",
-	"....GEGG..",
-	"....GGGGOO",
-	".BBBBWWW..",
-	"TBBBBBBB..",
-	".BBBBBBB..",
-	"..LLLLLL..",
-]
-const DABBLE := [
-	".T........",
-	"TBBB......",
-	".BBBBBWW..",
-	".BBBBBBB..",
-	"..LLLLLL..",
-]
-const COL := {
-	"G": Color("2e7d57"), "E": Color("14121c"), "O": Color("f0b030"), "W": Color("f4efe4"),
-	"B": Color("8a6a4a"), "T": Color("3a3a48"), "L": Color("b8a080"),
-}
+## Rex's duck pictures, packed by tools/pack_ducks.py from art/duck_src/ (32x32 art px each,
+## drawn at half size like all art: 1 art px = 0.5 world px). Frame order as in that tool.
+const SHEET := preload("res://art/ducks.png")
+const F := {"float": 0, "blink": 1, "quack": 2, "preen_back": 3, "preen_breast": 4, "sleep": 5,
+		"dip": 6, "dip_deep": 7, "tail_up": 8, "flap_half": 9, "flap_up": 10}
+const FRAME := 32
+## The duck's position is the middle of its waterline, which is this row of the picture.
+const WATERLINE := 27
+## What a resting duck may get up to: [name, chance weight, min seconds, max seconds].
+const ACTS := [["rest", 5.0, 1.5, 5.0], ["dabble", 2.5, 2.2, 3.4], ["preen", 1.5, 2.0, 4.0],
+		["quack", 1.2, 0.9, 1.3], ["flap", 0.8, 0.9, 1.1], ["sleep", 0.8, 5.0, 10.0]]
 
 var _imgs: Array = []
 var _ducks: Array = []
@@ -50,7 +42,7 @@ func _ready() -> void:
 			_ducks.append({
 				"pond": i, "pos": p, "target": p, "dir": 1.0 if rng.randf() < 0.5 else -1.0,
 				"state": "idle", "wait": rng.randf_range(0.5, 4.0), "phase": rng.randf() * 6.0,
-				"ripples": [], "rip_t": 0.0,
+				"ripples": [], "rip_t": 0.0, "act": "rest", "act_t": 0.0,
 			})
 
 
@@ -77,22 +69,24 @@ func _process(delta: float) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	for d in _ducks:
+		d["act_t"] += delta
 		match d["state"]:
-			"idle", "dabble":
+			"idle":
 				d["wait"] -= delta
 				if d["wait"] <= 0.0:
 					var tgt: Vector2 = _random_water(d["pond"], rng)
 					# stay on this duck's side: only go to spots not too far
-					if tgt != Vector2.INF and tgt.distance_to(d["pos"]) < 90.0 and _clear_path(d["pond"], d["pos"], tgt):
+					if rng.randf() < 0.6 and tgt != Vector2.INF and tgt.distance_to(d["pos"]) < 90.0 and _clear_path(d["pond"], d["pos"], tgt):
 						d["target"] = tgt
 						d["state"] = "swim"
+						d["act"] = "rest"
 					else:
-						d["wait"] = rng.randf_range(0.5, 2.0)
+						_pick_act(d, rng)
 			"swim":
 				var to: Vector2 = d["target"] - d["pos"]
 				if to.length() < 1.5:
-					d["state"] = "dabble" if rng.randf() < 0.35 else "idle"
-					d["wait"] = rng.randf_range(1.5, 5.0)
+					d["state"] = "idle"
+					_pick_act(d, rng)
 				else:
 					var step: Vector2 = to.normalized() * SPEED * delta
 					var np: Vector2 = d["pos"] + step
@@ -106,7 +100,7 @@ func _process(delta: float) -> void:
 					d["rip_t"] -= delta
 					if d["rip_t"] <= 0.0:
 						d["rip_t"] = 0.45
-						d["ripples"].append({"p": d["pos"] + Vector2(-5.0 * d["dir"], 3), "age": 0.0})
+						d["ripples"].append({"p": d["pos"] + Vector2(-6.0 * d["dir"], 0), "age": 0.0})
 		for r in d["ripples"]:
 			r["age"] += delta
 		d["ripples"] = d["ripples"].filter(func(r): return r["age"] < 1.4)
@@ -121,27 +115,73 @@ func _clear_path(pond: int, a: Vector2, b: Vector2) -> bool:
 	return true
 
 
+## Starts something to do while floating in place (see ACTS), for a random while.
+func _pick_act(d: Dictionary, rng: RandomNumberGenerator) -> void:
+	var total := 0.0
+	for a: Array in ACTS:
+		total += a[1]
+	var r := rng.randf() * total
+	for a: Array in ACTS:
+		r -= a[1]
+		if r <= 0.0:
+			d["act"] = a[0]
+			d["wait"] = rng.randf_range(a[2], a[3])
+			break
+	d["act_t"] = 0.0
+	if d["act"] == "flap" or d["act"] == "dabble":       # a little splash
+		for k in 2:
+			d["ripples"].append({"p": d["pos"] + Vector2((k * 2 - 1) * 4.0, 0), "age": -0.1 * k})
+
+
+## Which picture a duck shows right now.
+func _frame(d: Dictionary) -> int:
+	var t: float = d["act_t"]
+	var total: float = t + maxf(d["wait"], 0.0)        # how long this act lasts in all
+	match d["act"]:
+		"dabble":
+			# dip in, tail up for a while (with a wiggle), and back up
+			var out := total - t
+			if t < 0.15 or out < 0.15:
+				return F["dip"]
+			if t < 0.3 or out < 0.3:
+				return F["dip_deep"]
+			return F["tail_up"] if fmod(t, 0.9) < 0.75 else F["dip_deep"]
+		"preen":
+			return F["preen_back"] if fmod(t, 1.6) < 1.0 else F["preen_breast"]
+		"quack":
+			# two quacks
+			return F["quack"] if (t < 0.25 or (t > 0.45 and t < 0.7)) else F["float"]
+		"flap":
+			if t < 0.08 or total - t < 0.1:
+				return F["flap_half"]
+			return F["flap_up"] if fmod(t, 0.24) < 0.12 else F["flap_half"]
+		"sleep":
+			return F["sleep"]
+	# floating or swimming: blink now and then
+	return F["blink"] if fmod(_t + d["phase"] * 3.0, 3.7) < 0.14 else F["float"]
+
+
 func _draw() -> void:
 	var order := _ducks.duplicate()
 	order.sort_custom(func(a, b): return a["pos"].y < b["pos"].y)
 	for d in order:
 		for r in d["ripples"]:
+			if r["age"] < 0.0:
+				continue
 			var k: float = r["age"] / 1.4
 			var rw := 3.0 + k * 7.0
 			var col := Color(1, 1, 1, 0.45 * (1.0 - k))
 			var c: Vector2 = r["p"]
-			draw_rect(Rect2(c.x - rw, c.y, rw * 2.0, 1), col)
-		var pat: Array = DABBLE if d["state"] == "dabble" else SWIM
-		var bob: float = roundf(sin(_t * 2.2 + d["phase"]) * 0.6)
+			draw_rect(Rect2(c.x - rw, c.y, rw * 2.0, 0.5), col)
+		var asleep: bool = d["act"] == "sleep"
+		var bob: float = sin(_t * (1.2 if asleep else 2.2) + d["phase"]) * 0.5
 		var dir: float = d["dir"]
-		var base: Vector2 = (d["pos"] + Vector2(0, bob)).round() - Vector2(5, 5)
-		# a dark water shadow and the waterline ripple under the body
-		draw_rect(Rect2(base.x + (1 if dir > 0 else 0), base.y + pat.size(), 9, 1), Color(0.1, 0.25, 0.4, 0.35))
-		for j in pat.size():
-			var row: String = pat[j]
-			for i in row.length():
-				var ch: String = row[i]
-				if ch == ".":
-					continue
-				var x: int = i if dir > 0 else row.length() - 1 - i
-				draw_rect(Rect2(base.x + x, base.y + j, 1, 1), COL[ch])
+		var at: Vector2 = ((d["pos"] + Vector2(0, bob)) * 2.0).round() / 2.0     # on whole art pixels
+		# a dark water shadow just under the waterline
+		draw_rect(Rect2(at.x - 6.0, at.y, 12.0, 1.0), Color(0.1, 0.25, 0.4, 0.3))
+		var src := Rect2(_frame(d) * FRAME, 0, FRAME, FRAME)
+		draw_set_transform(at, 0.0, Vector2(0.5 * dir, 0.5))
+		draw_texture_rect_region(SHEET, Rect2(-FRAME / 2.0, -WATERLINE, FRAME, FRAME), src)
+		draw_set_transform(Vector2.ZERO)
+		# a thin bright line where the body meets the water
+		draw_rect(Rect2(at.x - 6.5, at.y, 13.0, 0.5), Color(1, 1, 1, 0.28))

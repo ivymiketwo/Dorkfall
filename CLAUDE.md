@@ -45,6 +45,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
   Trolls (grey valley) reuse the skeleton wizard brain (`scripts/troll.gd` extends it). Their club is
   drawn into `art/troll.png` by `tools/gen_troll_club.py` (edit its CLUB table, never the sheet).
+- Ducks (`scripts/ducks.gd`, drawing only): Rex's poses in `art/duck_src/`, packed into `art/ducks.png`
+  by `tools/pack_ducks.py` (lines up the waterlines, makes the blink frame).
 
 ## The player
 - Always a wizard: no classes, no melee swing, no shields, no iron armour. Left click fires
