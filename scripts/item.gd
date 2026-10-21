@@ -49,6 +49,9 @@ extends Resource
 ## Melee (1hand) module: art pixels of the item left showing below the hand (+3 / +4 = a bit more handle past the hand,
 ## negative = hand nearer the very bottom). 0 = the module's automatic grip.
 @export var hold_grip_offset := 0.0
+## Staffs: picture pixels from the top of the staff down to the middle of its orb, where spells leave from.
+## -1 = the hold style's own value (4). Set it when the orb sits lower, e.g. under a spike or inside a cage.
+@export var orb_from_top := -1.0
 ## Weapons: the type picks the standard hold style (res://hold_styles/<type>.tres).
 @export_enum("none", "staff") var weapon_kind := "none"
 ## Locked to the account: it stays with you when you die (never left on a gravestone),

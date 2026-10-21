@@ -25,6 +25,8 @@ var style: HoldStyle = HoldStyle.new()
 var item_scale := 1.0
 ## Item > Hold Grip Offset: art pixels of the item left showing below the hand (+ = hand higher up the item).
 var grip_extra := 0.0
+## Item > Orb From Top: texture px from the top of the picture to the orb (-1 = the style's tip_inset).
+var orb_inset := -1.0
 var _grip_tex := 0.0           # half the length of the handle section at the bottom of the picture (texture px)
 var player: Node2D
 var _src: Texture2D
@@ -42,7 +44,11 @@ func _init() -> void:
 
 ## Where the orb at the top of the staff is, in global coordinates.
 func orb_global() -> Vector2:
-	return to_global(Vector2(0.0, offset.y + style.tip_inset))
+	return to_global(Vector2(0.0, offset.y + _tip_inset()))
+
+
+func _tip_inset() -> float:
+	return orb_inset if orb_inset >= 0.0 else style.tip_inset
 
 
 ## Where a beam fired by `caster` should start: the staff's orb when the weapon is out and already posed
@@ -56,9 +62,13 @@ static func beam_origin(caster: Node2D) -> Vector2:
 			continue
 		if not w.visible or w.body == null:
 			return plain
-		if (w.body.frame / w.body.hframes) % 4 == facing:
+		var row := w.body.frame / w.body.hframes
+		# already facing that way, or running (the body keeps facing where it runs, so the
+		# shot leaves from the orb where it really is)
+		if row % 4 == facing or row / 4 == 1:
 			return w.orb_global()
-		return caster.global_position + w.style.tip_idle[facing]
+		var turned = w.orb_global_facing(facing)
+		return turned if turned != null else caster.global_position + w.style.tip_idle[facing]
 	return plain
 
 
@@ -104,17 +114,53 @@ func _process(_delta: float) -> void:
 		_rebuild(texture)
 	if _crop == null or body == null:
 		return
-	var key := "robe" if body.texture.resource_path.ends_with("player_new_robe.png") else "naked"
 	var cols := body.hframes
 	var row := body.frame / cols
 	var col := body.frame % cols
+	var pose := _pose(row, col)
+	if pose.is_empty():
+		visible = false
+		return
+	visible = true
+	position = pose.position
+	rotation_degrees = pose.rotation
+	scale = pose.scale
+	offset = pose.offset
+	var facing := row % 4
+	_show_top_only(row % 4 == 2)
+	var h: Array = pose.hand
+	var behind := int(h[2]) == 1
+	_set_behind(behind)
+	_update_hand(facing, col, row, h, behind)
+	var orb := player.get_node_or_null("CastOrb") as Node2D if player else null
+	if orb != null and orb.visible:
+		layer_above_staff(player, orb)   # the weapon just re-stacked itself; keep the orb over its tip
+
+
+## Where the orb will be (global) once the character has turned to `facing` (same animation and
+## frame): used for the shot fired while turning, before the sprite has swung round. Worked out
+## from this item's own picture and size, so a longer or shorter staff still shoots from its orb.
+## Null if unknown.
+func orb_global_facing(facing: int) -> Variant:
+	if _crop == null or body == null or get_parent() == null:
+		return null
+	var row := body.frame / body.hframes
+	var pose := _pose((row / 4) * 4 + facing, body.frame % body.hframes)
+	if pose.is_empty():
+		return null
+	var local: Vector2 = pose.position + (Vector2(0.0, pose.offset.y + _tip_inset()) * pose.scale).rotated(deg_to_rad(pose.rotation))
+	return (get_parent() as Node2D).to_global(local)
+
+
+## Where the weapon sits for one frame of the body sheet: position, rotation, scale and offset,
+## plus the hand entry from hands.json. Empty when no hand is visible in that frame.
+func _pose(row: int, col: int) -> Dictionary:
+	var key := "robe" if body.texture.resource_path.ends_with("player_new_robe.png") else "naked"
 	var rows: Dictionary = _hands.get(key, {})
 	var entry = rows.get(str(row), [])
 	var h = entry[col] if col < entry.size() else null
 	if h == null:
-		visible = false
-		return
-	visible = true
+		return {}
 	var local := Vector2(float(h[0]) - FRAME_PX / 2.0, float(h[1]) - FRAME_PX / 2.0) + body.offset
 	if row % 4 == 0:
 		local += Vector2(style.offset_south.x, 0)       # facing south: held a little closer to the body
@@ -126,17 +172,17 @@ func _process(_delta: float) -> void:
 		local += style.offset_west_run
 	if row % 4 == 1:
 		local += style.offset_north
-	position = body.position + local * body.scale
+	var pos := body.position + local * body.scale
 	var facing := row % 4
-	rotation_degrees = [style.lean_south, style.lean_north, style.lean_west_run, style.lean_east][facing]
+	var rot: float = [style.lean_south, style.lean_north, style.lean_west_run, style.lean_east][facing]
 	if row == 2:
-		rotation_degrees = -style.lean_east          # west idle: mirror of the east idle angle
+		rot = -style.lean_east          # west idle: mirror of the east idle angle
 		# ...and mirror the east idle position too, so the orb sits just in front of the head
 		var he = rows.get("3", [])
 		if col < he.size() and he[col] != null:
 			var le := Vector2(float(he[col][0]) - FRAME_PX / 2.0, float(he[col][1]) - FRAME_PX / 2.0) + body.offset
 			le += style.offset_east
-			position = body.position + (Vector2(-le.x, le.y) + style.offset_west) * body.scale
+			pos = body.position + (Vector2(-le.x, le.y) + style.offset_west) * body.scale
 	var jump_pose := Vector3.ZERO
 	var has_jump_pose := false
 	if row >= 8 and (facing == 2 or facing == 3):
@@ -145,9 +191,8 @@ func _process(_delta: float) -> void:
 		if pc < table.size():
 			jump_pose = table[pc]
 			has_jump_pose = true
-	_show_top_only(row % 4 == 2)
 	var along := style.length_south if facing == 0 else (style.length_north if facing == 1 else 1.0)
-	scale = body.scale * style.size_scale * item_scale * Vector2(1.0, along)     # same size in every direction (a rod pointing at / away from the camera is foreshortened)
+	var scl := body.scale * style.size_scale * item_scale * Vector2(1.0, along)     # same size in every direction (a rod pointing at / away from the camera is foreshortened)
 	var g := style.grip_west_motion if (facing == 2 and row != 2) else style.grip
 	if style.grip_from_sprite:
 		# melee (1hand) module: measure from the bottom of the picture, in screen art pixels
@@ -161,18 +206,13 @@ func _process(_delta: float) -> void:
 		g = clampf(1.0 - style.butt_overhang_south / maxf(shown, 1.0), 0.0, 1.0)
 	elif facing == 0 and style.grip_south >= 0.0:
 		g = style.grip_south
-	offset = Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
+	var off := Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
 	if has_jump_pose:
-		rotation_degrees = jump_pose.z
+		rot = jump_pose.z
 		var up := Vector2(0, -1).rotated(deg_to_rad(jump_pose.z))
-		var length := _full_region.size.y * scale.y
-		position = body.position + Vector2(jump_pose.x, jump_pose.y) + up * (0.5 - g) * length
-	var behind := int(h[2]) == 1
-	_set_behind(behind)
-	_update_hand(facing, col, row, h, behind)
-	var orb := player.get_node_or_null("CastOrb") as Node2D if player else null
-	if orb != null and orb.visible:
-		layer_above_staff(player, orb)   # the weapon just re-stacked itself; keep the orb over its tip
+		var length := _full_region.size.y * scl.y
+		pos = body.position + Vector2(jump_pose.x, jump_pose.y) + up * (0.5 - g) * length
+	return {"position": pos, "rotation": rot, "scale": scl, "offset": off, "hand": h}
 
 
 ## Facing down or right the weapon is held in front of the body, so re-draw the hand over it:

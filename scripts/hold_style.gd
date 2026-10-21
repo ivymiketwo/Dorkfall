@@ -63,7 +63,7 @@ extends Resource
 ## Where beams leave from, measured down from the top of the item, in art pixels (the staff's orb).
 @export var tip_inset := 4.0
 ## Typical tip position from the character's feet, per facing (south, north, west, east), in world units.
-## Only used for the one shot fired while turning, before the item has swung to its new pose.
+## Only a fallback: the shot fired while turning normally uses HeldWeapon.idle_orb_global (exact for any item).
 @export var tip_idle := PackedVector2Array([Vector2(-4.2, -17.5), Vector2(4.9, -17.0), Vector2(-3.8, -15.5), Vector2(3.8, -15.5)])
 
 

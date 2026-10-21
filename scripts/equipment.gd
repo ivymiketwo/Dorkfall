@@ -92,6 +92,7 @@ func _refresh() -> void:
 			s.style = HoldStyle.for_item(it)
 			s.item_scale = it.hold_scale if it != null else 1.0
 			s.grip_extra = it.hold_grip_offset if it != null else 0.0
+			s.orb_inset = it.orb_from_top if it != null else -1.0
 			s._crop = null                # re-crop with this style's grip
 		if slot == "weapon":
 			s.visible = it != null and it.worn_texture != null

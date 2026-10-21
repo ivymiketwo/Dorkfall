@@ -57,6 +57,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   icon; then write `items/<id>.tres` by hand (copy `amethyst_staff.tres`). `HeldWeapon` uses the
   whole picture when it isn't an old 120x160 worn sheet. `hold_scale` 0.77 = same pixel size as the
   character (Rex draws them about 50 px tall in an 80x80 canvas so they don't drag on the floor).
+  Spells leave from the orb, 4 picture px below the top; if the orb sits lower (under a spike or in a
+  cage) set the item's `orb_from_top` (the Amethyst Staff uses 9).
 
 ## Difficulty design (Rex's rules)
 - Stronger monsters must be *harder to play against*, not spongier: keep time-to-kill roughly flat

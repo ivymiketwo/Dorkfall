@@ -17,5 +17,6 @@ equip_slot = "weapon"
 two_handed = true
 worn_texture = ExtResource("2_worn")
 hold_scale = 0.77
+orb_from_top = 9.0
 weapon_kind = "staff"
 basic_attack = ExtResource("3_beam")
