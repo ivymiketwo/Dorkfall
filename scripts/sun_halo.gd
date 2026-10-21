@@ -4,7 +4,7 @@ extends Node2D
 ##   1. charge: a bright orb on the staff's tip pulses `pulses` times as it grows,
 ##   2. it turns into a shining halo standing upright that floats off toward the mouse, slowing
 ##      down and wobbling like a smoke ring,
-##   3. right away it divides into three halos in a row, which drift to a stop and hover,
+##   3. as it comes to a stop it quickly divides into three halos in a row,
 ##   4. then a huge pulsing sun beam bursts from the staff through the three halos and lingers.
 ## Stages 1-3 are a cast: the cast bar fills and the caster can't move until the beam fires.
 ## Only the beam hurts: everything inside it takes `damage` once, when it fires.
@@ -27,22 +27,22 @@ extends Node2D
 
 @export_group("Halo")
 ## Seconds the halo floats out before it stops.
-@export var drift_time := 0.7
+@export var drift_time := 0.6
 ## How far it floats (world px). It starts fast and keeps slowing down, like a smoke ring.
 @export var drift_distance := 36.0
 ## Seconds the three halos hover in place (bobbing a little) before they flare up.
-@export var hover_time := 0.45
+@export var hover_time := 0.0
 ## Half the halo's height (world px).
 @export var halo_radius := 7.5
 ## How far it sways from side to side while drifting (world px).
 @export var wobble := 1.5
 ## Seconds after it leaves the staff that it starts dividing.
-@export var split_after := 0.1
+@export var split_after := 0.45
 ## Seconds the division takes, and how far apart the three halos end up (world px).
-@export var split_time := 0.45
+@export var split_time := 0.15
 @export var split_gap := 13.0
 ## Seconds the halos flare up before the beam.
-@export var gather_time := 0.15
+@export var gather_time := 0.06
 
 @export_group("Beam")
 ## How wide the beam is (world px; 1 world px = 2 art px).
