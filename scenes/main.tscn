@@ -3974,7 +3974,7 @@ position = Vector2(-235, 490)
 [node name="Paddock" parent="Entities" instance=ExtResource("221_paddock")]
 position = Vector2(-345, 290)
 size = Vector2(448, 544)
-gate_at = 256.0
+gate_at = 288.0
 keep_out = Array[Rect2]([Rect2(0, 0, 226, 222)])
 cows = 7
 

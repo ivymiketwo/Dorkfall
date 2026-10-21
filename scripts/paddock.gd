@@ -3,24 +3,27 @@ class_name Paddock
 extends Node2D
 ## A fenced field with cows wandering about in it (scenes/paddock.tscn).
 ##
-## The fence is a rectangle `size` big with its top-left corner at this node, built from the
-## wooden fence pieces of the crop field (decor.tscn, "wfence_a" / "wfence_side_a"), with an open
-## gate in one side. It's built by itself, so in the editor you just move the node or change the
+## The fence is a rectangle `size` big with its top-left corner at this node, built from Rex's
+## ranch fence pieces (cut by tools/cut_fence.py: decor kinds "rfence_*", and the up-and-down
+## pieces made here), with an open gate in the top or bottom side. It's built by itself, so in the editor you just move the node or change the
 ## numbers in the Inspector. Cows (scripts/cow.gd) wander inside, never into `keep_out` (in this
 ## node's local units, e.g. the barn) and never out through the gate.
 
 const DECOR := preload("res://scenes/decor.tscn")
 const COW := preload("res://scripts/cow.gd")
-const STEP := 16.0                    # one fence piece
-const GATE := 48.0                    # gate opening (between the two gate posts)
+const STEP := 16.0                    # one left-right fence piece
+const SIDE_STEP := 16.0               # posts of the up-and-down sides
+const GATE := 32.0                    # gate opening (between the two gate posts)
+const SIDE_TEX := preload("res://art/rfence_side.png")
 
 ## The fence rectangle (world px), from this node's position.
 @export var size := Vector2(448, 544):
 	set(v):
 		size = v
 		_rebuild()
-## Which side has the gate, and how far along that side it starts (world px, from the top or left).
-@export_enum("north", "south", "west", "east") var gate_side := "east":
+## Which side has the gate, and how far along that side it starts (world px, from the left;
+## a multiple of 16).
+@export_enum("north", "south") var gate_side := "north":
 	set(v):
 		gate_side = v
 		_rebuild()
@@ -54,42 +57,49 @@ func _rebuild() -> void:
 	_built.y_sort_enabled = true
 	add_child(_built, false, Node.INTERNAL_MODE_BACK)      # generated, never saved in the scene
 	var nx := int(round(size.x / STEP))
-	var ny := int(round(size.y / STEP))
-	# top and bottom rows (piece centres every 16 px)
+	var ny := int(round(size.y / SIDE_STEP))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = variation
+	# top and bottom: a post with rails to its right every 16 px (the next post covers the ends)
 	for side in ["north", "south"]:
 		var y := 0.0 if side == "north" else size.y
 		for i in nx:
-			var x := STEP * (i + 0.5)
-			if not _in_gate(side, x - STEP * 0.5, x + STEP * 0.5):
-				_piece("wfence_a", Vector2(x, y))
-	# left and right columns
-	for side in ["west", "east"]:
-		var x := 0.0 if side == "west" else size.x
-		for i in range(1, ny + 1):
-			var y := STEP * i
-			if not _in_gate(side, y - STEP, y):
-				_piece("wfence_side_a", Vector2(x, y))
-	# the gate: two posts, the two halves swung open outwards
-	var a := _gate_point(gate_at)
-	var b := _gate_point(gate_at + GATE)
-	_piece("wgate_post", a)
-	_piece("wgate_post", b)
-	var out := {"north": Vector2(0, -10), "south": Vector2(0, 10), "west": Vector2(-10, 0), "east": Vector2(10, 0)}[gate_side] as Vector2
-	var leaf := "wgate_leaf_h" if gate_side in ["west", "east"] else "wgate_leaf_v"
-	_piece(leaf, a + out)
-	_piece(leaf, b + out)
+			var x := STEP * i
+			if side == gate_side and x >= gate_at and x < gate_at + GATE:
+				continue
+			var r := rng.randf()
+			_piece("rfence_a" if r < 0.7 else ("rfence_b" if r < 0.85 else "rfence_c"), Vector2(x + STEP * 0.5, y))
+	# left and right: a post every 32 px with the rails running down to the next one
+	for x in [0.0, size.x]:
+		for i in ny:
+			_side_post(Vector2(x, SIDE_STEP * i))
+	# big posts on the corners (added last, so they're drawn over the pieces they stand on)
+	for c in [Vector2.ZERO, Vector2(size.x, 0), Vector2(0, size.y), size]:
+		_piece("rfence_corner", c)
+	# the gate: a post on the left, the gate swung open on its post on the right
+	var gy := 0.0 if gate_side == "north" else size.y
+	_piece("rfence_post", Vector2(gate_at + 2.25, gy))
+	_piece("rfence_gate_open", Vector2(gate_at + GATE - 2.75, gy))
 
 
-func _gate_point(along: float) -> Vector2:
-	match gate_side:
-		"north": return Vector2(along, 0)
-		"south": return Vector2(along, size.y)
-		"west": return Vector2(0, along)
-	return Vector2(size.x, along)
-
-
-func _in_gate(side: String, from: float, to: float) -> bool:
-	return side == gate_side and to > gate_at and from < gate_at + GATE
+## One post of an up-and-down side: picture anchored at the post's foot, the rails hanging down
+## to the next post, and a thin solid strip along them.
+func _side_post(at: Vector2) -> void:
+	var b := StaticBody2D.new()
+	b.position = at
+	var s := Sprite2D.new()
+	s.texture = SIDE_TEX
+	s.centered = false
+	s.offset = Vector2(-4.5, -31)
+	s.scale = Vector2(0.5, 0.5)
+	b.add_child(s)
+	var cs := CollisionShape2D.new()
+	var r := RectangleShape2D.new()
+	r.size = Vector2(4, SIDE_STEP)
+	cs.shape = r
+	cs.position = Vector2(0, SIDE_STEP * 0.5 - 1.5)
+	b.add_child(cs)
+	_built.add_child(b)
 
 
 func _piece(kind: String, at: Vector2) -> void:
