@@ -47,6 +47,10 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   drawn into `art/troll.png` by `tools/gen_troll_club.py` (edit its CLUB table, never the sheet).
 - Ducks (`scripts/ducks.gd`, drawing only): Rex's poses in `art/duck_src/`, packed into `art/ducks.png`
   by `tools/pack_ducks.py` (lines up the waterlines, makes the blink frame).
+- Barn + cow paddock (south-west of the crossroads): `scenes/barn.tscn`; `scenes/paddock.tscn`
+  (`scripts/paddock.gd` builds the fence and gate from decor pieces, `scripts/cow.gd` cows wander
+  inside, solid, and stop short of the player). Cow sheet `art/cow.png` from `tools/pack_cows.py`
+  (originals in `art/cow_src/`). The minimap there was repainted by hand to match.
 
 ## The player
 - Always a wizard: no classes, no melee swing, no shields, no iron armour. Left click fires

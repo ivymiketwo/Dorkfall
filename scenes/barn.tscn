@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Texture2D" path="res://art/bld_barn.png" id="1_tex"]
+[ext_resource type="Script" path="res://scripts/night_glow.gd" id="2_glow"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_walls"]
+size = Vector2(192, 34)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hay"]
+size = Vector2(54, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_trough"]
+size = Vector2(50, 10)
+
+[node name="Barn" type="StaticBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tex")
+centered = false
+position = Vector2(-128, -222)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, -17)
+shape = SubResource("RectangleShape2D_walls")
+
+[node name="HayCollision" type="CollisionShape2D" parent="."]
+position = Vector2(-64, 4)
+shape = SubResource("RectangleShape2D_hay")
+
+[node name="TroughCollision" type="CollisionShape2D" parent="."]
+position = Vector2(62, 2)
+shape = SubResource("RectangleShape2D_trough")
+
+[node name="NightGlow" type="Node2D" parent="."]
+script = ExtResource("2_glow")
+rects = Array[Rect2]([Rect2(45, -57, 7, 10)])
+light_scale = 0.6
