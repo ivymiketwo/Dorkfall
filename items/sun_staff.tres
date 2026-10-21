@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
 [ext_resource type="Texture2D" path="res://art/worn_sun_staff.png" id="2_worn"]
-[ext_resource type="Resource" path="res://abilities/solar_beam.tres" id="3_beam"]
+[ext_resource type="Resource" path="res://abilities/sun_halo.tres" id="3_beam"]
 
 [resource]
 script = ExtResource("1_item")
 id = &"sun_staff"
 display_name = "Sun Staff"
-description = "A golden staff that holds a captured sunbeam. Shoots a blazing solar beam. Two-handed."
+description = "A golden staff that holds a captured sunbeam. Charges a sun orb into a drifting halo that splits in three, then bursts into a huge sun beam. Two-handed."
 icon_frame = 32
 value = 3000
 mana_regen_bonus = 1.3

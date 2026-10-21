@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ability.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/spells/sun_halo.tscn" id="2_spell"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Sun Halo"
+kind = 6
+icon_index = 1
+mana_cost = 25.0
+cooldown = 3.2
+damage = 150.0
+beam_color = Color(1, 0.88, 0.4, 1)
+spell_scene = ExtResource("2_spell")

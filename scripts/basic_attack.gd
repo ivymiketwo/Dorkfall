@@ -1,6 +1,7 @@
 class_name BasicAttack
 extends Node
-## Left-click attack: fires the equipped staff's basic spell (its `basic_attack`, a beam).
+## Left-click attack: fires the equipped staff's basic spell (its `basic_attack`): a beam, or a
+## staff's own special attack (an ability of kind SPELL, e.g. the Sun Staff's halo beam).
 ## Does nothing without a staff, and only warns when out of mana. Lives as a child of the player.
 
 ## GameClock time the next attack is allowed (see game_clock.gd).
@@ -20,7 +21,7 @@ func _process(_delta: float) -> void:
 	# Holding left click keeps firing a staff's beam.
 	if GameClock.passed(_ready_at) and caster.get("input_fire_held"):
 		var w := weapon
-		if w != null and not w.fishing_rod and w.basic_attack != null and w.basic_attack.kind == Ability.Kind.BEAM and not _ui_blocking():
+		if w != null and not w.fishing_rod and w.basic_attack != null and _usable(w.basic_attack) and not _ui_blocking():
 			attack()
 
 
@@ -51,12 +52,29 @@ func attack() -> void:
 	if caster.has_method("is_warding") and caster.is_warding():   # no attacking behind the Ward
 		return
 	var ab := w.basic_attack
-	if ab == null or ab.kind != Ability.Kind.BEAM:
+	if not _usable(ab):
 		return
 	if stats.mana < ab.mana_cost:
 		stats.warn_out_of_mana()
 		return
-	_basic_beam(ab)
+	if ab.kind == Ability.Kind.SPELL:
+		_cast_spell(ab)
+	else:
+		_basic_beam(ab)
+
+
+func _usable(ab: Ability) -> bool:
+	return ab != null and (ab.kind == Ability.Kind.BEAM or (ab.kind == Ability.Kind.SPELL and ab.spell_scene != null))
+
+
+## A staff's own special attack: the spell scene runs all of it (see e.g. sun_halo.gd).
+func _cast_spell(ab: Ability) -> void:
+	stats.spend_mana(ab.mana_cost)
+	_ready_at = GameClock.now + ab.cooldown
+	var s := ab.spell_scene.instantiate()
+	s.caster = caster
+	s.damage = ab.damage
+	caster.get_parent().add_child(s)
 
 
 ## Left-click ranged attack: same beam as the ability, fired from the weapon.

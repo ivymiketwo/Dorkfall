@@ -3,7 +3,7 @@ extends Resource
 ## One hotbar ability. Each lives in res://abilities/*.tres — open one in
 ## the Inspector to tweak costs, cast times and amounts.
 
-enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT, SWARM }
+enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT, SWARM, SPELL }
 
 @export var display_name := ""
 @export var kind := Kind.PROJECTILE
@@ -37,6 +37,12 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT, SWARM }
 ## Poison left on everything the beam hits: damage per second, for this many seconds (0 = none).
 @export var poison_dps := 0.0
 @export var poison_time := 0.0
+
+@export_group("Spell")
+## A staff's own special attack that runs itself (kind SPELL), e.g. the Sun Staff's halo beam
+## (scenes/spells/sun_halo.tscn). Its root script gets `caster` and `damage` (the one above) set
+## before it is added to the world. Its own timings are in that scene's Inspector.
+@export var spell_scene: PackedScene
 
 @export_group("Swarm")
 ## Crimson Swarm: this many beams land on non-overlapping circles around the mouse.
