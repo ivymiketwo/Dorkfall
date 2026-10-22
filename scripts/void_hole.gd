@@ -3,9 +3,10 @@ extends Node2D
 ## The Void Staff's attack:
 ##   1. a thin black beam (2 px jet black with a 1 px dark blue-grey edge each side) shoots from the
 ##      staff's orb to where you aim (up to `max_range`),
-##   2. at its end a small black orb appears and blinks `blinks` times,
-##   3. then it swells into a large black hole that lingers for `hole_time` seconds while specks of
-##      dark blue are sucked violently in from all round it, and collapses.
+##   2. at its end a small black orb blinks in and out of existence `blinks` times,
+##   3. then a large black hole snaps into existence, perfectly still, for `hole_time` seconds:
+##      dark blue specks appear on its rim and snap straight to its middle (each ending a little
+##      apart from the others), no spin, no wobble. Then it's simply gone.
 ## Everything inside the hole takes `damage` every `tick_every` seconds while it's open.
 ##
 ## Made by BasicAttack from the Void Staff's ability (abilities/void_hole.tres, which points at
@@ -21,22 +22,26 @@ extends Node2D
 @export var beam_time := 0.3
 
 @export_group("Orb")
-## Seconds the small orb blinks before it swells, and how many times it blinks.
+## Seconds the small orb blinks before the hole opens, and how many times it blinks.
 @export var blink_time := 0.6
 @export var blinks := 3
 @export var orb_radius := 2.5
 
 @export_group("Black hole")
-## Its size once open (world px), and how long it takes to swell to it.
+## Its size (world px).
 @export var hole_radius := 14.0
-@export var grow_time := 0.15
-## Seconds it stays open, and how long it takes to collapse at the end.
+## Seconds it stays open.
 @export var hole_time := 1.4
-@export var collapse_time := 0.15
 ## It hurts everything inside it this often while open (first time just after it opens).
 @export var tick_every := 0.4
-## How many blue specks are falling in at any moment.
-@export var specks := 18
+## How many blue specks there are at any moment.
+@export var specks := 10
+## A speck waits on the rim this long (random between the two), then snaps to the middle in
+## `snap_time` and stays there `rest_time` before it's gone.
+@export var rim_wait_min := 0.08
+@export var rim_wait_max := 0.4
+@export var snap_time := 0.05
+@export var rest_time := 0.2
 
 ## Set by whoever casts it, before adding it to the world.
 var caster: Node2D
@@ -52,7 +57,7 @@ var _timeline: AttackTimeline
 var _from := Vector2.ZERO          # the staff's orb when cast (global)
 var _at := Vector2.ZERO            # where the hole opens (global); this node sits there
 var _beam: Node2D                  # the beam, drawn above everyone
-var _specks: Array = []            # each {a: start angle, r0: start radius, born: t, life: s, col}
+var _specks: Array = []            # each {a: angle on the rim, end: where it lands, born, wait, col}
 
 
 func _ready() -> void:
@@ -68,10 +73,10 @@ func _ready() -> void:
 	_beam.draw.connect(_draw_beam)
 	add_child(_beam)
 	var open_at := blink_time
-	var close_at := open_at + grow_time + hole_time
-	_timeline = AttackTimeline.new().lasts(close_at + collapse_time)
+	var close_at := open_at + hole_time
+	_timeline = AttackTimeline.new().lasts(close_at)
 	_timeline.at(open_at, _open)
-	var t := open_at + grow_time * 0.5
+	var t := open_at + 0.05
 	while t < close_at:
 		_timeline.at(t, _hurt)
 		t += tick_every
@@ -139,67 +144,47 @@ func _process(_delta: float) -> void:
 	_beam.queue_redraw()
 
 
-## The hole's radius at time t (0 before it opens and after it's gone).
+## The hole's radius at time t: all or nothing (0 before it opens and once it's gone).
 func _hole_radius(t: float) -> float:
-	var open_at := blink_time
-	var close_at := open_at + grow_time + hole_time
-	if t < open_at:
-		return 0.0
-	if t < open_at + grow_time:
-		var x := (t - open_at) / grow_time
-		return lerpf(orb_radius, hole_radius, 1.0 - pow(1.0 - x, 3.0))
-	if t < close_at:
-		return hole_radius + 0.5 * sin(t * 9.0)          # a slight throb
-	return hole_radius * clampf(1.0 - (t - close_at) / collapse_time, 0.0, 1.0)
+	return hole_radius if t >= blink_time and t < blink_time + hole_time else 0.0
 
 
 func _update_specks(t: float) -> void:
-	var close_at := blink_time + grow_time + hole_time
-	_specks = _specks.filter(func(s): return t - s["born"] < s["life"])
-	while _specks.size() < specks and t < close_at:
+	_specks = _specks.filter(func(s): return t - s["born"] < s["wait"] + snap_time + rest_time)
+	while _specks.size() < specks:
+		var end := Vector2.from_angle(randf() * TAU) * randf_range(0.5, 2.5)
 		_specks.append({
-			"a": randf() * TAU, "r0": hole_radius * randf_range(1.3, 2.2),
-			"born": t - randf() * 0.3 if _specks.is_empty() else t, "life": randf_range(0.3, 0.55),
-			"spin": randf_range(1.5, 3.0) * (1.0 if randf() < 0.85 else -1.0),
-			"col": BLUES[randi() % BLUES.size()],
+			"a": randf() * TAU, "end": end, "born": t,
+			"wait": randf_range(rim_wait_min, rim_wait_max), "col": BLUES[randi() % BLUES.size()],
 		})
 
 
 func _draw() -> void:
 	var t := _timeline.t
 	if t < blink_time:
-		# the little orb, blinking (on most of each beat, off for the rest)
+		# the little orb blinks in and out of existence (there for most of each beat, then gone)
 		var beat := blink_time / maxf(blinks, 1)
-		if t > beam_time * 0.3 and fmod(t, beat) < beat * 0.65:
+		if t > beam_time * 0.3 and fmod(t, beat) < beat * 0.6:
 			_disc(Vector2.ZERO, orb_radius + 0.5, EDGE)
 			_disc(Vector2.ZERO, orb_radius, BLACK)
 		return
 	var r := _hole_radius(t)
 	if r <= 0.0:
 		return
-	# specks: start outside the sphere and are flung inwards, faster and faster, spinning round
-	for s: Dictionary in _specks:
-		var k := clampf((t - s["born"]) / s["life"], 0.0, 1.0)
-		var dist: float = s["r0"] * (1.0 - pow(k, 2.6))
-		var ang: float = s["a"] + s["spin"] * pow(k, 2.0) * 2.0
-		var p := Vector2(cos(ang), sin(ang)) * dist
-		var col: Color = s["col"]
-		if dist > r:
-			_px(p, col, 1.0)                 # still outside: a 2x2 speck
-		else:
-			_px(p, col.lightened(0.15))      # over the black: one pixel
-		# a short streak behind it once it's moving fast
-		if k > 0.45:
-			var back := Vector2(cos(ang - s["spin"] * 0.15), sin(ang - s["spin"] * 0.15)) * minf(dist * 1.18 + 0.5, s["r0"])
-			_px(back, Color(col, 0.6))
 	_disc(Vector2.ZERO, r, BLACK)
-	# specks already over the sphere are drawn again on top of it
+	# specks: on the rim, then straight to the middle in a snap, then gone
 	for s: Dictionary in _specks:
-		var k := clampf((t - s["born"]) / s["life"], 0.0, 1.0)
-		var dist: float = s["r0"] * (1.0 - pow(k, 2.6))
-		if dist <= r - 0.5:
-			var ang: float = s["a"] + s["spin"] * pow(k, 2.0) * 2.0
-			_px(Vector2(cos(ang), sin(ang)) * dist, s["col"])
+		var age: float = t - s["born"]
+		var rim := Vector2.from_angle(s["a"]) * (r - 0.5)
+		var p: Vector2
+		if age < s["wait"]:
+			p = rim
+		elif age < s["wait"] + snap_time:
+			var k: float = (age - s["wait"]) / snap_time
+			p = rim.lerp(s["end"], k * k)
+		else:
+			p = s["end"]
+		_px(p, s["col"])
 
 
 func _draw_beam() -> void:
