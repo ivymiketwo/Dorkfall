@@ -6,7 +6,7 @@ extends Node2D
 ##   2. at its end a small black orb blinks in and out of existence `blinks` times,
 ##   3. then a large black hole snaps into existence, perfectly still, for `hole_time` seconds:
 ##      dark blue specks appear on its rim and snap straight to its middle (each ending a little
-##      apart from the others), no spin; only its edge ripples very slightly (`undulation`).
+##      apart from the others), no spin; only its edge pulses very slightly (`pulse`).
 ##      Then it's simply gone.
 ## Everything inside the hole takes `damage` every `tick_every` seconds while it's open.
 ##
@@ -29,9 +29,11 @@ extends Node2D
 @export var orb_radius := 2.5
 
 @export_group("Black hole")
-## Its size (world px), and how much its edge gently ripples (world px; 0 = perfectly still).
+## Its size (world px), and how much its edge gently pulses in and out (world px; 0 = perfectly
+## still) and how many pulses a second.
 @export var hole_radius := 14.0
-@export var undulation := 0.5
+@export var pulse := 0.5
+@export var pulses_per_second := 1.4
 ## Seconds it stays open.
 @export var hole_time := 1.4
 ## It hurts everything inside it this often while open (first time just after it opens).
@@ -177,7 +179,7 @@ func _draw() -> void:
 	# specks: on the rim, then straight to the middle in a snap, then gone
 	for s: Dictionary in _specks:
 		var age: float = t - s["born"]
-		var rim := Vector2.from_angle(s["a"]) * (r - 0.5 - undulation)
+		var rim := Vector2.from_angle(s["a"]) * (r - 0.5 - pulse)
 		var p: Vector2
 		if age < s["wait"]:
 			p = rim
@@ -200,18 +202,10 @@ func _draw_beam() -> void:
 	_beam.draw_line(from, Vector2.ZERO, Color(BLACK, a), 1.0)
 
 
-## The hole: a black disc whose edge ripples very slightly (a few slow waves going round it).
+## The hole: a black disc whose edge gently pulses in and out.
 func _blob(r: float, t: float) -> void:
-	if undulation <= 0.0:
-		_disc(Vector2.ZERO, r, BLACK)
-		return
-	var pts := PackedVector2Array()
-	var n := 48
-	for i in n:
-		var a := TAU * i / n
-		var w := sin(a * 3.0 + t * 2.3) * 0.6 + sin(a * 5.0 - t * 3.1) * 0.4
-		pts.append(Vector2.from_angle(a) * (r + w * undulation))
-	draw_colored_polygon(pts, BLACK)
+	var open_for := t - blink_time
+	_disc(Vector2.ZERO, r + pulse * sin(open_for * TAU * pulses_per_second), BLACK)
 
 
 ## A solid disc on whole art pixels (no smoothing).
