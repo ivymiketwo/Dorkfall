@@ -40,6 +40,8 @@ extends Node2D
 @export var ring_spin := 0.35
 @export var spikes := 8
 @export var spike_length := 4.0
+## Every other spike is this much of the full length, so they don't all look the same.
+@export var short_spike := 0.6
 ## Seconds it stays open.
 @export var hole_time := 1.4
 ## It hurts everything inside it this often while open (first time just after it opens).
@@ -220,14 +222,15 @@ func _blob(r: float, t: float) -> void:
 	# spikes combed back against the spin: each leaves the ring and curls away behind it
 	var turn := open_for * TAU * ring_spin
 	var dir := signf(ring_spin) if ring_spin != 0.0 else 1.0
-	var sweep := spike_length / maxf(edge, 1.0)        # how far round the ring a spike reaches
 	for i in spikes:
+		var length := spike_length * (short_spike if i % 2 == 1 else 1.0)
+		var sweep := length / maxf(edge, 1.0)          # how far round the ring it reaches
 		var a := turn + TAU * i / maxf(spikes, 1)
-		var steps := int(spike_length * 2.0) + 2
+		var steps := int(length * 2.0) + 2
 		for k in steps:
 			var f := float(k) / (steps - 1)
 			var ang := a - dir * sweep * f
-			var rad := edge + 1.0 + f * spike_length * 0.6        # peels away from the ring
+			var rad := edge + 1.0 + f * length * 0.6              # peels away from the ring
 			var p := Vector2.from_angle(ang) * rad
 			if f < 0.6:                                # 2 px thick until it tapers to a point
 				_px(p - Vector2.from_angle(ang) * 0.5, RING)
