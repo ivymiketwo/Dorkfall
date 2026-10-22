@@ -36,12 +36,12 @@ extends Node2D
 @export var pulse := 0.5
 @export var pulses_per_second := 1.4
 ## The purple ring round its edge: how fast it turns (turns a second; + = clockwise), how many
-## swept-back spikes it has and how long they are (world px).
+## swept-back spikes it has, and how long they are: each one a random length between these two
+## (art pixels), picked when the hole opens.
 @export var ring_spin := 0.35
 @export var spikes := 8
-@export var spike_length := 4.0
-## Every other spike is this much of the full length, so they don't all look the same.
-@export var short_spike := 0.6
+@export var spike_min_px := 2
+@export var spike_max_px := 5
 ## Seconds it stays open.
 @export var hole_time := 1.4
 ## It hurts everything inside it this often while open (first time just after it opens).
@@ -71,6 +71,7 @@ var _timeline: AttackTimeline
 var _from := Vector2.ZERO          # the staff's orb when cast (global)
 var _at := Vector2.ZERO            # where the hole opens (global); this node sits there
 var _beam: Node2D                  # the beam, drawn above everyone
+var _spike_px: Array[int] = []    # each spike's length (art px)
 var _specks: Array = []            # each {a: angle on the rim, end: where it lands, born, wait, col}
 
 
@@ -82,6 +83,8 @@ func _ready() -> void:
 	_at = _from + aim
 	_face(aim)
 	global_position = _at              # sorted with everyone else by where the hole stands
+	for i in spikes:
+		_spike_px.append(randi_range(spike_min_px, maxi(spike_min_px, spike_max_px)))
 	_beam = Node2D.new()
 	_beam.z_index = 4
 	_beam.draw.connect(_draw_beam)
@@ -222,19 +225,19 @@ func _blob(r: float, t: float) -> void:
 	# spikes combed back against the spin: each leaves the ring and curls away behind it
 	var turn := open_for * TAU * ring_spin
 	var dir := signf(ring_spin) if ring_spin != 0.0 else 1.0
-	for i in spikes:
-		var length := spike_length * (short_spike if i % 2 == 1 else 1.0)
-		var sweep := length / maxf(edge, 1.0)          # how far round the ring it reaches
-		var a := turn + TAU * i / maxf(spikes, 1)
-		var steps := int(length * 2.0) + 2
-		for k in steps:
-			var f := float(k) / (steps - 1)
+	for i in _spike_px.size():
+		var n: int = _spike_px[i]                      # pixels long
+		var length := n * 0.5                          # world px
+		var sweep := length * 0.8 / maxf(edge, 1.0)    # how far round the ring it reaches
+		var a := turn + TAU * i / maxf(_spike_px.size(), 1)
+		for k in n:
+			var f := float(k) / maxf(n - 1, 1)
 			var ang := a - dir * sweep * f
-			var rad := edge + 1.0 + f * length * 0.6              # peels away from the ring
+			var rad := edge + 1.0 + f * length * 0.6        # peels away from the ring
 			var p := Vector2.from_angle(ang) * rad
-			if f < 0.6:                                # 2 px thick until it tapers to a point
+			if k == 0 and n >= 4:                      # a thicker root on the longer ones
 				_px(p - Vector2.from_angle(ang) * 0.5, RING)
-			_px(p, RING_LIGHT if f < 0.75 else RING)
+			_px(p, RING_LIGHT if f < 0.5 else RING)
 
 
 ## A solid disc on whole art pixels (no smoothing).
