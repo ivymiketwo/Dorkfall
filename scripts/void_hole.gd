@@ -58,6 +58,8 @@ extends Node2D
 @export var travel_time := 0.4
 @export var fade_in := 0.5
 @export var rest_time := 0.2
+## How far round each speck curls on its way in (turns; follows the ring's spin direction).
+@export var swirl := 0.12
 
 ## Set by whoever casts it, before adding it to the world.
 var caster: Node2D
@@ -173,7 +175,7 @@ func _hole_radius(t: float) -> float:
 func _update_specks(t: float) -> void:
 	_specks = _specks.filter(func(s): return t - s["born"] < s["wait"] + travel_time + rest_time)
 	while _specks.size() < specks:
-		var end := Vector2.ZERO                   # every speck ends on the very same point
+		var end := Vector2.ZERO                   # every speck ends on the very same point (the middle)
 		_specks.append({
 			"a": randf() * TAU, "end": end, "born": t,
 			"wait": randf_range(start_delay_min, start_delay_max), "col": SPECKS[randi() % SPECKS.size()],
@@ -198,9 +200,11 @@ func _draw() -> void:
 		var age: float = t - s["born"] - s["wait"]
 		if age < 0.0:
 			continue
-		var rim := Vector2.from_angle(s["a"]) * (r - speck_px * 0.5 - pulse)
 		var k := clampf(age / maxf(travel_time, 0.001), 0.0, 1.0)
-		var p := rim.lerp(s["end"], k * k)              # slow at first, faster as it falls in
+		# slow at first, faster as it falls in, curling a little the way the ring turns
+		var spin_dir := signf(ring_spin) if ring_spin != 0.0 else 1.0
+		var ang: float = s["a"] + spin_dir * swirl * TAU * k
+		var p := Vector2.from_angle(ang) * (r - speck_px * 0.5 - pulse) * (1.0 - k * k)
 		var col: Color = s["col"]
 		col.a = clampf(k / maxf(fade_in, 0.001), 0.0, 1.0)
 		_px(p - Vector2.ONE * speck_px * 0.25, col, speck_px * 0.5)
