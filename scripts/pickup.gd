@@ -75,3 +75,4 @@ func _try_pick_up(player: Node2D, from: Vector2) -> void:
 
 func _refresh() -> void:
 	$Sprite2D.frame = item.frame_for(count) if item else 0
+	$Sprite2D.scale = Vector2.ONE * (item.ground_scale if item else 0.5)

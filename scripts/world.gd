@@ -25,11 +25,16 @@ var _mountains := {}
 
 const ARRIVAL_LOCK := 0.1   # seconds the player can't move after going through a door
 
-## Mouse-wheel zoom, up to 25% closer or further (ZOOMS: 1.0 = normal). At normal zoom nothing
-## changes: the world draws on its 640x360 screen, blown up to the window. Zoomed, that screen is
-## drawn at the window's full resolution instead (same 640x360 layout, so the interface and the
-## mouse work exactly the same) and the camera zooms, so no art pixel is ever dropped; at
-## in-between sizes some art pixels just come out one window pixel wider than others.
+## The world is laid out on a 640x360 screen (the camera, the interface and the mouse all work in
+## those units) but DRAWN at the window's full resolution (2x at 1280x720, 3x at 1920x1080...).
+## Ordinary art (half a world px per art pixel) looks exactly as before, each of its pixels a
+## whole block of window pixels; small things can use finer art (a quarter of a world px per
+## pixel, e.g. dropped coins: Item.ground_scale) that would have been lost on a plain 640x360
+## screen. At 1920x1080 those fine pixels alternate 1 and 2 window pixels wide.
+##
+## Mouse-wheel zoom, up to 25% closer or further (ZOOMS: 1.0 = normal): the camera zooms on
+## the same full-resolution drawing, so no art pixel is ever dropped; at in-between sizes some
+## art pixels just come out one window pixel wider than others.
 const ZOOMS := [0.8, 0.85, 0.9, 0.95, 1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
 const ZOOM_NORMAL := 4
 const BASE_ZOOM := 2.0
@@ -48,11 +53,8 @@ func _ready() -> void:
 	ground.self_modulate = Color(1, 1, 1, 0)   # the tiles are only for collision; GroundArt is what you see
 	_fit_camera_to_map()
 	_zoom_i = clampi(int(SaveGame.get_value("view_zoom", ZOOM_NORMAL)), 0, ZOOMS.size() - 1)
-	if _zoom_i != ZOOM_NORMAL:
-		_apply_zoom.call_deferred()
-	get_tree().root.size_changed.connect(func() -> void:
-		if _zoom_i != ZOOM_NORMAL:
-			_apply_zoom())
+	_apply_zoom.call_deferred()
+	get_tree().root.size_changed.connect(_apply_zoom)
 	$HUD/Bars.stats = $Entities/Player.stats
 	$HUD/Bars.xp = $Entities/Player/Experience
 	Gravestone.restore($Entities)
@@ -152,23 +154,18 @@ func _apply_zoom() -> void:
 	if box == null:
 		return                  # running main.tscn on its own: no window wrapper to resize
 	var zi := ZOOM_NORMAL if _in_shop() else _zoom_i
-	if zi == ZOOM_NORMAL:
-		view.size_2d_override = Vector2i.ZERO
-		box.scale = Vector2.ONE
-		box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		box.stretch = true
-	else:
-		# the window's real pixels per screen pixel (2 in a 1280x720 window)
-		var k := get_tree().root.get_final_transform().get_scale().x
-		var win := Vector2i(roundi(640 * k), roundi(360 * k))
-		box.stretch = false
-		box.set_anchors_preset(Control.PRESET_TOP_LEFT)
-		box.position = Vector2.ZERO
-		view.size = win
-		view.size_2d_override = Vector2i(640, 360)
-		view.size_2d_override_stretch = true
-		box.size = Vector2(win)
-		box.scale = Vector2(640.0 / win.x, 360.0 / win.y)
+	# always drawn at the window's real resolution (see the top of this section): the window's
+	# pixels per 640x360 screen pixel (2 in a 1280x720 window)
+	var k := get_tree().root.get_final_transform().get_scale().x
+	var win := Vector2i(roundi(640 * k), roundi(360 * k))
+	box.stretch = false
+	box.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	box.position = Vector2.ZERO
+	view.size = win
+	view.size_2d_override = Vector2i(640, 360)
+	view.size_2d_override_stretch = true
+	box.size = Vector2(win)
+	box.scale = Vector2(640.0 / win.x, 360.0 / win.y)
 	camera.zoom = Vector2.ONE * BASE_ZOOM * float(ZOOMS[zi])
 	if _inside:
 		_set_camera_limits(_inside.camera_rect(_view_world()))

@@ -27,7 +27,11 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Viewport 640x360, camera zoom 2 (the mouse wheel zooms 0.8x-1.25x around that, see `world.gd`
   `_apply_zoom`: zoomed, the world's SubViewport renders at window resolution with a 640x360
   `size_2d_override`, so the layout, the interface and the mouse coordinates never change). Tiles are 32 px art drawn at half scale (16 world px), so
-  1 art pixel = 0.5 world px. Player sheet: 48x48 frames, 9 x 12 (rows = anim*4 + facing
+  1 art pixel = 0.5 world px. The world is laid out at 640x360 but DRAWN at the window's resolution
+  (`world.gd` `_apply_zoom`, always on), so small things may use finer art: 1 art px = 0.25 world px
+  (e.g. dropped coins, `Item.ground_scale` 0.25). Rule (Rex agreed): only tiny / fast / glowing things
+  (drops, coins, sparkles, spell particles, icons) get the finer pixels, never anything with a body
+  (characters, monsters, buildings, trees). The camera rounds to window pixels (`Player._place_camera`). Player sheet: 48x48 frames, 9 x 12 (rows = anim*4 + facing
   down/up/left/right; anims idle 4 frames, run 4, jump 9).
 - The ground is a painting cut into 512 px squares (`art/ground/`, streamed by `GroundStream`).
   Edit with `tools/ground_tiles.py` (`assemble()` / `split()`); the invisible tile layer from

@@ -111,8 +111,9 @@ func _process(_delta: float) -> void:
 	_place_camera()
 
 
-## The camera sits on the player's smoothed (interpolated) position, rounded to whole screen
-## pixels (half a world px at zoom 2), so the ground is always pixel-exact (no shimmer). Sprites
+## The camera sits on the player's smoothed (interpolated) position, rounded to whole WINDOW
+## pixels (the world is drawn at the window's resolution, see world.gd), so the ground is always
+## pixel-exact (no shimmer). Sprites
 ## are kept on screen pixels by snap_2d_vertices_to_pixel (scenes/game.tscn). See
 ## docs/desert_texture.md, "Keep everything on the pixel grid".
 func _place_camera() -> void:
@@ -122,7 +123,8 @@ func _place_camera() -> void:
 		_tick.prev = global_position
 		_tick.now = global_position
 	var at: Vector2 = _tick.prev.lerp(_tick.now, Engine.get_physics_interpolation_fraction())
-	_cam.global_position = (at * 2.0).round() / 2.0
+	var px := _cam.zoom.x * get_tree().root.get_final_transform().get_scale().x   # window px per world px
+	_cam.global_position = (at * px).round() / px
 	_cam.force_update_scroll()          # use it this frame, not next
 
 

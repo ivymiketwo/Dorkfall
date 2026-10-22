@@ -84,6 +84,9 @@ extends Resource
 ## Optional: icon changes as the stack grows (RuneScape coins). Each threshold
 ## that the count reaches moves the icon one frame further along.
 @export var stack_thresholds := PackedInt32Array()
+## How big it is lying on the ground, as a scale of its 32 px icon: 0.5 = the normal art pixel
+## size (16 world px), 0.25 = half as big with the same detail (the finer pixels, see world.gd).
+@export var ground_scale := 0.5
 
 
 func frame_for(count: int) -> int:
