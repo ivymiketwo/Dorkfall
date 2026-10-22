@@ -5,8 +5,8 @@ extends Node2D
 ##      staff's orb to where you aim (up to `max_range`),
 ##   2. at its end a small black orb blinks in and out of existence `blinks` times,
 ##   3. then a large black hole snaps into existence, perfectly still, for `hole_time` seconds:
-##      purple specks appear on its rim and snap straight to its middle (each ending a little
-##      apart from the others), no spin; its edge pulses very slightly (`pulse`) and a purple ring
+##      purple specks appear on its rim and snap straight to one single point in its middle,
+##      no spin; its edge pulses very slightly (`pulse`) and a purple ring
 ##      with a few swept-back spikes turns slowly round it.
 ##      Then it's simply gone.
 ## Everything inside the hole takes `damage` every `tick_every` seconds while it's open.
@@ -51,8 +51,10 @@ extends Node2D
 @export var speck_px := 2
 ## A speck waits on the rim this long (random between the two), then snaps to the middle in
 ## `snap_time` and stays there `rest_time` before it's gone.
-@export var rim_wait_min := 0.08
-@export var rim_wait_max := 0.4
+@export var rim_wait_min := 0.18
+@export var rim_wait_max := 0.45
+## Seconds a speck takes to fade in on the rim (it snaps in fully faded in).
+@export var fade_in := 0.15
 @export var snap_time := 0.05
 @export var rest_time := 0.2
 
@@ -170,10 +172,10 @@ func _hole_radius(t: float) -> float:
 func _update_specks(t: float) -> void:
 	_specks = _specks.filter(func(s): return t - s["born"] < s["wait"] + snap_time + rest_time)
 	while _specks.size() < specks:
-		var end := Vector2.from_angle(randf() * TAU) * randf_range(0.5, 2.5)
+		var end := Vector2.ZERO                   # every speck ends on the very same point
 		_specks.append({
 			"a": randf() * TAU, "end": end, "born": t,
-			"wait": randf_range(rim_wait_min, rim_wait_max), "col": SPECKS[randi() % SPECKS.size()],
+			"wait": maxf(randf_range(rim_wait_min, rim_wait_max), fade_in), "col": SPECKS[randi() % SPECKS.size()],
 		})
 
 
@@ -202,7 +204,9 @@ func _draw() -> void:
 			p = rim.lerp(s["end"], k * k)
 		else:
 			p = s["end"]
-		_px(p - Vector2.ONE * speck_px * 0.25, s["col"], speck_px * 0.5)
+		var col: Color = s["col"]
+		col.a = clampf(age / maxf(fade_in, 0.001), 0.0, 1.0) if age < s["wait"] else 1.0
+		_px(p - Vector2.ONE * speck_px * 0.25, col, speck_px * 0.5)
 
 
 func _draw_beam() -> void:
