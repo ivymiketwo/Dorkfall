@@ -5,7 +5,7 @@ extends Node2D
 ##      staff's orb to where you aim (up to `max_range`),
 ##   2. at its end a small black orb blinks in and out of existence `blinks` times,
 ##   3. then a large black hole snaps into existence, perfectly still, for `hole_time` seconds:
-##      purple specks appear on its rim and snap straight to one single point in its middle,
+##      purple specks fade in as they're pulled straight from its rim to one single point in its middle,
 ##      no spin; its edge pulses very slightly (`pulse`) and a purple ring
 ##      with a few swept-back spikes turns slowly round it.
 ##      Then it's simply gone.
@@ -49,13 +49,14 @@ extends Node2D
 ## How many purple specks there are at any moment, and how big each is (art px square).
 @export var specks := 22
 @export var speck_px := 2
-## A speck waits on the rim this long (random between the two), then snaps to the middle in
-## `snap_time` and stays there `rest_time` before it's gone.
-@export var rim_wait_min := 0.18
-@export var rim_wait_max := 0.45
-## Seconds a speck takes to fade in on the rim (it snaps in fully faded in).
-@export var fade_in := 0.15
-@export var snap_time := 0.05
+## Each speck starts on the rim after a random delay (between the two, so they don't all go at
+## once), travels in to the middle in `travel_time` seconds (slow at first, speeding up), and
+## stays there `rest_time` before it's gone. It's invisible on the rim and fades in as it moves:
+## fully there after `fade_in` of the way (0.5 = halfway in).
+@export var start_delay_min := 0.0
+@export var start_delay_max := 0.6
+@export var travel_time := 0.4
+@export var fade_in := 0.5
 @export var rest_time := 0.2
 
 ## Set by whoever casts it, before adding it to the world.
@@ -170,12 +171,12 @@ func _hole_radius(t: float) -> float:
 
 
 func _update_specks(t: float) -> void:
-	_specks = _specks.filter(func(s): return t - s["born"] < s["wait"] + snap_time + rest_time)
+	_specks = _specks.filter(func(s): return t - s["born"] < s["wait"] + travel_time + rest_time)
 	while _specks.size() < specks:
 		var end := Vector2.ZERO                   # every speck ends on the very same point
 		_specks.append({
 			"a": randf() * TAU, "end": end, "born": t,
-			"wait": maxf(randf_range(rim_wait_min, rim_wait_max), fade_in), "col": SPECKS[randi() % SPECKS.size()],
+			"wait": randf_range(start_delay_min, start_delay_max), "col": SPECKS[randi() % SPECKS.size()],
 		})
 
 
@@ -192,20 +193,16 @@ func _draw() -> void:
 	if r <= 0.0:
 		return
 	_blob(r, t)
-	# specks: on the rim, then straight to the middle in a snap, then gone
+	# specks: leave the rim unseen, fade in as they're pulled straight in, then rest in the middle
 	for s: Dictionary in _specks:
-		var age: float = t - s["born"]
+		var age: float = t - s["born"] - s["wait"]
+		if age < 0.0:
+			continue
 		var rim := Vector2.from_angle(s["a"]) * (r - speck_px * 0.5 - pulse)
-		var p: Vector2
-		if age < s["wait"]:
-			p = rim
-		elif age < s["wait"] + snap_time:
-			var k: float = (age - s["wait"]) / snap_time
-			p = rim.lerp(s["end"], k * k)
-		else:
-			p = s["end"]
+		var k := clampf(age / maxf(travel_time, 0.001), 0.0, 1.0)
+		var p := rim.lerp(s["end"], k * k)              # slow at first, faster as it falls in
 		var col: Color = s["col"]
-		col.a = clampf(age / maxf(fade_in, 0.001), 0.0, 1.0) if age < s["wait"] else 1.0
+		col.a = clampf(k / maxf(fade_in, 0.001), 0.0, 1.0)
 		_px(p - Vector2.ONE * speck_px * 0.25, col, speck_px * 0.5)
 
 
