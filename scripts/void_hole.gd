@@ -6,7 +6,8 @@ extends Node2D
 ##   2. at its end a small black orb blinks in and out of existence `blinks` times,
 ##   3. then a large black hole snaps into existence, perfectly still, for `hole_time` seconds:
 ##      dark blue specks appear on its rim and snap straight to its middle (each ending a little
-##      apart from the others), no spin; only its edge pulses very slightly (`pulse`).
+##      apart from the others), no spin; its edge pulses very slightly (`pulse`) and a purple ring
+##      with a few swept-back spikes turns slowly round it.
 ##      Then it's simply gone.
 ## Everything inside the hole takes `damage` every `tick_every` seconds while it's open.
 ##
@@ -34,6 +35,11 @@ extends Node2D
 @export var hole_radius := 14.0
 @export var pulse := 0.5
 @export var pulses_per_second := 1.4
+## The purple ring round its edge: how fast it turns (turns a second; + = clockwise), how many
+## swept-back spikes it has and how long they are (world px).
+@export var ring_spin := 0.35
+@export var spikes := 4
+@export var spike_length := 4.0
 ## Seconds it stays open.
 @export var hole_time := 1.4
 ## It hurts everything inside it this often while open (first time just after it opens).
@@ -53,6 +59,8 @@ var damage := 30.0
 
 const BLACK := Color(0, 0, 0)
 const EDGE := Color8(44, 52, 78)                  # the beam's dark blue-grey edge
+const RING := Color8(124, 74, 196)                # purple ring
+const RING_LIGHT := Color8(196, 170, 246)         # its bright inner line
 const BLUES := [Color8(60, 86, 186), Color8(76, 108, 214), Color8(50, 72, 164), Color8(92, 126, 232)]
 const CAST_SOUND := preload("res://audio/ray_swoosh.wav")
 const OPEN_SOUND := preload("res://audio/fireball_hit.wav")
@@ -205,7 +213,25 @@ func _draw_beam() -> void:
 ## The hole: a black disc whose edge gently pulses in and out.
 func _blob(r: float, t: float) -> void:
 	var open_for := t - blink_time
-	_disc(Vector2.ZERO, r + pulse * sin(open_for * TAU * pulses_per_second), BLACK)
+	var edge := r + pulse * sin(open_for * TAU * pulses_per_second)
+	_disc(Vector2.ZERO, edge + 1.0, RING)          # 2 art px of purple round the black
+	_disc(Vector2.ZERO, edge + 0.5, RING_LIGHT)    # with a 1 art px bright line inside it
+	_disc(Vector2.ZERO, edge, BLACK)
+	# spikes combed back against the spin: each leaves the ring and curls away behind it
+	var turn := open_for * TAU * ring_spin
+	var dir := signf(ring_spin) if ring_spin != 0.0 else 1.0
+	var sweep := spike_length / maxf(edge, 1.0)        # how far round the ring a spike reaches
+	for i in spikes:
+		var a := turn + TAU * i / maxf(spikes, 1)
+		var steps := int(spike_length * 2.0) + 2
+		for k in steps:
+			var f := float(k) / (steps - 1)
+			var ang := a - dir * sweep * f
+			var rad := edge + 1.0 + f * spike_length * 0.6        # peels away from the ring
+			var p := Vector2.from_angle(ang) * rad
+			if f < 0.6:                                # 2 px thick until it tapers to a point
+				_px(p - Vector2.from_angle(ang) * 0.5, RING)
+			_px(p, RING_LIGHT if f < 0.75 else RING)
 
 
 ## A solid disc on whole art pixels (no smoothing).
