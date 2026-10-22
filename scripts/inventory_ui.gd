@@ -146,7 +146,7 @@ func _gui_input(event: InputEvent) -> void:
 				# let go outside the bag: maybe onto a hotbar slot
 				var it2 := inventory.items[_drag_from]
 				var hb := get_tree().get_first_node_in_group("hotbar_ui")
-				if it2 != null and it2.is_consumable() and hb != null:
+				if it2 != null and (it2.is_consumable() or it2.is_hand_gear()) and hb != null:
 					hb.drop_item_at(position + event.position, it2)
 			_drag_from = -1
 			_dragging = false

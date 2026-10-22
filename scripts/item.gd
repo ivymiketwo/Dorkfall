@@ -155,5 +155,10 @@ func is_equippable() -> bool:
 	return equip_slot != "none"
 
 
+## Staffs and fishing rods: they can go on the hotbar, where using the slot equips them.
+func is_hand_gear() -> bool:
+	return equip_slot == "weapon"
+
+
 func is_weapon() -> bool:
 	return weapon_kind != "none"

@@ -12,6 +12,7 @@ const BG := Color(0.03, 0.03, 0.03, 0.7)
 const BORDER := Color("4a4a55")
 const SELECTED := Color(0.9, 0.55, 0.08, 0.95)
 const FAIL := Color("e03c3c")
+const EQUIPPED := Color("f0d040")
 
 var hotbar: Hotbar:
 	set(value):
@@ -112,7 +113,7 @@ func _input(event: InputEvent) -> void:
 				else:
 					hotbar.clear_slot(from)   # dragged off the bar: unassign
 			elif hotbar.item_slots[from] != null:
-				hotbar.try_cast(from)   # plain click uses a consumable
+				hotbar.try_cast(from)   # plain click uses a consumable, or equips a staff
 			_dragging = false
 			get_viewport().set_input_as_handled()
 			queue_redraw()
@@ -141,8 +142,12 @@ func _draw() -> void:
 			if icd > 0.0 and it.use_cooldown > 0.0:
 				var h2 := ceili(ICON * icd / it.use_cooldown)
 				draw_rect(Rect2(r.position + Vector2(1, ICON + 1 - h2), Vector2(ICON, h2)), Color(0, 0, 0, 0.65))
-			HiFont.draw(self, r.position + Vector2(1.5, 1.5), HiFont.short_count(stock),
-					UiStyle.TEXT if stock > 0 else Color("e03c3c"), 0.5)
+			if it.is_hand_gear():
+				if hotbar.is_equipped(i):          # the staff in your hands: a gold frame
+					draw_rect(Rect2(r.position + Vector2.ONE, Vector2(ICON, ICON)), EQUIPPED, false, 1.0)
+			else:
+				HiFont.draw(self, r.position + Vector2(1.5, 1.5), HiFont.short_count(stock),
+						UiStyle.TEXT if stock > 0 else Color("e03c3c"), 0.5)
 		elif ab and not lifted:
 			draw_texture_rect_region(ICONS, Rect2(r.position + Vector2.ONE, Vector2(ICON, ICON)),
 					Rect2(ab.icon_index * 16, 0, 16, 16))

@@ -73,8 +73,11 @@ func _gui_input(event: InputEvent) -> void:
 		if it and menu:
 			_hover = ""
 			queue_redraw()
-			menu.open_at_screen(get_viewport().get_mouse_position(), [
-				{"label": "Unequip " + it.display_name, "callback": equipment.unequip.bind(slot)}])
+			var opts := [{"label": "Unequip " + it.display_name, "callback": equipment.unequip.bind(slot)}]
+			var hb := equipment.get_parent().get_node_or_null("Hotbar") as Hotbar
+			if it.is_hand_gear() and hb:
+				opts.append({"label": "Put on hotbar", "callback": hb.add_item_to_free_slot.bind(it)})
+			menu.open_at_screen(get_viewport().get_mouse_position(), opts)
 
 
 func _notification(what: int) -> void:

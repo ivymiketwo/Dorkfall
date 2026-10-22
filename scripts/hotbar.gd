@@ -37,6 +37,7 @@ var fail_flash: Array[float] = []
 @onready var caster: Node2D = get_parent()
 @onready var stats: Stats = get_parent().get_node("Stats")
 @onready var inventory: Inventory = get_parent().get_node_or_null("Inventory")
+@onready var equipment: Equipment = get_parent().get_node_or_null("Equipment")
 var _cast_snd: AudioStreamPlayer2D
 ## The summoning circle drawn under the caster while some spells charge (Ability.cast_circle).
 var _circle: Node2D
@@ -69,6 +70,8 @@ func _ready() -> void:
 	active_bar = clampi(int(SaveGame.get_value("hotbar_bar", 0)), 0, BARS - 1)
 	if inventory:
 		inventory.changed.connect(func(): changed.emit())
+	if equipment:
+		equipment.changed.connect(func(): changed.emit())
 
 
 ## --- assigning things to slots (drag and drop) ---
@@ -113,7 +116,16 @@ func has_content(i: int) -> bool:
 func item_stock(i: int) -> int:
 	if item_slots[i] == null or inventory == null:
 		return 0
-	return inventory.count_of(item_slots[i])
+	return inventory.count_of(item_slots[i]) + (1 if is_equipped(i) else 0)
+
+
+## True when slot `i` holds a staff / rod that is in the player's hands right now.
+func is_equipped(i: int) -> bool:
+	var it := item_slots[i]
+	if it == null or not it.is_hand_gear() or equipment == null:
+		return false
+	var held := equipment.get_item(it.equip_slot)
+	return held != null and held.id == it.id
 
 
 func _layout_changed() -> void:
@@ -252,10 +264,48 @@ func try_cast(i: int) -> void:
 func _use_item_slot(i: int) -> void:
 	if is_busy():
 		return
+	if item_slots[i].is_hand_gear():
+		_equip_slot(i)
+		return
 	if inventory == null or inventory.cooldown_of(item_slots[i]) > 0.0 or not inventory.use_item(item_slots[i]):
 		_fail(i)
 		return
 	changed.emit()
+
+
+## Puts an item on the first free slot of the bar you're looking at (then any bar). Does nothing
+## if it's already on the hotbar. False when there's no free slot.
+func add_item_to_free_slot(item: Item) -> bool:
+	for i in SLOT_COUNT:
+		if item_slots[i] != null and item_slots[i].id == item.id:
+			return true
+	var order: Array[int] = []
+	for s in PER_BAR:
+		order.append(active_bar * PER_BAR + s)
+	for i in SLOT_COUNT:
+		if not order.has(i):
+			order.append(i)
+	for i in order:
+		if not has_content(i):
+			assign_item(i, item)
+			return true
+	return false
+
+
+## A staff or rod on the hotbar: take it out of the bag and into the hands (whatever was held
+## goes back into the bag, see Equipment.equip_from). Already held: nothing to do.
+func _equip_slot(i: int) -> void:
+	if is_equipped(i):
+		return
+	var it := item_slots[i]
+	if inventory != null and equipment != null:
+		for k in Inventory.SLOT_COUNT:
+			var have := inventory.items[k]
+			if have != null and have.id == it.id:
+				equipment.equip_from(inventory, k)
+				changed.emit()
+				return
+	_fail(i)              # not in the bag any more
 
 
 ## Starts a cast bar of `seconds` for a spell that runs itself (see channel_from).
