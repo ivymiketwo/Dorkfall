@@ -5,7 +5,7 @@ extends Node2D
 ##      staff's orb to where you aim (up to `max_range`),
 ##   2. at its end a small black orb blinks in and out of existence `blinks` times,
 ##   3. then a large black hole snaps into existence, perfectly still, for `hole_time` seconds:
-##      dark blue specks appear on its rim and snap straight to its middle (each ending a little
+##      purple specks appear on its rim and snap straight to its middle (each ending a little
 ##      apart from the others), no spin; its edge pulses very slightly (`pulse`) and a purple ring
 ##      with a few swept-back spikes turns slowly round it.
 ##      Then it's simply gone.
@@ -46,8 +46,9 @@ extends Node2D
 @export var hole_time := 1.4
 ## It hurts everything inside it this often while open (first time just after it opens).
 @export var tick_every := 0.4
-## How many blue specks there are at any moment.
+## How many purple specks there are at any moment, and how big each is (art px square).
 @export var specks := 22
+@export var speck_px := 2
 ## A speck waits on the rim this long (random between the two), then snaps to the middle in
 ## `snap_time` and stays there `rest_time` before it's gone.
 @export var rim_wait_min := 0.08
@@ -63,7 +64,7 @@ const BLACK := Color(0, 0, 0)
 const EDGE := Color8(44, 52, 78)                  # the beam's dark blue-grey edge
 const RING := Color8(124, 74, 196)                # purple ring
 const RING_LIGHT := Color8(196, 170, 246)         # its bright inner line
-const BLUES := [Color8(60, 86, 186), Color8(76, 108, 214), Color8(50, 72, 164), Color8(92, 126, 232)]
+const SPECKS := [Color8(150, 96, 224), Color8(174, 126, 240), Color8(128, 78, 202), Color8(196, 160, 250)]
 const CAST_SOUND := preload("res://audio/ray_swoosh.wav")
 const OPEN_SOUND := preload("res://audio/fireball_hit.wav")
 
@@ -172,7 +173,7 @@ func _update_specks(t: float) -> void:
 		var end := Vector2.from_angle(randf() * TAU) * randf_range(0.5, 2.5)
 		_specks.append({
 			"a": randf() * TAU, "end": end, "born": t,
-			"wait": randf_range(rim_wait_min, rim_wait_max), "col": BLUES[randi() % BLUES.size()],
+			"wait": randf_range(rim_wait_min, rim_wait_max), "col": SPECKS[randi() % SPECKS.size()],
 		})
 
 
@@ -192,7 +193,7 @@ func _draw() -> void:
 	# specks: on the rim, then straight to the middle in a snap, then gone
 	for s: Dictionary in _specks:
 		var age: float = t - s["born"]
-		var rim := Vector2.from_angle(s["a"]) * (r - 0.5 - pulse)
+		var rim := Vector2.from_angle(s["a"]) * (r - speck_px * 0.5 - pulse)
 		var p: Vector2
 		if age < s["wait"]:
 			p = rim
@@ -201,7 +202,7 @@ func _draw() -> void:
 			p = rim.lerp(s["end"], k * k)
 		else:
 			p = s["end"]
-		_px(p, s["col"])
+		_px(p - Vector2.ONE * speck_px * 0.25, s["col"], speck_px * 0.5)
 
 
 func _draw_beam() -> void:
