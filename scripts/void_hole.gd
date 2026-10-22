@@ -6,7 +6,8 @@ extends Node2D
 ##   2. at its end a small black orb blinks in and out of existence `blinks` times,
 ##   3. then a large black hole snaps into existence, perfectly still, for `hole_time` seconds:
 ##      dark blue specks appear on its rim and snap straight to its middle (each ending a little
-##      apart from the others), no spin, no wobble. Then it's simply gone.
+##      apart from the others), no spin; only its edge ripples very slightly (`undulation`).
+##      Then it's simply gone.
 ## Everything inside the hole takes `damage` every `tick_every` seconds while it's open.
 ##
 ## Made by BasicAttack from the Void Staff's ability (abilities/void_hole.tres, which points at
@@ -28,14 +29,15 @@ extends Node2D
 @export var orb_radius := 2.5
 
 @export_group("Black hole")
-## Its size (world px).
+## Its size (world px), and how much its edge gently ripples (world px; 0 = perfectly still).
 @export var hole_radius := 14.0
+@export var undulation := 0.5
 ## Seconds it stays open.
 @export var hole_time := 1.4
 ## It hurts everything inside it this often while open (first time just after it opens).
 @export var tick_every := 0.4
 ## How many blue specks there are at any moment.
-@export var specks := 10
+@export var specks := 22
 ## A speck waits on the rim this long (random between the two), then snaps to the middle in
 ## `snap_time` and stays there `rest_time` before it's gone.
 @export var rim_wait_min := 0.08
@@ -49,7 +51,7 @@ var damage := 30.0
 
 const BLACK := Color(0, 0, 0)
 const EDGE := Color8(44, 52, 78)                  # the beam's dark blue-grey edge
-const BLUES := [Color8(44, 64, 150), Color8(58, 84, 184), Color8(36, 52, 128), Color8(74, 104, 204)]
+const BLUES := [Color8(60, 86, 186), Color8(76, 108, 214), Color8(50, 72, 164), Color8(92, 126, 232)]
 const CAST_SOUND := preload("res://audio/ray_swoosh.wav")
 const OPEN_SOUND := preload("res://audio/fireball_hit.wav")
 
@@ -171,11 +173,11 @@ func _draw() -> void:
 	var r := _hole_radius(t)
 	if r <= 0.0:
 		return
-	_disc(Vector2.ZERO, r, BLACK)
+	_blob(r, t)
 	# specks: on the rim, then straight to the middle in a snap, then gone
 	for s: Dictionary in _specks:
 		var age: float = t - s["born"]
-		var rim := Vector2.from_angle(s["a"]) * (r - 0.5)
+		var rim := Vector2.from_angle(s["a"]) * (r - 0.5 - undulation)
 		var p: Vector2
 		if age < s["wait"]:
 			p = rim
@@ -196,6 +198,20 @@ func _draw_beam() -> void:
 	# a 2 px jet black line with a 1 px dark blue-grey edge on each side (art px: half a world px)
 	_beam.draw_line(from, Vector2.ZERO, Color(EDGE, a), 2.0)
 	_beam.draw_line(from, Vector2.ZERO, Color(BLACK, a), 1.0)
+
+
+## The hole: a black disc whose edge ripples very slightly (a few slow waves going round it).
+func _blob(r: float, t: float) -> void:
+	if undulation <= 0.0:
+		_disc(Vector2.ZERO, r, BLACK)
+		return
+	var pts := PackedVector2Array()
+	var n := 48
+	for i in n:
+		var a := TAU * i / n
+		var w := sin(a * 3.0 + t * 2.3) * 0.6 + sin(a * 5.0 - t * 3.1) * 0.4
+		pts.append(Vector2.from_angle(a) * (r + w * undulation))
+	draw_colored_polygon(pts, BLACK)
 
 
 ## A solid disc on whole art pixels (no smoothing).
