@@ -38,7 +38,7 @@ extends Node2D
 ## The purple ring round its edge: how fast it turns (turns a second; + = clockwise), how many
 ## swept-back spikes it has and how long they are (world px).
 @export var ring_spin := 0.35
-@export var spikes := 4
+@export var spikes := 8
 @export var spike_length := 4.0
 ## Seconds it stays open.
 @export var hole_time := 1.4
