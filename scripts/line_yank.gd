@@ -30,7 +30,7 @@ extends Node2D
 
 @export_group("Yank")
 ## How fast it pulls you (world px a second; walking is 70).
-@export var yank_speed := 600.0
+@export var yank_speed := 300.0
 ## How much of that speed you keep when you arrive (1 = all of it).
 @export var keep := 0.8
 ## It gives up after this long (seconds), e.g. if something stops you.

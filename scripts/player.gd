@@ -20,7 +20,7 @@ extends CharacterBody2D
 ## Holding the opposite way while sliding brakes this many times harder.
 @export var brake_mult := 2.5
 ## The fastest you can ever go (px/s).
-@export var max_speed := 700.0
+@export var max_speed := 300.0
 
 @export_group("Jump")
 ## Seconds in the air, and how high the jump goes (world px).
