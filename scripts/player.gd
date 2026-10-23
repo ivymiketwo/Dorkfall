@@ -381,8 +381,7 @@ func _yank_step(delta: float) -> void:
 	var step := _yank_speed * delta
 	facing = (Facing.RIGHT if dir.x > 0 else Facing.LEFT) if absf(dir.x) > absf(dir.y) \
 			else (Facing.DOWN if dir.y > 0 else Facing.UP)
-	_use_body_texture()                    # the running pose, staff held out (the line stays tied to its orb)
-	sprite.frame = (ANIM_RUN * 4 + facing) * sprite.hframes + 1
+	_set_jump_frame(0.5)                   # flying along mid-jump (the line stays tied to the staff's orb)
 	sprite.position.y = -2.0
 	var before := global_position
 	velocity = dir * minf(_yank_speed, to.length() / delta)
