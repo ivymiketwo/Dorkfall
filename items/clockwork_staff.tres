@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
 [ext_resource type="Texture2D" path="res://art/worn_clockwork_staff.png" id="2_worn"]
-[ext_resource type="Resource" path="res://abilities/amber_beam.tres" id="3_beam"]
+[ext_resource type="Resource" path="res://abilities/clockwork_spider.tres" id="3_beam"]
 
 [resource]
 script = ExtResource("1_item")
 id = &"clockwork_staff"
 display_name = "Clockwork Staff"
-description = "A brass-geared staff holding a glowing amber gem. Shoots an amber beam. Two-handed."
+description = "A brass-geared staff holding a glowing amber gem. Shoots a ray that summons a clockwork spider, which runs at the nearest monster and explodes. Two-handed."
 icon_frame = 36
 value = 900
 mana_regen_bonus = 0.9

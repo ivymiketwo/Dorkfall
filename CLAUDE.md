@@ -76,6 +76,11 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   and gets `caster` and `damage` from BasicAttack. First one: the Sun Staff's halo beam
   (`scripts/sun_halo.gd`, timings in `scenes/spells/sun_halo.tscn`'s Inspector).
   The Void Staff's black hole: `scripts/void_hole.gd` / `scenes/spells/void_hole.tscn`.
+  The Clockwork Staff's spider: `scripts/clockwork_spider.gd` / `scenes/spells/clockwork_spider.tscn`
+  (ray, summoning circle, orange half-dome, then a clockwork spider that hunts the nearest monster
+  and explodes). Spider sheet `art/clockwork_spider.png` from `tools/pack_spider.py` (originals in
+  `art/spider_src/`, drawn at native half size); explosion strip `art/explosion.png` from
+  `tools/pack_explosion.py` (Rex's 10 stages in `art/explosion_src/`, frame order in its ORDER list).
   A spell can root its caster (`player.rooted_until`) and fill the cast bar (`Hotbar.start_channel`).
 
 ## Difficulty design (Rex's rules)
