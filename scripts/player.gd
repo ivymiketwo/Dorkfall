@@ -17,6 +17,11 @@ extends CharacterBody2D
 @export var friction_start := 60.0
 @export var friction_max := 1500.0
 @export var friction_ramp := 0.35
+## Each jump in a row (jumping off a landing while still carrying speed) shortens that grace:
+## the ramp is multiplied by this per jump, down to `friction_ramp_min` seconds. It resets when
+## you slow to walking speed or a spell (e.g. a yank) gives you fresh speed.
+@export var ramp_shrink := 0.75
+@export var friction_ramp_min := 0.08
 ## Holding the opposite way while sliding brakes this many times harder.
 @export var brake_mult := 2.5
 ## The fastest you can ever go (px/s).
@@ -90,6 +95,7 @@ var _air_t := -1.0             ## seconds into the current jump (-1 = on the gro
 var _air_vel := Vector2.ZERO   ## velocity through the air on the current jump
 var _jump_buffer := 0.0        ## Space pressed just before landing still counts
 var _ground_t := 10.0          ## seconds on the ground since the last landing
+var _chain := 0                ## jumps in a row, each shortening the friction grace (ramp_shrink)
 
 # Being yanked along (e.g. the Yank Line spell, line_yank.gd): pulled straight at a point.
 var yanking := false
@@ -199,6 +205,8 @@ func _physics_process(delta: float) -> void:
 	if yanking:
 		_yank_step(delta)
 		return
+	if velocity.length() <= speed + 1.0:
+		_chain = 0                         # back to normal speed (for whatever reason): full grace again
 	if _air_t >= 0.0:
 		_air_step(delta)
 		return
@@ -212,7 +220,7 @@ func _physics_process(delta: float) -> void:
 		# Sliding on speed you carried in: it keeps going the same way and the ground bleeds the
 		# extra off, gently just after landing and harder the longer you stay down. The keys
 		# can't steer it, only brake it by holding the other way.
-		var fric := lerpf(friction_start, friction_max, clampf(_ground_t / maxf(friction_ramp, 0.001), 0.0, 1.0))
+		var fric := lerpf(friction_start, friction_max, clampf(_ground_t / _ramp_time(), 0.0, 1.0))
 		fric *= brake_mult if dir.dot(v.normalized()) < -0.5 else 1.0
 		velocity = v.normalized() * maxf(v.length() - fric * delta, move_speed)
 	else:
@@ -298,6 +306,8 @@ func is_warding() -> bool:
 ## you hold, or straight on if none), and at least walking speed if you're moving: momentum only
 ## goes one way, so turning loses it. No keys and standing still: a jump on the spot.
 func _jump() -> void:
+	if _ground_t < 10.0 and _ground_t < _ramp_time() and velocity.length() > speed + 1.0:
+		_chain += 1                        # off a landing, still carrying speed: one more in a row
 	var dir := input_dir.normalized() if input_dir != Vector2.ZERO \
 			else (velocity.normalized() if velocity.length() > 1.0 else Vector2.ZERO)
 	var spd := maxf(velocity.dot(dir), speed if input_dir != Vector2.ZERO else 0.0)
@@ -313,6 +323,12 @@ func _jump() -> void:
 		_jump_snd.volume_db = -6.0   # half amplitude
 		add_child(_jump_snd)
 	_jump_snd.play()
+
+
+## Seconds the ground takes to go from gentle to full braking, shorter for each jump in a row.
+func _ramp_time() -> float:
+	var t := friction_ramp * pow(ramp_shrink, maxi(_chain - 1, 0))
+	return maxf(maxf(t, minf(friction_ramp_min, friction_ramp)), 0.001)
 
 
 func _air_step(delta: float) -> void:
@@ -399,6 +415,7 @@ func _end_yank(keep: float) -> void:
 	sprite.position.y = 0.0
 	velocity *= keep
 	_ground_t = 0.0                        # like landing: a quick jump keeps the speed
+	_chain = 0                             # fresh speed: the full grace again
 
 
 ## F: close an open shop, or talk to the nearest shopkeeper in range.
@@ -428,6 +445,7 @@ func _interact() -> void:
 
 func _on_died() -> void:
 	_end_yank(0.0)
+	_chain = 0
 	_air_t = -1.0
 	_jump_buffer = 0.0
 	sprite.position.y = 0.0

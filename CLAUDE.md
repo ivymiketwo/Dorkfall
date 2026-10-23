@@ -67,7 +67,9 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   only goes one way (no air strafing, Rex's call: wrong vibe for top-down). On the ground it bleeds
   off, and the friction ramps up the longer you stay on the ground (`friction_start` ->
   `friction_max` over `friction_ramp` s), so jumping right as you land keeps nearly all of it and
-  late jumps eat speed (Rex's design). A jump keeps the part of your speed pointing where you jump
+  late jumps eat speed (Rex's design). Each jump in a row shortens that grace (`ramp_shrink`, floor
+  `friction_ramp_min`); it resets whenever you're back at walking speed or less, for any reason,
+  and when a yank gives fresh speed (Rex asked for that reset to be bulletproof). A jump keeps the part of your speed pointing where you jump
   (at least walking speed if moving); no steering in the air; walls soak up what hits them.
   Momentum skills push the player through `Player.yank_to` (and later more like it). Planned: a
   wind gust cast on the ground that you walk into.
