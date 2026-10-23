@@ -178,11 +178,11 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     (gear `ward_bonus` adds to it, max 90%), costing 25% of the stopped damage in mana. Everything
     else (ground effects, aimed hits from the side or behind): 30% stopped, costing 50% of it in
     mana. The first 0.25 s is a parry against aimed hits you face (95% stopped, half thrown back).
-    Holding drains 10 mana/s, halves your speed, and you can't attack, cast or hop. Out of mana:
-    "WARD BROKEN", 1 s lockout. Poison ticks and hop costs ignore the Ward.
+    Holding drains 10 mana/s, halves your speed, and you can't attack, cast or jump. Out of mana:
+    "WARD BROKEN", 1 s lockout. Poison ticks ignore the Ward.
   - **Stats:** Intelligence (mana, magic damage) and Vitality (health). Stamina, sprint and
-    Dexterity were removed; the bunnyhop is the fast way to move.
-  - **Bunnyhop** ("Begone"): chain-hop health cost **set to 0 for testing** (was 35).
+    Dexterity were removed.
+  - **Jump** (Space): free, no cooldown, keeps carried momentum (see CLAUDE.md, "Momentum").
 - **Sounds:** fireball cast and hit (30% quieter), ray swoosh on every beam, jump (half volume).
 - **Economy:** sell items to vendors (right-click Sell while a shop is open; left-click shows the
   value). Fish: minnow 20, perch 50, bass 75, golden carp 100. Rules are in `Trade.sell` and
@@ -203,7 +203,6 @@ exists.
 
 ## 8. Open items / ideas not done yet
 
-- Bunnyhop health cost is off for testing; restore it later (it was 35 per chained hop).
 - The grey valley has trolls but no landmarks yet.
 - The pet could also get a shorter "loot must sit for 1 s" delay if wanted.
 - Aim prediction is ready for future monsters Rex picks.

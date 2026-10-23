@@ -61,11 +61,14 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Always a wizard: no classes, no melee swing, no shields, no iron armour. Left click fires
   the staff's spell. Right click holds the Ward (`scripts/ward.gd`): a mana-powered
   block (50% / 25% mana for aimed hits it faces, 30% / 50% mana for everything else) with a parry window; the orb is lit from the mouse side (`shaders/ward_orb.gdshader`). Stats are Intelligence (mana, magic damage) and Vitality (health).
-  No stamina and no sprint: the Space-key bunnyhop is the fast way to move.
+  No stamina and no sprint. Space is a plain jump (no cost, no cooldown; the old "Begone" gust
+  hop skill was removed at Rex's request).
 - Momentum (player.gd, "Momentum" group in the Inspector): speed above walking is carried and
   only goes one way (no air strafing, Rex's call: wrong vibe for top-down). On the ground it bleeds
-  off (`slide_friction`); a hop inside the landing window keeps all of it (hops take the part of
-  your speed pointing where you hop, never less than a plain hop); walls soak up what hits them.
+  off, and the friction ramps up the longer you stay on the ground (`friction_start` ->
+  `friction_max` over `friction_ramp` s), so jumping right as you land keeps nearly all of it and
+  late jumps eat speed (Rex's design). A jump keeps the part of your speed pointing where you jump
+  (at least walking speed if moving); no steering in the air; walls soak up what hits them.
   Momentum skills push the player through `Player.yank_to` (and later more like it). Planned: a
   wind gust cast on the ground that you walk into.
 - Staff spells: besides left click, a staff can have up to 3 more spells (`Item.spells`), cast

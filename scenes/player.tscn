@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://art/player_new.png" id="2_tex"]
@@ -8,7 +8,6 @@
 [ext_resource type="Resource" path="res://abilities/fireball.tres" id="6_fireball"]
 [ext_resource type="Resource" path="res://abilities/beam.tres" id="7_beam"]
 [ext_resource type="Resource" path="res://abilities/red_beam.tres" id="70_redbeam"]
-[ext_resource type="Resource" path="res://abilities/gust_hop.tres" id="71_hop"]
 [ext_resource type="Texture2D" path="res://art/fireball.png" id="10_orb"]
 [ext_resource type="Script" path="res://scripts/nameplate.gd" id="11_nameplate"]
 [ext_resource type="Script" path="res://scripts/experience.gd" id="90_exp"]
@@ -30,7 +29,6 @@ physics_interpolation_mode = 1
 collision_mask = 3
 motion_mode = 1
 script = ExtResource("1_script")
-hop_ability = ExtResource("71_hop")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_tex")

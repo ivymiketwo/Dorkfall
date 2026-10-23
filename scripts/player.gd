@@ -1,24 +1,33 @@
 extends CharacterBody2D
 ## Top-down player: 8-direction movement, 4-direction facing, 2-frame walk cycle,
-## and health/mana via the Stats child. (No sprint: the Space-key hop is the fast move.)
+## and health/mana via the Stats child. Space jumps; speed carried in from spells (and kept by
+## jumping again the moment you land) is the fast way about. No sprint.
 
 @export var display_name := "Rex"
 @export var speed := 70.0              ## pixels per second
 @export var walk_fps := 7.0            ## walk animation speed (4 steps per cycle)
-@export var hop_ability: Ability        ## the Space-key gust hop (not on the hotbar)
 
 @export_group("Momentum")
 ## How quickly you get up to walking speed and stop again when just walking (px/s²; high = snappy).
 @export var walk_accel := 1400.0
-## When you're going faster than walking (after a hop or a yank), how quickly the ground bleeds
-## that extra speed away (px/s²). Hopping again the moment you land skips this entirely.
-@export var slide_friction := 700.0
+## When you're going faster than walking (e.g. after a yank), the ground brakes you, harder the
+## longer you stay on it: `friction_start` (px/s²) the moment you land, climbing to `friction_max`
+## after `friction_ramp` seconds. So jumping again right as you land keeps nearly all your speed,
+## and every moment you wait eats more of it.
+@export var friction_start := 60.0
+@export var friction_max := 1500.0
+@export var friction_ramp := 0.35
 ## Holding the opposite way while sliding brakes this many times harder.
 @export var brake_mult := 2.5
-## Extra speed each perfectly timed hop adds (px/s; 0 = it only keeps what you had).
-@export var hop_chain_gain := 0.0
 ## The fastest you can ever go (px/s).
 @export var max_speed := 700.0
+
+@export_group("Jump")
+## Seconds in the air, and how high the jump goes (world px).
+@export var jump_time := 0.45
+@export var jump_height := 12.0
+## Space pressed this long (seconds) before you land still jumps the moment you touch down.
+@export var jump_buffer := 0.1
 
 @export_group("Debug keys")
 @export var debug_damage := 50.0       ## F1
@@ -51,13 +60,13 @@ const TEST_GEAR := [preload("res://items/wooden_staff.tres"), preload("res://ite
 		preload("res://items/wizard_hat.tres"), preload("res://items/wizard_robe.tres")]
 
 ## What the player is asking for right now. Only `_gather_input` reads the keyboard and mouse;
-## everything else (movement, casting, hopping) uses these values, so a server can
+## everything else (movement, casting, jumping) uses these values, so a server can
 ## be fed the same data over the network.
 var input_dir := Vector2.ZERO
 ## Set by minigames (fishing) so the keys don't walk the character.
 var control_locked := false
 ## GameClock time until which the player is rooted by a spell they are casting (can't walk,
-## hop or ward), e.g. the Sun Staff's halo beam (sun_halo.gd).
+## jump or ward), e.g. the Sun Staff's halo beam (sun_halo.gd).
 var rooted_until := 0.0
 var input_ward := false            ## right mouse (pressed in the world): hold the Ward up
 var aim_world := Vector2.ZERO      ## where in the world the player is aiming
@@ -73,19 +82,14 @@ var _idle_time := 0.0
 const IDLE_BOB_PERIOD := 0.6   ## seconds per up/down step while standing still
 var _spawn_point: Vector2
 
-# Gust hop (bunnyhop): leap along a ballistic arc; landing opens a quick window to press Space again.
-const HOP_GUST := preload("res://scripts/hop_gust.gd")
+# Jump (Space): a plain leap, no cost and no cooldown. In the air you keep going exactly the way
+# you took off (no steering); landing starts the ground's friction ramp (see "Momentum").
 const JUMP_SOUND := preload("res://audio/jump.wav")
 var _jump_snd: AudioStreamPlayer2D
-var _hop_ab: Ability
-var _hop_dir := Vector2.DOWN
-var _hop_t := -1.0          ## seconds into the current leap (-1 = not airborne)
-var _hop_window := 0.0      ## seconds left to press Space after landing
-var _jump_buffer := 0.0     ## Space pressed just before landing still counts
-var _hop_ring: Node2D
-var _hop_cooldown := 0.0
-var _hop_vel := Vector2.ZERO  ## velocity through the air on the current leap
-var _land_vel := Vector2.ZERO ## velocity you landed with (a hop inside the window keeps all of it)
+var _air_t := -1.0             ## seconds into the current jump (-1 = on the ground)
+var _air_vel := Vector2.ZERO   ## velocity through the air on the current jump
+var _jump_buffer := 0.0        ## Space pressed just before landing still counts
+var _ground_t := 10.0          ## seconds on the ground since the last landing
 
 # Being yanked along (e.g. the Yank Line spell, line_yank.gd): pulled straight at a point.
 var yanking := false
@@ -192,26 +196,24 @@ func _input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	_gather_input()
-	_hop_cooldown = maxf(_hop_cooldown - delta, 0.0)
 	if yanking:
 		_yank_step(delta)
 		return
-	if _hop_ab:
-		if _hop_t >= 0.0:
-			_hop_step(delta)
-			return
-		_hop_window -= delta              # landed: move freely while the Space window ticks down
-		if _hop_window <= 0.0:
-			_hop_end()
+	if _air_t >= 0.0:
+		_air_step(delta)
+		return
+	_ground_t += delta
 	var dir: Vector2 = input_dir
 	var move_speed := speed
 	if is_warding():
 		move_speed *= Ward.SPEED_MULT   # ward up: slow going
 	var v := velocity
 	if v.length() > move_speed + 1.0:
-		# Sliding on speed you carried in: it keeps going the same way and the ground bleeds
-		# the extra off. The keys can't steer it, only brake it by holding the other way.
-		var fric := slide_friction * (brake_mult if dir.dot(v.normalized()) < -0.5 else 1.0)
+		# Sliding on speed you carried in: it keeps going the same way and the ground bleeds the
+		# extra off, gently just after landing and harder the longer you stay down. The keys
+		# can't steer it, only brake it by holding the other way.
+		var fric := lerpf(friction_start, friction_max, clampf(_ground_t / maxf(friction_ramp, 0.001), 0.0, 1.0))
+		fric *= brake_mult if dir.dot(v.normalized()) < -0.5 else 1.0
 		velocity = v.normalized() * maxf(v.length() - fric * delta, move_speed)
 	else:
 		velocity = v.move_toward(dir * move_speed, walk_accel * delta)
@@ -260,27 +262,14 @@ func reconcile(seq: int, server_pos: Vector2) -> float:
 func _unhandled_input(event: InputEvent) -> void:
 	if (control_locked or is_rooted()) and event.is_action_pressed("jump"):
 		return
-	if event.is_action_pressed("jump") and yanking:
-		# hop straight out of a yank, keeping all its speed
-		var ab: Ability = _hop_ab if _hop_ab else hop_ability
-		if ab and _hop_cooldown <= 0.0 and not is_warding() and (_hop_ab or stats.mana >= ab.mana_cost):
-			_end_yank(1.0)
-			if _hop_ab:
-				_hop_leap()
-			else:
-				start_hop(ab)
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("jump") and _hop_ab:
-		if _hop_t >= 0.0:
-			_jump_buffer = 0.05
-		elif _hop_window > 0.0:
-			if _hop_ab.hop_chain_health_cost > 0.0:
-				stats.take_damage(_hop_ab.hop_chain_health_cost, null, true)       # chaining a hop costs blood
-			if _hop_ab:                                       # (dying ends the chain)
-				_hop_leap()
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("jump") and hop_ability:
-		start_hop(hop_ability)
+	if event.is_action_pressed("jump"):
+		if yanking:
+			_end_yank(1.0)                 # jump straight out of a yank, keeping all its speed
+			_jump()
+		elif _air_t >= 0.0:
+			_jump_buffer = jump_buffer     # a touch early: jumps again the moment you land
+		elif not is_warding():
+			_jump()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("debug_damage"):
 		stats.take_damage(debug_damage)
@@ -305,76 +294,49 @@ func is_warding() -> bool:
 	return w != null and w.warding
 
 
-## Called by the hotbar. Returns false if a hop chain is already running (or the Ward is up).
-func start_hop(ab: Ability) -> bool:
-	if _hop_ab or _hop_cooldown > 0.0 or is_warding():
-		return false
-	if not stats.spend_mana(ab.mana_cost):
-		stats.warn_out_of_mana()
-		return false
-	if ab.hop_health_cost > 0.0:
-		var dies := stats.health <= ab.hop_health_cost
-		stats.take_damage(ab.hop_health_cost)
-		if dies:
-			return false
-	_hop_ab = ab
-	_hop_dir = _hop_input_dir()
-	_hop_leap()
-	return true
-
-
-func _hop_input_dir() -> Vector2:
-	var d := input_dir
-	if d != Vector2.ZERO:
-		return d.normalized()
-	if _hop_ab and _hop_t == -1.0 and _hop_window > 0.0 and _hop_dir != Vector2.ZERO:
-		return _hop_dir
-	return [Vector2.DOWN, Vector2.UP, Vector2.LEFT, Vector2.RIGHT][facing]
-
-
-func _hop_leap() -> void:
-	var chained := _hop_window > 0.0 or _jump_buffer > 0.0   # a perfectly timed hop off a landing
-	var carry := _land_vel if _hop_window > 0.0 else velocity
-	_hop_dir = _hop_input_dir()
-	# Momentum only goes one way: you keep the part of your speed that points where you're
-	# hopping (turning away loses it), and never less than a plain hop.
-	var spd := maxf(_hop_ab.hop_speed, carry.dot(_hop_dir) + (hop_chain_gain if chained else 0.0))
-	_hop_vel = _hop_dir * minf(spd, max_speed)
-	_hop_t = 0.0
-	_hop_window = 0.0
+## Leaves the ground. You keep the part of your speed that points where you're going (the keys
+## you hold, or straight on if none), and at least walking speed if you're moving: momentum only
+## goes one way, so turning loses it. No keys and standing still: a jump on the spot.
+func _jump() -> void:
+	var dir := input_dir.normalized() if input_dir != Vector2.ZERO \
+			else (velocity.normalized() if velocity.length() > 1.0 else Vector2.ZERO)
+	var spd := maxf(velocity.dot(dir), speed if input_dir != Vector2.ZERO else 0.0)
+	_air_vel = dir * minf(spd, max_speed)
+	_air_t = 0.0
 	_jump_buffer = 0.0
-	if _hop_ring:
-		_hop_ring.queue_free()
-		_hop_ring = null
-	facing = (Facing.RIGHT if _hop_dir.x > 0 else Facing.LEFT) if absf(_hop_dir.x) > absf(_hop_dir.y) \
-			else (Facing.DOWN if _hop_dir.y > 0 else Facing.UP)
+	if dir != Vector2.ZERO:
+		facing = (Facing.RIGHT if dir.x > 0 else Facing.LEFT) if absf(dir.x) > absf(dir.y) \
+				else (Facing.DOWN if dir.y > 0 else Facing.UP)
 	if _jump_snd == null:
 		_jump_snd = AudioStreamPlayer2D.new()
 		_jump_snd.stream = JUMP_SOUND
 		_jump_snd.volume_db = -6.0   # half amplitude
 		add_child(_jump_snd)
 	_jump_snd.play()
-	var gust := Node2D.new()
-	gust.set_script(HOP_GUST)
-	gust.direction = _hop_dir
-	gust.global_position = global_position
-	get_parent().add_child(gust)
 
 
-func _hop_step(delta: float) -> void:
+func _air_step(delta: float) -> void:
 	_idle_time = 0.0
 	_idle_mat.set_shader_parameter("bob", 0.0)
-	if _hop_t >= 0.0:
-		_hop_t += delta
-		_jump_buffer = maxf(_jump_buffer - delta, 0.0)
-		var k := clampf(_hop_t / _hop_ab.hop_time, 0.0, 1.0)
-		_set_jump_frame(k)
-		sprite.position.y = -4.0 * _hop_ab.hop_height * k * (1.0 - k)      # parabola, apex at k = 0.5
-		velocity = _hop_vel
-		_move_tick()
-		_hop_vel = velocity                # (minus whatever a wall soaked up)
-		if k >= 1.0:
-			_hop_land()
+	_air_t += delta
+	_jump_buffer = maxf(_jump_buffer - delta, 0.0)
+	var k := clampf(_air_t / maxf(jump_time, 0.01), 0.0, 1.0)
+	_set_jump_frame(k)
+	sprite.position.y = -4.0 * jump_height * k * (1.0 - k)      # parabola, apex at k = 0.5
+	velocity = _air_vel
+	_move_tick()
+	_air_vel = velocity                # (minus whatever a wall soaked up)
+	if k >= 1.0:
+		_land()
+
+
+func _land() -> void:
+	sprite.position.y = 0.0
+	_air_t = -1.0
+	velocity = _air_vel                # land still moving: the ground starts slowing you
+	_ground_t = 0.0
+	if _jump_buffer > 0.0:
+		_jump()
 
 
 ## The chest item, if it comes with its own body sheet (robe, chestplate...).
@@ -398,30 +360,12 @@ func _set_jump_frame(k: float) -> void:
 	sprite.frame = (ANIM_JUMP * 4 + facing) * sprite.hframes + mini(int(k * n), n - 1)
 
 
-func _hop_land() -> void:
-	sprite.position.y = 0.0
-	_land_vel = _hop_vel
-	velocity = _hop_vel                    # land still moving: the ground starts slowing you
-	_hop_t = -1.0
-	if _jump_buffer > 0.0:
-		if _hop_ab.hop_chain_health_cost > 0.0:
-			stats.take_damage(_hop_ab.hop_chain_health_cost, null, true)
-		if _hop_ab:
-			_hop_leap()
-		return
-	_hop_window = _hop_ab.hop_window
-	_hop_ring = HopRing.new()
-	_hop_ring.life = _hop_window
-	add_child(_hop_ring)
-	move_child(_hop_ring, 0)          # drawn under the sprite, above the ground
-
-
 ## Pulls the player straight at `point` at `spd` px/s (a spell's rope, see line_yank.gd). It
 ## stops on arrival, against a wall, or after `max_time`; you then keep `keep` of the speed
-## and slide (or hop on, see the jump key). Space during the pull hops out of it at full speed.
+## and slide (or jump on). Space during the pull jumps out of it at full speed.
 func yank_to(point: Vector2, spd: float, max_time: float, keep: float) -> void:
-	if _hop_ab and _hop_t >= 0.0:
-		_hop_t = -1.0                      # a yank takes you out of the air
+	if _air_t >= 0.0:
+		_air_t = -1.0                      # a yank takes you out of the air
 		sprite.position.y = 0.0
 	yanking = true
 	_yank_to = point
@@ -455,18 +399,7 @@ func _end_yank(keep: float) -> void:
 	yanking = false
 	sprite.position.y = 0.0
 	velocity *= keep
-
-
-func _hop_end() -> void:
-	if _hop_ab:
-		_hop_cooldown = _hop_ab.cooldown   # the cooldown starts when the chain ends
-	_hop_ab = null
-	_hop_t = -1.0
-	_hop_window = 0.0
-	sprite.position.y = 0.0
-	if _hop_ring:
-		_hop_ring.queue_free()
-		_hop_ring = null
+	_ground_t = 0.0                        # like landing: a quick jump keeps the speed
 
 
 ## F: close an open shop, or talk to the nearest shopkeeper in range.
@@ -496,7 +429,9 @@ func _interact() -> void:
 
 func _on_died() -> void:
 	_end_yank(0.0)
-	_hop_end()
+	_air_t = -1.0
+	_jump_buffer = 0.0
+	sprite.position.y = 0.0
 	velocity = Vector2.ZERO
 	_leave_gravestone()
 	# Respawn at the start with full stats.

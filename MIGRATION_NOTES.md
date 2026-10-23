@@ -65,8 +65,11 @@ changes in one place, and visuals are separate from logic.
 ## Network numbers to use (decided, for when we build it)
 - Send monsters / players / loot within ~400 px of a player; remove them past ~500 px.
 - The client predicts its own movement for at most ~1 s without hearing from the server, then
-  stops and shows "Connection lost...". Grow the 400 px if anything faster than the gust hop
-  (150 px/s) is added.
+  stops and shows "Connection lost...". Note: players can now go much faster than walking (the
+  Yank Line pulls at 600 px/s and jumping keeps that momentum, capped by `Player.max_speed` 700),
+  so 1 s of prediction can cover ~700 px: grow the 400 px send range, or shorten that second.
+- Momentum makes movement depend on state, not just keys: the server must run the same jump /
+  friction / yank rules (player.gd) and send back velocity and air time with each correction.
 
 ## Still to do (needs the actual server)
 1. **Networking itself**: sending player commands up and state down. The pieces above are the
