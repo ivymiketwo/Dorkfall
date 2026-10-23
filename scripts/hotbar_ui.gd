@@ -60,10 +60,11 @@ func _spell_cooling() -> bool:
 	return false
 
 
-## The staff-spell slots: above the main bar, starting at its left end (the bar switcher).
+## The staff-spell slots: right above the main bar's first three slots.
+const SPELL_ROW := SLOT + GAP + 1         # how far above the main bar they sit
 func _spell_rect(i: int) -> Rect2:
 	var o := _origin()
-	return Rect2(o + Vector2(-12 + i * (SLOT + GAP), -SLOT - 8), Vector2(SLOT, SLOT))
+	return Rect2(o + Vector2(i * (SLOT + GAP), -SPELL_ROW), Vector2(SLOT, SLOT))
 
 
 func _origin() -> Vector2:
@@ -238,9 +239,9 @@ func _draw() -> void:
 		draw_colored_polygon(PackedVector2Array([Vector2(cx - 2.5, cy - d * 1.0), Vector2(cx + 2.5, cy - d * 1.0), Vector2(cx, cy + d * 1.5)]) if k == 1 else PackedVector2Array([Vector2(cx - 2.5, cy + 1.0), Vector2(cx + 2.5, cy + 1.0), Vector2(cx, cy - 1.5)]), UiStyle.GOLD)
 	HiFont.draw(self, ar[2], str(hotbar.active_bar + 1), UiStyle.TEXT, 0.5)
 
-	# Cast bar above the hotbar
+	# Cast bar above the hotbar (and above the staff-spell row)
 	if hotbar.is_busy():
-		var bar := Rect2(origin + Vector2(0, -6), Vector2(total_w, 4))
+		var bar := Rect2(origin + Vector2(0, -SPELL_ROW - 6), Vector2(total_w, 4))
 		draw_rect(bar, Color("1a1a22"))
 		draw_rect(Rect2(bar.position + Vector2.ONE, Vector2((total_w - 2) * hotbar.cast_progress(), 2)), SELECTED)
 
