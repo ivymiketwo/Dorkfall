@@ -66,8 +66,8 @@ changes in one place, and visuals are separate from logic.
 - Send monsters / players / loot within ~400 px of a player; remove them past ~500 px.
 - The client predicts its own movement for at most ~1 s without hearing from the server, then
   stops and shows "Connection lost...". Note: players can now go much faster than walking (the
-  Yank Line pulls at 300 px/s and jumping keeps that momentum, capped by `Player.max_speed` 300),
-  so 1 s of prediction can cover ~300 px; grow the 400 px send range if that cap goes up.
+  Yank Line pulls at 400 px/s and jumping keeps that momentum, capped by `Player.max_speed` 400),
+  so 1 s of prediction can cover ~400 px: grow the 400 px send range (or shorten that second).
 - Momentum makes movement depend on state, not just keys: the server must run the same jump /
   friction / yank rules (player.gd) and send back velocity and air time with each correction.
 
