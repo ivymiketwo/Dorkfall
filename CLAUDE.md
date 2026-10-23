@@ -74,7 +74,10 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   Momentum skills push the player through `Player.yank_to` (and later more like it). Planned: a
   wind gust cast on the ground that you walk into.
 - Staff spells: besides left click, a staff can have up to 3 more spells (`Item.spells`), cast
-  with Q / E / R (actions `staff_spell_1..3`, rebindable; `BasicAttack.cast_staff_spell`). Rex's
+  with Q / E / R (actions `staff_spell_1..3`, rebindable; `BasicAttack.cast_staff_spell`). They show
+  in a 3-slot bar above the left end of the hotbar (`hotbar_ui.gd`, with cooldown shading; click
+  casts). That bar only ever shows the equipped staff's own spells: no items or other skills
+  can be dropped on it (Rex's rule). Yank Line icon: `art/icons.png` slot 7 (`tools/add_yank_icon.py`). Rex's
   plan: several colour-coded spells per staff, each staff with its own theme. First: the
   Linecaster Staff (Astral Staff art), purple-rope theme modelled on a MICLIC line charge (no
   rocket): Q = Yank Line (`scripts/line_yank.gd` / `scenes/spells/line_yank.tscn`), a grapple

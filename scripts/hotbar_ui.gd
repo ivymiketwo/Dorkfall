@@ -1,5 +1,6 @@
 extends Control
-## Draws the 6-slot hotbar along the bottom of the screen, plus a cast bar.
+## Draws the 6-slot hotbar along the bottom of the screen, plus a cast bar, and above its
+## left end the 3 staff-spell slots (Q / E / R: the equipped staff's Item.spells).
 
 const SLOT := 14
 const ICON := 12   # the 16px art is drawn smaller to fit
@@ -31,6 +32,38 @@ var _mouse := Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group("hotbar_ui")
+
+
+func _process(_delta: float) -> void:
+	if _spell_cooling():
+		queue_redraw()                     # the staff spells' cooldown shades shrink smoothly
+
+
+## The player's BasicAttack (it owns the staff spells and their cooldowns).
+func _attack() -> BasicAttack:
+	return hotbar.get_parent().get_node_or_null("BasicAttack") as BasicAttack if hotbar else null
+
+
+func _staff_spells() -> Array:
+	var ba := _attack()
+	var w: Item = ba.weapon if ba else null
+	return w.spells if w else []
+
+
+func _spell_cooling() -> bool:
+	var ba := _attack()
+	if ba == null:
+		return false
+	for i in 3:
+		if ba.staff_spell_wait(i) > 0.0:
+			return true
+	return false
+
+
+## The staff-spell slots: above the main bar, starting at its left end (the bar switcher).
+func _spell_rect(i: int) -> Rect2:
+	var o := _origin()
+	return Rect2(o + Vector2(-12 + i * (SLOT + GAP), -SLOT - 8), Vector2(SLOT, SLOT))
 
 
 func _origin() -> Vector2:
@@ -95,6 +128,12 @@ func _input(event: InputEvent) -> void:
 				hotbar.set_bar(hotbar.active_bar + (-1 if (arr[0] as Rect2).has_point(p) else 1))
 				get_viewport().set_input_as_handled()
 				return
+			for k in 3:
+				if _spell_rect(k).has_point(p):
+					get_viewport().set_input_as_handled()
+					if _attack():
+						_attack().cast_staff_spell(k)   # clicking a staff spell casts it
+					return
 			var i := slot_at(p)
 			if i != -1:
 				get_viewport().set_input_as_handled()   # don't swing the weapon
@@ -168,6 +207,25 @@ func _draw() -> void:
 			key = Keybinds.label("bar%d_slot%d" % [hotbar.active_bar + 1, s + 1], true)
 		if key != "":
 			HiFont.draw(self, r.position + Vector2(SLOT - 0.5 - HiFont.text_width(key, 0.5), SLOT - 5.5), key, UiStyle.TEXT, 0.5)
+
+	# the staff's Q / E / R spells
+	var spells := _staff_spells()
+	var ba := _attack()
+	for k in 3:
+		var r := _spell_rect(k)
+		UiStyle.slot(self, r, false)
+		var ab: Ability = spells[k] if k < spells.size() else null
+		if ab:
+			draw_texture_rect_region(ICONS, Rect2(r.position + Vector2.ONE, Vector2(ICON, ICON)),
+					Rect2(ab.icon_index * 16, 0, 16, 16))
+			var wait := ba.staff_spell_wait(k) if ba else 0.0
+			if wait > 0.0 and ab.cooldown > 0.0:
+				var h := ceili(ICON * wait / ab.cooldown)
+				draw_rect(Rect2(r.position + Vector2(1, ICON + 1 - h), Vector2(ICON, h)), Color(0, 0, 0, 0.65))
+		var key := Keybinds.label("staff_spell_%d" % (k + 1), true)
+		if key != "":
+			HiFont.draw(self, r.position + Vector2(SLOT - 0.5 - HiFont.text_width(key, 0.5), SLOT - 5.5), key,
+					UiStyle.TEXT if ab else Color(UiStyle.TEXT, 0.4), 0.5)
 
 	# bar switcher
 	var ar := _arrows()
