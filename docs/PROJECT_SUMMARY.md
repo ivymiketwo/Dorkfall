@@ -173,7 +173,7 @@ A handoff for a new Claude chat. Read this first, then `CLAUDE.md` (project rule
     Placeholder icon (index 6).
   - **Red beam:** 60 damage.
   - **Blue staff beam** (left click): 15 damage, 1 s cooldown, hold to keep firing.
-  - **Ward** (hold right click or Q): a summoning circle under you and a glass orb around you, lit
+  - **Ward** (hold right click): a summoning circle under you and a glass orb around you, lit
     only on the side facing the mouse. Aimed hits from the side you face (120 degree arc): 50% stopped
     (gear `ward_bonus` adds to it, max 90%), costing 25% of the stopped damage in mana. Everything
     else (ground effects, aimed hits from the side or behind): 30% stopped, costing 50% of it in

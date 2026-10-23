@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="Item" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://art/worn_astral_staff.png" id="2_worn"]
+[ext_resource type="Resource" path="res://abilities/arcane_beam.tres" id="3_beam"]
+[ext_resource type="Resource" path="res://abilities/yank_line.tres" id="4_yank"]
+[ext_resource type="Script" path="res://scripts/ability.gd" id="5_ab"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"linecaster_staff"
+display_name = "Linecaster Staff"
+description = "Flings out lines of purple rope. Shoots an arcane beam. Q: Yank Line, a rope that lands where you aim, snaps tight and yanks you to its end. Two-handed."
+icon_frame = 35
+value = 1500
+mana_regen_bonus = 1.0
+int_bonus = 5
+equip_slot = "weapon"
+two_handed = true
+worn_texture = ExtResource("2_worn")
+hold_scale = 0.385
+orb_from_top = 11.0
+weapon_kind = "staff"
+basic_attack = ExtResource("3_beam")
+spells = Array[ExtResource("5_ab")]([ExtResource("4_yank")])

@@ -1,6 +1,6 @@
 class_name Ward
 extends Node2D
-## The wizard's block (hold right mouse button, or Q). Lives on the player.
+## The wizard's block (hold right mouse button). Lives on the player.
 ##
 ## A summoning circle spins under your feet and a glass orb surrounds you. The orb is lit
 ## from the mouse's side: that is the side you are warding.

@@ -59,9 +59,22 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 
 ## The player
 - Always a wizard: no classes, no melee swing, no shields, no iron armour. Left click fires
-  the staff's spell. Right click (or Q) holds the Ward (`scripts/ward.gd`): a mana-powered
+  the staff's spell. Right click holds the Ward (`scripts/ward.gd`): a mana-powered
   block (50% / 25% mana for aimed hits it faces, 30% / 50% mana for everything else) with a parry window; the orb is lit from the mouse side (`shaders/ward_orb.gdshader`). Stats are Intelligence (mana, magic damage) and Vitality (health).
   No stamina and no sprint: the Space-key bunnyhop is the fast way to move.
+- Momentum (player.gd, "Momentum" group in the Inspector): speed above walking is carried and
+  only goes one way (no air strafing, Rex's call: wrong vibe for top-down). On the ground it bleeds
+  off (`slide_friction`); a hop inside the landing window keeps all of it (hops take the part of
+  your speed pointing where you hop, never less than a plain hop); walls soak up what hits them.
+  Momentum skills push the player through `Player.yank_to` (and later more like it). Planned: a
+  wind gust cast on the ground that you walk into.
+- Staff spells: besides left click, a staff can have up to 3 more spells (`Item.spells`), cast
+  with Q / E / R (actions `staff_spell_1..3`, rebindable; `BasicAttack.cast_staff_spell`). Rex's
+  plan: several colour-coded spells per staff, each staff with its own theme. First: the
+  Linecaster Staff (Astral Staff art), purple-rope theme modelled on a MICLIC line charge (no
+  rocket): Q = Yank Line (`scripts/line_yank.gd` / `scenes/spells/line_yank.tscn`), a grapple
+  that must NOT look like a grapple: the line is flung, lies loose and wiggly, snaps tight and
+  yanks you to its tip. Space during the yank hops out at full speed.
 - Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
 - New staffs are a single upright picture: `tools/add_staff.py <id> <png> <icon_frame>` keeps the
   original in `art/staff_src/`, trims it to `art/worn_<id>.png` and makes the tilted inventory

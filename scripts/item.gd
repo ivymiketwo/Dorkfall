@@ -80,6 +80,9 @@ extends Resource
 @export_group("Basic attack")
 ## Staffs: the spell fired on left-click (an Ability, e.g. a beam).
 @export var basic_attack: Ability
+## Staffs: up to three more spells, cast with Q, E and R (rebindable in Esc > Hotkeys).
+## Each is an Ability of kind SPELL (see e.g. abilities/yank_line.tres).
+@export var spells: Array[Ability] = []
 @export_group("")
 ## Optional: icon changes as the stack grows (RuneScape coins). Each threshold
 ## that the count reaches moves the icon one frame further along.

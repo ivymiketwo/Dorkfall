@@ -6,6 +6,9 @@ extends Node
 
 ## GameClock time the next attack is allowed (see game_clock.gd).
 var _ready_at := 0.0
+## The staff's Q / E / R spells (Item.spells): GameClock time each is ready again, by ability.
+var _spell_ready := {}
+const SPELL_KEYS := ["staff_spell_1", "staff_spell_2", "staff_spell_3"]
 
 @onready var caster: Node2D = get_parent()
 @onready var stats: Stats = get_parent().get_node("Stats")
@@ -26,6 +29,12 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	for i in SPELL_KEYS.size():
+		if event.is_action_pressed(SPELL_KEYS[i]) and not event.is_echo():
+			if not ChatLog.typing and not _ui_blocking():
+				cast_staff_spell(i)
+				get_viewport().set_input_as_handled()
+			return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if _ui_blocking():
 			return
@@ -64,6 +73,39 @@ func attack() -> void:
 		_cast_spell(ab)
 	else:
 		_basic_beam(ab)
+
+
+## Casts the equipped staff's spell number `i` (0 = Q, 1 = E, 2 = R) if it has one and it's ready.
+func cast_staff_spell(i: int) -> void:
+	var w := weapon
+	if w == null or i >= w.spells.size() or stats.health <= 0.0:
+		return
+	var ab: Ability = w.spells[i]
+	if ab == null or ab.kind != Ability.Kind.SPELL or ab.spell_scene == null:
+		return
+	if not GameClock.passed(_spell_ready.get(ab, 0.0)):
+		return
+	if caster.has_method("is_warding") and caster.is_warding():
+		return
+	var hb := caster.get_node_or_null("Hotbar") as Hotbar
+	if hb != null and hb.is_busy():
+		return
+	if not stats.spend_mana(ab.mana_cost):
+		stats.warn_out_of_mana()
+		return
+	_spell_ready[ab] = GameClock.now + ab.cooldown
+	var s := ab.spell_scene.instantiate()
+	s.caster = caster
+	s.damage = ab.damage
+	caster.get_parent().add_child(s)
+
+
+## Seconds until the staff's spell `i` is ready (0 = ready, or no such spell).
+func staff_spell_wait(i: int) -> float:
+	var w := weapon
+	if w == null or i >= w.spells.size() or w.spells[i] == null:
+		return 0.0
+	return maxf(_spell_ready.get(w.spells[i], 0.0) - GameClock.now, 0.0)
 
 
 func _usable(ab: Ability) -> bool:

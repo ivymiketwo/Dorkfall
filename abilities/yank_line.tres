@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ability.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/spells/line_yank.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Yank Line"
+kind = 6
+mana_cost = 10.0
+cooldown = 2.5
+damage = 0.0
+spell_scene = ExtResource("2_scene")

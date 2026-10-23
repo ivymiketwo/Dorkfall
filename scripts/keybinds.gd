@@ -12,6 +12,9 @@ static func entries() -> Array:
 		["stats", "Stats", "Windows"],
 		["home_teleport", "Home teleport", "Actions"],
 		["interact", "Talk / interact", "Actions"],
+		["staff_spell_1", "Staff spell 1", "Staff spells"],
+		["staff_spell_2", "Staff spell 2", "Staff spells"],
+		["staff_spell_3", "Staff spell 3", "Staff spells"],
 		["bar_up", "Previous hotbar", "Hotbar"],
 		["bar_down", "Next hotbar", "Hotbar"],
 	]
@@ -31,6 +34,9 @@ static func default_key(action: String) -> Array:   # [keycode, shift, ctrl, alt
 		"stats": return [KEY_C, false, false, false]
 		"home_teleport": return [KEY_H, false, false, false]
 		"interact": return [KEY_F, false, false, false]
+		"staff_spell_1": return [KEY_Q, false, false, false]
+		"staff_spell_2": return [KEY_E, false, false, false]
+		"staff_spell_3": return [KEY_R, false, false, false]
 	if action.begins_with("hotbar_"):
 		return [KEY_1 + int(action.substr(7)) - 1, false, false, false]
 	return []
