@@ -1,12 +1,11 @@
 class_name TrollRock
 extends Node2D
-## A troll club attack: a red circle on the ground that hits everyone inside it when the warning
-## runs out, with a puff of dust and flying chips.
-##   thrown = true:  the knocked rock. The troll's club hits the ground at `launch_from` (a global
-##                   position) `launch_at` seconds after the circle appears; a chunk of rock flies
-##                   from there in a high tumbling arc and lands on the circle's centre.
-##   thrown = false: the smash itself; the circle is where the club lands, no rock.
-## Place this node at the circle's centre and set the fields before adding it to the scene.
+## The troll's thrown rock. A red circle appears on the ground where the target was standing;
+## partway through the troll's throw the rock leaves its fist, flies in a high arc (tumbling)
+## and lands on the circle's centre exactly when the warning runs out. Everyone inside the
+## circle then takes the hit, with a puff of dust and flying chips. Place this node at the
+## circle's centre; set `launch_from` (a global position) and `launch_at` (seconds after the
+## circle appears) before adding it to the scene.
 ##
 ## Rules (when it lands, who it hits) run on the game tick through AttackTimeline/AttackRules;
 ## everything else here is only drawing.
@@ -15,7 +14,6 @@ extends Node2D
 @export var radius := 22.0
 ## Seconds from the circle appearing to the rock landing.
 @export var warn_time := 1.0
-@export var thrown := true
 var launch_from := Vector2.ZERO
 var launch_at := 0.4
 
@@ -28,7 +26,6 @@ const FILL := Color(0.95, 0.12, 0.1)
 const ARC_MIN := 18.0
 const ARC_PER_PX := 0.25
 const DUST_TIME := 0.5
-const PUFF_TIME := 0.35
 
 var _t := 0.0
 var _landed := false
@@ -40,9 +37,6 @@ var _fx: Node2D                      # rock + dust, drawn above characters
 
 
 func _ready() -> void:
-	if not thrown:
-		launch_from = global_position
-		launch_at = warn_time + 1.0          # never flies
 	_start = to_local(launch_from)
 	_arc = ARC_MIN + _start.length() * ARC_PER_PX
 	_timeline = AttackTimeline.new().at(warn_time, _land).lasts(warn_time + DUST_TIME)
@@ -67,8 +61,7 @@ func _physics_process(delta: float) -> void:
 	var over := _timeline.tick(delta)
 	_t = _timeline.t
 	if was < launch_at and _t >= launch_at:
-		_sound(HIT_SOUND, -12.0, _start)     # the club hitting the ground
-		_sound(THROW_SOUND, -8.0, _start)
+		_sound(THROW_SOUND, -8.0)
 	if over:
 		queue_free()
 
@@ -106,7 +99,7 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, radius * p, Color(FILL.r, FILL.g, FILL.b, 0.22))
 	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 40, Color(RING.r, RING.g, RING.b, 0.65 + 0.3 * pulse), 1.5)
 	# the rock's shadow, growing as it comes down
-	if thrown and _t >= launch_at:
+	if _t >= launch_at:
 		var k := _flight()
 		var sh := _start.lerp(Vector2.ZERO, k)
 		draw_set_transform(sh, 0.0, Vector2(1.0, 0.5))
@@ -115,13 +108,6 @@ func _draw() -> void:
 
 
 func _draw_fx() -> void:
-	# where the club hit the ground and knocked the rock loose: a small puff
-	var pa := _t - launch_at
-	if thrown and pa >= 0.0 and pa < PUFF_TIME:
-		var pk := pa / PUFF_TIME
-		_fx.draw_set_transform(_start, 0.0, Vector2(1.0, 0.6))
-		_fx.draw_arc(Vector2.ZERO, 4.0 + 8.0 * pk, 0.0, TAU, 24, Color(0.78, 0.76, 0.74, 0.7 * (1.0 - pk)), 1.5)
-		_fx.draw_set_transform(Vector2.ZERO)
 	if not _landed:
 		return
 	var age := _t - warn_time
@@ -147,13 +133,13 @@ func _draw_fx() -> void:
 		_fx.draw_rect(Rect2(pos - Vector2(s, s) * 0.5, Vector2(s, s)), Color(0.42, 0.43, 0.47, a))
 
 
-func _sound(stream: AudioStream, volume: float, at := Vector2.ZERO) -> void:
+func _sound(stream: AudioStream, volume: float) -> void:
 	var s := AudioStreamPlayer2D.new()
 	s.stream = stream
 	s.volume_db = volume
 	s.finished.connect(s.queue_free)
 	get_parent().add_child(s)
-	s.global_position = global_position + at
+	s.global_position = global_position + (_start if stream == THROW_SOUND else Vector2.ZERO)
 	s.play()
 
 

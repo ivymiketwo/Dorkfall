@@ -47,8 +47,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   memory, ~3.5 minutes). Re-run it to change them (it starts from `art/ground_src/east_before_ravine.png`).
   Unreachable land there is left unpainted and its ground squares don't exist (GroundStream skips them).
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
-  Trolls (grey valley) reuse the skeleton wizard brain (`scripts/troll.gd` extends it). Their club is
-  drawn into `art/troll.png` by `tools/gen_troll_club.py` (edit its CLUB table, never the sheet).
+  Trolls (grey valley) reuse the skeleton wizard brain (`scripts/troll.gd` extends it) and throw
+  rocks (Rex had a club version added, then asked for it removed: rock throwers only).
 - Ducks (`scripts/ducks.gd`, drawing only): Rex's poses in `art/duck_src/`, packed into `art/ducks.png`
   by `tools/pack_ducks.py` (lines up the waterlines, makes the blink frame).
 - Barn + cow paddock (south-west of the crossroads): `scenes/barn.tscn`; `scenes/paddock.tscn`
