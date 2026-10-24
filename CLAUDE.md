@@ -117,7 +117,7 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Never regenerate `data/hands.json` with `tools/gen_hand_data.py`: it holds hand-tuned
   staff positions that the tool would overwrite. The south-facing jump (naked) uses Rex's hand-placed
   poses instead: `HoldStyle.jump_pose_south` / `jump_grip_south` / `jump_behind_south`; the robed
-  south jump (7 frames) reuses the matching naked pose (`robe_south_map`, nudges in `robe_south_nudge`) (east / west
+  south jump (7 frames) has its own (`robe_jump_pose_south` / `robe_jump_grip_south` / `robe_jump_behind_south`) (east / west
   jumps: `jump_pose_east` / `jump_pose_west`).
 - `art/player_new.png` is trimmed from `art/gear_src/player_new_original.png` by
   `tools/trim_body.py`. Never edit the trimmed sheet directly; edit the map or the original.

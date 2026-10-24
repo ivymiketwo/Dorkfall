@@ -64,10 +64,11 @@ extends Resource
 @export var jump_grip_south := PackedFloat32Array([0.48, 0.48, 0.39, 0.66, 0.77, 0.79, 0.45, 0.37, 0.43])
 ## ...and whether the body covers it in that frame (1 = drawn behind the body).
 @export var jump_behind_south := PackedInt32Array([0, 1, 1, 0, 0, 1, 0, 1, 1])
-## The robed south jump has 7 frames: which of the naked south poses above each one uses (the
-## matching pose), and a nudge for each (world units) where the robed body sits differently.
-@export var robe_south_map := PackedInt32Array([0, 1, 2, 3, 5, 7, 8])
-@export var robe_south_nudge: Array[Vector2] = [Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO]
+## The robed south jump (7 frames, its own poses, also placed by Rex): grip point and angle, how far
+## down the staff the grip is, and whether the body covers it (1 = behind).
+@export var robe_jump_pose_south: Array[Vector3] = [Vector3(-4.18, -8.29, -20.5), Vector3(-5.50, -7.64, -34.9), Vector3(-5.77, -1.11, -97.9), Vector3(-6.31, -13.90, -13.9), Vector3(-4.51, -11.13, -23.3), Vector3(-6.02, -5.62, -83.3), Vector3(-4.50, -2.60, -94.0)]
+@export var robe_jump_grip_south := PackedFloat32Array([0.48, 0.47, 0.39, 0.65, 0.79, 0.37, 0.43])
+@export var robe_jump_behind_south := PackedInt32Array([0, 1, 1, 0, 1, 1, 1])
 ## The naked jump has 9 frames, the robed one 8: which robed frame's pose each naked frame uses.
 @export var naked_jump_map := PackedInt32Array([0, 1, 2, 3, 4, 4, 5, 6, 7])
 
