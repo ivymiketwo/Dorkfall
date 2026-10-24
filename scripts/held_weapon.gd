@@ -185,7 +185,9 @@ func _pose(row: int, col: int) -> Dictionary:
 			pos = body.position + (Vector2(-le.x, le.y) + style.offset_west) * body.scale
 	var jump_pose := Vector3.ZERO
 	var has_jump_pose := false
-	var south_jump := row >= 8 and facing == 0 and key == "naked" and col < style.jump_pose_south.size()
+	# south jump: the naked frames use Rex's poses directly, the robed ones the matching naked pose
+	var sj := col if key == "naked" else (style.robe_south_map[col] if col < style.robe_south_map.size() else -1)
+	var south_jump := row >= 8 and facing == 0 and sj >= 0 and sj < style.jump_pose_south.size()
 	if row >= 8 and (facing == 2 or facing == 3):
 		var table: Array = style.jump_pose_west if facing == 2 else style.jump_pose_east
 		var pc: int = style.naked_jump_map[col] if key == "naked" and col < style.naked_jump_map.size() else col
@@ -207,18 +209,20 @@ func _pose(row: int, col: int) -> Dictionary:
 		g = clampf(1.0 - style.butt_overhang_south / maxf(shown, 1.0), 0.0, 1.0)
 	elif facing == 0 and style.grip_south >= 0.0:
 		g = style.grip_south
-	if south_jump and col < style.jump_grip_south.size():
-		g = style.jump_grip_south[col]
+	if south_jump and sj < style.jump_grip_south.size():
+		g = style.jump_grip_south[sj]
 	var off := Vector2(-_full_region.size.x / 2.0, -_full_region.size.y * g)
 	if south_jump:
 		# south jump: Rex's hand-placed poses (grip point, angle, and whether the body covers it)
-		var sp: Vector3 = style.jump_pose_south[col]
+		var sp: Vector3 = style.jump_pose_south[sj]
 		rot = sp.z
 		pos = body.position + Vector2(sp.x, sp.y)
+		if key != "naked" and col < style.robe_south_nudge.size():
+			pos += style.robe_south_nudge[col]
 		scl = body.scale * style.size_scale * item_scale     # seen side-on mid-air: full length
 		h = h.duplicate()
-		if col < style.jump_behind_south.size():
-			h[2] = style.jump_behind_south[col]
+		if sj < style.jump_behind_south.size():
+			h[2] = style.jump_behind_south[sj]
 	elif has_jump_pose:
 		rot = jump_pose.z
 		var up := Vector2(0, -1).rotated(deg_to_rad(jump_pose.z))
