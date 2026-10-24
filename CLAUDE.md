@@ -115,7 +115,9 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 
 ## Gear (armour) pipeline: read art/gear_src/README.md
 - Never regenerate `data/hands.json` with `tools/gen_hand_data.py`: it holds hand-tuned
-  staff positions that the tool would overwrite.
+  staff positions that the tool would overwrite. The south-facing jump (naked) uses Rex's hand-placed
+  poses instead: `HoldStyle.jump_pose_south` / `jump_grip_south` / `jump_behind_south` (east / west
+  jumps: `jump_pose_east` / `jump_pose_west`).
 - `art/player_new.png` is trimmed from `art/gear_src/player_new_original.png` by
   `tools/trim_body.py`. Never edit the trimmed sheet directly; edit the map or the original.
 - Admin/debug: F1-F4 keys and chat commands (`/help`) are kept on purpose for testing
