@@ -31,6 +31,9 @@ extends CharacterBody2D
 ## Seconds in the air, and how high the jump goes (world px).
 @export var jump_time := 0.45
 @export var jump_height := 12.0
+## Each jump made while going faster than walking keeps only this much of that speed (0.8 = loses
+## 20% per jump), so jumping can't carry you across the map; never drops below walking speed.
+@export var jump_speed_keep := 0.8
 ## Space pressed this long (seconds) before you land still jumps the moment you touch down.
 @export var jump_buffer := 0.1
 
@@ -310,7 +313,10 @@ func _jump() -> void:
 		_chain += 1                        # off a landing, still carrying speed: one more in a row
 	var dir := input_dir.normalized() if input_dir != Vector2.ZERO \
 			else (velocity.normalized() if velocity.length() > 1.0 else Vector2.ZERO)
-	var spd := maxf(velocity.dot(dir), speed if input_dir != Vector2.ZERO else 0.0)
+	var carried := velocity.dot(dir)
+	if carried > speed:
+		carried = maxf(carried * jump_speed_keep, speed)   # each jump on carried speed loses some of it
+	var spd := maxf(carried, speed if input_dir != Vector2.ZERO else 0.0)
 	_air_vel = dir * minf(spd, max_speed)
 	_air_t = 0.0
 	_jump_buffer = 0.0
