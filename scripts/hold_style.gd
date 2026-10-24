@@ -58,10 +58,10 @@ extends Resource
 @export var jump_pose_west: Array[Vector3] = [Vector3(-3.1, -9.0, -76.4), Vector3(-3.5, -9.5, -85.1), Vector3(-2.0, -6.0, -83.9), Vector3(-0.5, -19.5, -91.1), Vector3(-0.5, -18.8, -92.3), Vector3(-3.4, -13.9, -88.2), Vector3(-2.5, -6.6, -88.1), Vector3(-3.0, -7.4, -68.3)]
 ## The south-facing jump (naked frames, Rex placed each one by hand on a drawing of the Astral Staff): x, y of
 ## where the hand grips it, from the character's origin in world units, and the angle in degrees.
-@export var jump_pose_south: Array[Vector3] = [Vector3(-3.19, -8.5, -8.1), Vector3(-4.14, -8.35, -34.3), Vector3(-4.01, -4.0, -98.8), Vector3(-6.02, -13.35, -12.2), Vector3(-6.01, -12.8, -4.5), Vector3(-4.48, -12.15, -20.0), Vector3(-5.63, -10.14, -24.1), Vector3(-4.87, -2.43, -103.1), Vector3(-2.75, -8.01, -22.0)]
+@export var jump_pose_south: Array[Vector3] = [Vector3(-4.18, -8.29, -20.5), Vector3(-4.8, -7.9, -34.2), Vector3(-4.01, -4.0, -98.8), Vector3(-6.5, -13.02, -15.3), Vector3(-6.01, -12.8, -4.5), Vector3(-4.73, -11.82, -24.5), Vector3(-5.63, -10.14, -24.1), Vector3(-4.87, -2.43, -103.1), Vector3(-4.83, -7.12, -24.5)]
 ## ...how far down the staff that grip is in each of those frames (0 = top, 1 = bottom), so longer
 ## and shorter staffs are held at the same spot along their length...
-@export var jump_grip_south := PackedFloat32Array([0.44, 0.47, 0.39, 0.65, 0.77, 0.79, 0.45, 0.37, 0.44])
+@export var jump_grip_south := PackedFloat32Array([0.48, 0.48, 0.39, 0.66, 0.77, 0.79, 0.45, 0.37, 0.43])
 ## ...and whether the body covers it in that frame (1 = drawn behind the body).
 @export var jump_behind_south := PackedInt32Array([0, 1, 1, 0, 0, 1, 0, 1, 1])
 ## The naked jump has 9 frames, the robed one 8: which robed frame's pose each naked frame uses.
