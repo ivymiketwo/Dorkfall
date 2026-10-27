@@ -62,6 +62,14 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
   Trolls (grey valley) reuse the skeleton wizard brain (`scripts/troll.gd` extends it) and throw
   rocks (Rex had a club version added, then asked for it removed: rock throwers only).
+- Goblins (enchanted forest clearing, ~200 in packs of 3-6): Rex's "tower defense" monster, NOT a
+  dodging fight: no telegraph, low health (80, no level scaling), runs at you faster than you walk
+  (chase 92 vs walk 70) with the run animation and just punches (`scripts/goblin.gd` brain,
+  `scripts/goblin_look.gd`, `scenes/goblin.tscn`). Each punch picks the left or right hand at random
+  (mirrored rows of the sheet). One that spots you or gets hit calls the goblins within `call_range`.
+  Their nameplates only show once hurt (`Nameplate.only_when_hurt`). Sheet `art/goblin.png` from
+  `tools/pack_goblin.py` (Rex's pixellab frames in `art/goblin_src/`). Placed by keeping out of the
+  forests, rock, the pass mouth and a 250 px circle around the clearing's middle (Rex's next village).
 - Ducks (`scripts/ducks.gd`, drawing only): Rex's poses in `art/duck_src/`, packed into `art/ducks.png`
   by `tools/pack_ducks.py` (lines up the waterlines, makes the blink frame).
 - Barn + cow paddock (south-west of the crossroads): `scenes/barn.tscn`; `scenes/paddock.tscn`

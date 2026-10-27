@@ -6,6 +6,8 @@ extends Node2D
 @export var show_bar := true
 @export var bar_width := 30
 @export var name_color := Color("ffe08a")
+## Hordes (goblins): only show the name and bar once it has been hurt, so a crowd isn't a wall of text.
+@export var only_when_hurt := false
 
 var _stats: Stats
 
@@ -19,6 +21,8 @@ func _ready() -> void:
 
 
 func _draw() -> void:
+	if only_when_hurt and (_stats.health >= _stats.max_health or _stats.health <= 0.0):
+		return
 	var label: String = get_parent().display_name
 	var lv = null
 	var exp_node := get_parent().get_node_or_null("Experience") as Experience

@@ -37,6 +37,7 @@
 [ext_resource type="PackedScene" path="res://scenes/luck.tscn" id="303_luck"]
 [ext_resource type="PackedScene" path="res://scenes/skeleton_wizard.tscn" id="310_wizard"]
 [ext_resource type="PackedScene" path="res://scenes/troll.tscn" id="311_troll"]
+[ext_resource type="PackedScene" path="res://scenes/goblin.tscn" id="320_goblin"]
 [ext_resource type="Texture2D" uid="uid://rjpx57fcdqje" path="res://art/dock.png" id="dock_tex"]
 [ext_resource type="Script" uid="uid://ckycjdmrplnoq" path="res://scripts/ground_stream.gd" id="gstream"]
 [ext_resource type="Script" uid="uid://ckkbn1spnkv0n" path="res://scripts/sleep_regions.gd" id="sleepreg"]
@@ -4022,6 +4023,621 @@ spacing = 40.0
 polygon = PackedVector2Array(9000, -430, 9470, -380, 9470, 660, 9150, 710, 9020, 540, 8975, 260, 9030, -40)
 kinds = PackedStringArray("ench_round_blue", "ench_round_blue", "ench_violet_oak", "ench_violet_oak", "ench_twisted", "ench_ancient", "ench_wide_blue", "ench_wide_blue", "ench_willow", "ench_young", "ench_lilac")
 spacing = 40.0
+
+[node name="Goblin1" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8357, -340)
+
+[node name="Goblin2" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8383, -333)
+
+[node name="Goblin3" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8365, -350)
+
+[node name="Goblin4" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8373, -322)
+
+[node name="Goblin5" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7627, 189)
+
+[node name="Goblin6" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7611, 182)
+
+[node name="Goblin7" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7604, 203)
+
+[node name="Goblin8" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7584, 183)
+
+[node name="Goblin9" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7609, 166)
+
+[node name="Goblin10" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7615, 155)
+
+[node name="Goblin11" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8529, 293)
+
+[node name="Goblin12" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8524, 252)
+
+[node name="Goblin13" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8518, 277)
+
+[node name="Goblin14" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(6855, 300)
+
+[node name="Goblin15" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(6863, 280)
+
+[node name="Goblin16" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(6844, 287)
+
+[node name="Goblin17" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7627, -518)
+
+[node name="Goblin18" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7640, -503)
+
+[node name="Goblin19" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7612, -493)
+
+[node name="Goblin20" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7607, -521)
+
+[node name="Goblin21" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8785, -320)
+
+[node name="Goblin22" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8793, -337)
+
+[node name="Goblin23" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8795, -307)
+
+[node name="Goblin24" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8809, -311)
+
+[node name="Goblin25" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8205, 22)
+
+[node name="Goblin26" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8211, 38)
+
+[node name="Goblin27" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8218, 55)
+
+[node name="Goblin28" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8201, 46)
+
+[node name="Goblin29" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8196, 35)
+
+[node name="Goblin30" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8196, 63)
+
+[node name="Goblin31" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7874, 770)
+
+[node name="Goblin32" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7851, 775)
+
+[node name="Goblin33" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7862, 781)
+
+[node name="Goblin34" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7863, 797)
+
+[node name="Goblin35" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7499, -341)
+
+[node name="Goblin36" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7501, -364)
+
+[node name="Goblin37" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7476, -363)
+
+[node name="Goblin38" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7488, -350)
+
+[node name="Goblin39" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7687, 517)
+
+[node name="Goblin40" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7705, 499)
+
+[node name="Goblin41" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7689, 497)
+
+[node name="Goblin42" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7667, 506)
+
+[node name="Goblin43" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8307, 859)
+
+[node name="Goblin44" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8288, 883)
+
+[node name="Goblin45" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8334, 899)
+
+[node name="Goblin46" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8312, 884)
+
+[node name="Goblin47" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8304, 873)
+
+[node name="Goblin48" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8332, 315)
+
+[node name="Goblin49" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8321, 310)
+
+[node name="Goblin50" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8340, 329)
+
+[node name="Goblin51" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8302, 325)
+
+[node name="Goblin52" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8966, -3)
+
+[node name="Goblin53" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8966, -18)
+
+[node name="Goblin54" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8968, -31)
+
+[node name="Goblin55" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8960, 10)
+
+[node name="Goblin56" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8412, 108)
+
+[node name="Goblin57" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8389, 121)
+
+[node name="Goblin58" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8425, 87)
+
+[node name="Goblin59" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8406, 95)
+
+[node name="Goblin60" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8416, 120)
+
+[node name="Goblin61" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8423, 102)
+
+[node name="Goblin62" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7625, 368)
+
+[node name="Goblin63" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7634, 386)
+
+[node name="Goblin64" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7602, 387)
+
+[node name="Goblin65" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7973, 926)
+
+[node name="Goblin66" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7992, 920)
+
+[node name="Goblin67" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7964, 937)
+
+[node name="Goblin68" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7951, 923)
+
+[node name="Goblin69" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8002, 911)
+
+[node name="Goblin70" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7982, 912)
+
+[node name="Goblin71" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8614, -136)
+
+[node name="Goblin72" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8628, -141)
+
+[node name="Goblin73" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8640, -131)
+
+[node name="Goblin74" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8236, 670)
+
+[node name="Goblin75" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8264, 667)
+
+[node name="Goblin76" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8220, 661)
+
+[node name="Goblin77" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8226, 678)
+
+[node name="Goblin78" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7971, -30)
+
+[node name="Goblin79" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7945, -40)
+
+[node name="Goblin80" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7970, -59)
+
+[node name="Goblin81" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7958, -14)
+
+[node name="Goblin82" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7987, -44)
+
+[node name="Goblin83" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7330, 541)
+
+[node name="Goblin84" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7318, 566)
+
+[node name="Goblin85" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7322, 578)
+
+[node name="Goblin86" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7313, 554)
+
+[node name="Goblin87" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8907, -176)
+
+[node name="Goblin88" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8948, -165)
+
+[node name="Goblin89" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8937, -172)
+
+[node name="Goblin90" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8926, -194)
+
+[node name="Goblin91" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8923, -169)
+
+[node name="Goblin92" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8934, -147)
+
+[node name="Goblin93" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8947, 406)
+
+[node name="Goblin94" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8957, 380)
+
+[node name="Goblin95" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8935, 401)
+
+[node name="Goblin96" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8951, 365)
+
+[node name="Goblin97" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8946, 388)
+
+[node name="Goblin98" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7394, 117)
+
+[node name="Goblin99" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7360, 121)
+
+[node name="Goblin100" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7370, 137)
+
+[node name="Goblin101" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7371, 103)
+
+[node name="Goblin102" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7558, 813)
+
+[node name="Goblin103" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7577, 801)
+
+[node name="Goblin104" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7576, 781)
+
+[node name="Goblin105" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7577, 821)
+
+[node name="Goblin106" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7555, 792)
+
+[node name="Goblin107" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7565, 835)
+
+[node name="Goblin108" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8800, 630)
+
+[node name="Goblin109" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8786, 590)
+
+[node name="Goblin110" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8825, 630)
+
+[node name="Goblin111" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8812, 589)
+
+[node name="Goblin112" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8792, 612)
+
+[node name="Goblin113" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8810, 607)
+
+[node name="Goblin114" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7855, 646)
+
+[node name="Goblin115" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7880, 666)
+
+[node name="Goblin116" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7909, 640)
+
+[node name="Goblin117" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8207, -235)
+
+[node name="Goblin118" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8192, -244)
+
+[node name="Goblin119" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8201, -258)
+
+[node name="Goblin120" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8190, -223)
+
+[node name="Goblin121" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8215, -248)
+
+[node name="Goblin122" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7156, 280)
+
+[node name="Goblin123" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7130, 280)
+
+[node name="Goblin124" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7143, 311)
+
+[node name="Goblin125" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8300, 452)
+
+[node name="Goblin126" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8292, 436)
+
+[node name="Goblin127" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8272, 488)
+
+[node name="Goblin128" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8281, 464)
+
+[node name="Goblin129" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8269, 459)
+
+[node name="Goblin130" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7421, 281)
+
+[node name="Goblin131" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7404, 261)
+
+[node name="Goblin132" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7398, 280)
+
+[node name="Goblin133" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7439, 303)
+
+[node name="Goblin134" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8438, 864)
+
+[node name="Goblin135" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8454, 871)
+
+[node name="Goblin136" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8474, 836)
+
+[node name="Goblin137" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8441, 834)
+
+[node name="Goblin138" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8465, 856)
+
+[node name="Goblin139" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8590, -352)
+
+[node name="Goblin140" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8569, -343)
+
+[node name="Goblin141" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8556, -341)
+
+[node name="Goblin142" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8566, -320)
+
+[node name="Goblin143" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8554, -323)
+
+[node name="Goblin144" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8954, 145)
+
+[node name="Goblin145" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8959, 133)
+
+[node name="Goblin146" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8959, 158)
+
+[node name="Goblin147" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8950, 111)
+
+[node name="Goblin148" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8931, 125)
+
+[node name="Goblin149" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8680, -547)
+
+[node name="Goblin150" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8703, -537)
+
+[node name="Goblin151" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8689, -523)
+
+[node name="Goblin152" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8665, -540)
+
+[node name="Goblin153" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8670, -529)
+
+[node name="Goblin154" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7903, -404)
+
+[node name="Goblin155" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7920, -428)
+
+[node name="Goblin156" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7901, -421)
+
+[node name="Goblin157" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7909, -441)
+
+[node name="Goblin158" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7908, -387)
+
+[node name="Goblin159" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7928, -405)
+
+[node name="Goblin160" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7683, 672)
+
+[node name="Goblin161" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7650, 664)
+
+[node name="Goblin162" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7671, 668)
+
+[node name="Goblin163" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7385, -226)
+
+[node name="Goblin164" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7357, -218)
+
+[node name="Goblin165" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7369, -212)
+
+[node name="Goblin166" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7367, -195)
+
+[node name="Goblin167" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7348, -199)
+
+[node name="Goblin168" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8502, -41)
+
+[node name="Goblin169" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8499, -20)
+
+[node name="Goblin170" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8514, -28)
+
+[node name="Goblin171" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8481, -46)
+
+[node name="Goblin172" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7817, -34)
+
+[node name="Goblin173" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7778, -49)
+
+[node name="Goblin174" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7791, -26)
+
+[node name="Goblin175" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7770, -60)
+
+[node name="Goblin176" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8989, 727)
+
+[node name="Goblin177" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8979, 740)
+
+[node name="Goblin178" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8996, 740)
+
+[node name="Goblin179" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(9000, 755)
+
+[node name="Goblin180" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8713, 322)
+
+[node name="Goblin181" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8708, 335)
+
+[node name="Goblin182" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8699, 313)
+
+[node name="Goblin183" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8810, 429)
+
+[node name="Goblin184" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8800, 418)
+
+[node name="Goblin185" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8789, 424)
+
+[node name="Goblin186" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8793, 448)
+
+[node name="Goblin187" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8827, 437)
+
+[node name="Goblin188" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8093, -531)
+
+[node name="Goblin189" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8107, -536)
+
+[node name="Goblin190" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8126, -556)
+
+[node name="Goblin191" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8081, -543)
+
+[node name="Goblin192" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8108, -551)
+
+[node name="Goblin193" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7715, -308)
+
+[node name="Goblin194" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7736, -285)
+
+[node name="Goblin195" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7713, -295)
+
+[node name="Goblin196" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(7720, -282)
+
+[node name="Goblin197" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8302, -566)
+
+[node name="Goblin198" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8315, -583)
+
+[node name="Goblin199" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8325, -591)
+
+[node name="Goblin200" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8968, -419)
+
+[node name="Goblin201" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8945, -418)
+
+[node name="Goblin202" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8963, -388)
+
+[node name="Goblin203" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8931, -428)
+
+[node name="Goblin204" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8939, -382)
+
+[node name="Goblin205" parent="Entities" instance=ExtResource("320_goblin")]
+position = Vector2(8956, -378)
 
 [node name="EnchTree1" parent="Entities" instance=ExtResource("4_tree")]
 position = Vector2(8701, 910)
