@@ -12,4 +12,5 @@ max_stack = 99
 icon_frame = 20
 value = 50
 use_cooldown = 7.0
+use_group = &"mana_potion"
 mana_amount = 150.0

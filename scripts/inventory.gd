@@ -22,9 +22,10 @@ func _ready() -> void:
 
 ## Seconds until `item` can be used again (0 = ready).
 func cooldown_of(item: Item) -> float:
-	var left := GameClock.left(float(item_cd.get(item, 0.0)))
+	var key: Variant = item.cooldown_key()
+	var left := GameClock.left(float(item_cd.get(key, 0.0)))
 	if left <= 0.0:
-		item_cd.erase(item)
+		item_cd.erase(key)
 	return left
 
 
@@ -272,7 +273,7 @@ func try_use(i: int) -> Dictionary:
 			used = true
 	if used:
 		if item.use_cooldown > 0.0:
-			item_cd[item] = GameClock.now + item.use_cooldown
+			item_cd[item.cooldown_key()] = GameClock.now + item.use_cooldown
 		remove(item, 1)
 	return {"ok": used, "messages": msgs}
 

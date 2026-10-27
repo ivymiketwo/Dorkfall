@@ -27,6 +27,9 @@ extends Resource
 @export var mana_amount := 0.0
 ## Seconds before this same item can be eaten / drunk again.
 @export var use_cooldown := 0.0
+## Items with the same group share one cooldown (all health potions, all mana potions), so you
+## can't chain a small one straight after a big one. Empty = its own cooldown.
+@export var use_group: StringName = &""
 ## Where this goes on the paperdoll (right-click > EQUIP in the inventory).
 @export_enum("none", "weapon", "helmet", "chest", "legs") var equip_slot := "none"
 ## Held with both hands (staffs). Items that are not get the one-hand grip (hold_styles/melee_hand.tres).
@@ -227,3 +230,8 @@ func is_hand_gear() -> bool:
 
 func is_weapon() -> bool:
 	return weapon_kind != "none"
+
+
+## What its use cooldown is tracked under: its group if it has one, else the item itself.
+func cooldown_key() -> Variant:
+	return use_group if use_group != &"" else self

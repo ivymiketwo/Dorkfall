@@ -104,6 +104,11 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   a tick; multi-hit spells roll once per cast), then Intelligence (`Stats.magic_mult`) and the
   target's `Stats.armour` (armour / (armour + 100) less; monsters are all 0 for now). Spells with
   weapon_percent 0 (the hotbar spells) still use their fixed `damage`.
+- Potions: 4 sizes each of health and mana (small 75 / normal 150 / large 300 / huge 600; the normal
+  ones are the old `health_potion` / `mana_potion`), all sold at the potion shop. Art: Rex's 4 bottles
+  in `art/item_src/potion_src/`, recoloured to one red and one blue palette by
+  `tools/recolor_potions.py` (RED / BLUE ramps). Items with the same `Item.use_group` share a use
+  cooldown (all health potions, all mana potions).
 - Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
 - New staffs are a single upright picture: `tools/add_staff.py <id> <png> <icon_frame>` keeps the
   original in `art/staff_src/`, trims it to `art/worn_<id>.png` and makes the tilted inventory

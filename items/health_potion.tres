@@ -12,4 +12,5 @@ max_stack = 99
 icon_frame = 19
 value = 50
 use_cooldown = 7.0
+use_group = &"health_potion"
 heal_amount = 150.0

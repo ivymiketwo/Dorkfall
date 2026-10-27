@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Item" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"mana_potion_small"
+display_name = "Small Mana Potion"
+description = "A small vial of sapphire draught. Restores 75 MP."
+stackable = true
+max_stack = 99
+icon_frame = 43
+value = 25
+use_cooldown = 7.0
+use_group = &"mana_potion"
+mana_amount = 75.0
