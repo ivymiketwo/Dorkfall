@@ -20,6 +20,7 @@ const HELP := [
 	"/quests - show your quest status",
 	"/time 0-24 - set the hour of the day",
 	"/xp N - give yourself N XP",
+	"/level N - set your level (1-50; stat points over the new total are refunded)",
 	"/gold N - give yourself N coins",
 	"/heal - refill health and mana",
 	"/resetcharacter - back to a fresh character (level, items, gear, pets)",
@@ -60,6 +61,21 @@ static func run(text: String, player: Node2D) -> Dictionary:
 				return _out(["Usage: /xp N"], false)
 			e.add_xp(arg.to_int())
 			return _out(["Gave %d XP" % arg.to_int()])
+		"level", "lvl":
+			var ex := player.get_node_or_null("Experience") as Experience
+			if ex == null or not arg.is_valid_int():
+				return _out(["Usage: /level N"], false)
+			var n := clampi(arg.to_int(), 1, Experience.MAX_LEVEL)
+			ex.set_level(n)
+			var at := player.get_node_or_null("Attributes") as Attributes
+			var refunded := false
+			if at and at.unspent() < 0:
+				at.reset_points()          # spent more points than the new level gives
+				refunded = true
+			var st2 := player.get_node_or_null("Stats") as Stats
+			if st2:
+				st2.refill()
+			return _out(["You are now level %d" % n] + (["Your stat points were refunded"] if refunded else []))
 		"gold":
 			var inv := player.get_node_or_null("Inventory") as Inventory
 			if inv == null or not arg.is_valid_int() or arg.to_int() <= 0:

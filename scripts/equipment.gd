@@ -127,12 +127,26 @@ func _say(msg: String, col := Color("f0d040")) -> void:
 	FloatingText.spawn(player.get_parent(), player.position + Vector2(0, -26), msg, col)
 
 
+## The level rule: gear with a level requirement can only be put on at that level or higher.
+static func can_wear(item: Item, player_level: int) -> bool:
+	return item != null and player_level >= item.level_req
+
+
+func player_level() -> int:
+	var e := player.get_node_or_null("Experience") as Experience
+	return e.level if e else 1
+
+
 ## Wears the item in inventory slot `i`; whatever was in that equipment slot goes back to the inventory.
 ## Bag and gear are saved in ONE write, so a crash can't leave an item both worn and in the bag.
-func equip_from(inv: Inventory, i: int) -> void:
+## Returns false if nothing was put on (empty slot, not gear, or your level is too low).
+func equip_from(inv: Inventory, i: int) -> bool:
 	var item := inv.items[i]
 	if item == null or not item.is_equippable():
-		return
+		return false
+	if not can_wear(item, player_level()):
+		_say("REQUIRES LEVEL %d" % item.level_req, Color("e03c3c"))
+		return false
 	var slot := item.equip_slot
 	var old := get_item(slot)
 	SaveGame.batch(func() -> void:
@@ -142,6 +156,7 @@ func equip_from(inv: Inventory, i: int) -> void:
 		items[slot] = item
 		_refresh())
 	_say("EQUIPPED " + item.display_name.to_upper())
+	return true
 
 
 func unequip(slot: String) -> void:

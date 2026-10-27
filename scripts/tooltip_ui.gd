@@ -14,6 +14,7 @@ var _at := Vector2.ZERO
 var _title := ""
 var _lines := PackedStringArray()
 var _title_color := UiStyle.GOLD
+var _line_colors: Array = []      ## optional colour per line (else STAT_TEXT)
 ## An item being dragged (follows the mouse in front of everything).
 var _icon_owner := 0
 var _icon_tex: Texture2D
@@ -26,18 +27,20 @@ static func _find(tree: SceneTree) -> TooltipUI:
 
 
 static func show_tip(from: CanvasItem, at: Vector2, title: String, lines := PackedStringArray(),
-		title_color := UiStyle.GOLD) -> void:
+		title_color := UiStyle.GOLD, line_colors: Array = []) -> void:
 	var t := _find(from.get_tree())
 	if t == null:
 		return
 	var p := from.get_global_transform() * at
-	if t._owner_id == from.get_instance_id() and t._at == p and t._title == title and t._lines == lines:
+	if t._owner_id == from.get_instance_id() and t._at == p and t._title == title and t._lines == lines \
+			and t._line_colors == line_colors:
 		return
 	t._owner_id = from.get_instance_id()
 	t._at = p
 	t._title = title
 	t._lines = lines
 	t._title_color = title_color
+	t._line_colors = line_colors
 	t.queue_redraw()
 
 
@@ -105,4 +108,5 @@ func _draw() -> void:
 	UiStyle.panel(self, Rect2(tp, Vector2(w, h)), px)
 	HiFont.draw(self, tp + Vector2(7, 7) * px, _title, _title_color, px)
 	for k in _lines.size():
-		HiFont.draw(self, tp + Vector2(7 * px, 7 * px + (k + 1) * lh), _lines[k], STAT_TEXT, px)
+		var c: Color = _line_colors[k] if k < _line_colors.size() and _line_colors[k] is Color else STAT_TEXT
+		HiFont.draw(self, tp + Vector2(7 * px, 7 * px + (k + 1) * lh), _lines[k], c, px)

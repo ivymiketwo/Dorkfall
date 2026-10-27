@@ -155,6 +155,12 @@ func _draw() -> void:
 		line = "%s  %d coins" % [hovered.display_name, hovered.value]
 		col = Color.WHITE
 	HiFont.draw(self, Vector2(PAD, fy), line, col, px)
+	if hovered and hovered.level_req > 1:
+		var lv_text := "Lv %d" % hovered.level_req
+		var e := _player.get_node_or_null("Experience") as Experience if is_instance_valid(_player) else null
+		var ok := e == null or Equipment.can_wear(hovered, e.level)
+		HiFont.draw(self, Vector2(size.x - PAD - HiFont.text_width(lv_text, px), fy), lv_text,
+				UiStyle.TEXT_DIM if ok else Color("e03c3c"), px)
 	if hovered and not hovered.stat_lines().is_empty():
 		HiFont.draw(self, Vector2(PAD, fy + 9), "  ".join(hovered.stat_lines()), Color("8fd0ff"), px)
 	elif _inv:

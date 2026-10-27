@@ -328,15 +328,28 @@ func _draw() -> void:
 		var label := item.title()
 		if item.stackable:
 			label += " " + str(inventory.counts[_hover])
-		TooltipUI.show_tip(self, _mouse, label, item.stat_lines())
+		_item_tip(label, item)
 	elif _hover_gear != "":
 		var it := equipment.get_item(_hover_gear) if equipment else null
 		if it:
-			TooltipUI.show_tip(self, _mouse, it.title(), it.stat_lines())
+			_item_tip(it.title(), it)
 		else:
 			TooltipUI.show_tip(self, _mouse, Equipment.SLOT_NAMES[_hover_gear])
 	else:
 		TooltipUI.hide_tip(self)
+
+
+## An item's tooltip: its stats, then its level requirement (red when you're below it).
+func _item_tip(label: String, item: Item) -> void:
+	var lines := item.stat_lines()
+	var colors: Array = []
+	colors.resize(lines.size())
+	var req := item.requirement_line()
+	if req != "":
+		lines.append(req)
+		var ok := equipment == null or Equipment.can_wear(item, equipment.player_level())
+		colors.append(UiStyle.TEXT_DIM if ok else Color("e03c3c"))
+	TooltipUI.show_tip(self, _mouse, label, lines, UiStyle.GOLD, colors)
 
 
 func _icon_rect(slot_pos: Vector2) -> Rect2:

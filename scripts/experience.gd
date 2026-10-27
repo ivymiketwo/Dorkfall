@@ -72,6 +72,13 @@ func _save() -> void:
 	SaveGame.put("experience", {"level": level, "xp": xp})
 
 
+## Testing (/level): jump straight to `lvl` with no XP into it.
+func set_level(lvl: int) -> void:
+	level = clampi(lvl, 1, MAX_LEVEL)
+	xp = 0
+	changed.emit()
+
+
 func add_xp(amount: int) -> void:
 	if level >= MAX_LEVEL or amount <= 0:
 		return

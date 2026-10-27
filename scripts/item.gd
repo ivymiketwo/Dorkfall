@@ -16,6 +16,8 @@ extends Resource
 @export var paperdoll_texture: Texture2D
 ## Shop price in coins.
 @export var value := 1
+## Character level needed to wear / wield this (0 = anyone). Checked by Equipment.can_wear.
+@export var level_req := 0
 ## What a vendor pays you for one, in coins. 0 = a quarter of the shop price (min 1). Coins and account-bound items can never be sold.
 @export var sell_price := 0
 ## If set, "Drop" puts this scene in the world (a follower pet) instead of an item on the ground.
@@ -160,6 +162,12 @@ func frame_for(count: int) -> int:
 
 
 ## Lines describing this item's gear stats (empty if it has none).
+## "REQUIRES LEVEL 15" for gear with a level requirement, "" otherwise (tooltips add it, coloured
+## by whether you meet it).
+func requirement_line() -> String:
+	return "REQUIRES LEVEL %d" % level_req if level_req > 1 else ""
+
+
 func stat_lines() -> PackedStringArray:
 	var out := PackedStringArray()
 	if has_damage():

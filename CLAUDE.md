@@ -146,6 +146,13 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   a tick; multi-hit spells roll once per cast), then Intelligence (`Stats.magic_mult`) and the
   target's `Stats.armour` (armour / (armour + 100) less; monsters are all 0 for now). Spells with
   weapon_percent 0 (the hotbar spells) still use their fixed `damage`.
+- Staff tiers (Rex, Oct 2026: wider gap + level requirements). `Item.level_req`, enforced by
+  `Equipment.can_wear` in `equip_from` (also from the hotbar); tooltips add "REQUIRES LEVEL N" (red
+  when too low), the shop shows "Lv N". Average damage grows like monster health
+  (15 x (1 + 0.25 x (level - 3)), the skeleton / troll health scaling), so time-to-kill stays flat:
+  Wooden 13-17 (none), Vorly's 20-26 (5), Amber 36-46 (10), Clockwork 43-55 (12), Amethyst 53-67 (15),
+  Astral + Linecaster 63-79 (18), Twilight 70-88 (20), Void 77-95 (22), Sun 87-108 (25).
+  Already-worn gear isn't taken off if you're under its level. Test: chat `/level N`.
 - Potions: 4 sizes each of health and mana (small 75 / normal 150 / large 300 / huge 600; the normal
   ones are the old `health_potion` / `mana_potion`), all sold at the potion shop. Art: Rex's 4 bottles
   in `art/item_src/potion_src/`, recoloured to one red and one blue palette by

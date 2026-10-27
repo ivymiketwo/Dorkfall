@@ -305,7 +305,8 @@ func _equip_slot(i: int) -> void:
 			for k in Inventory.SLOT_COUNT:
 				var have := inventory.items[k]
 				if have != null and (SaveGame.item_to_path(have) == key if exact else have.id == it.id):
-					equipment.equip_from(inventory, k)
+					if not equipment.equip_from(inventory, k):
+						_fail(i)          # e.g. your level is too low for it
 					changed.emit()
 					return
 	_fail(i)              # not in the bag any more

@@ -85,6 +85,14 @@ func can_spend(stat: String) -> bool:
 	return unspent() > 0 and base_of(stat) < BASE_CAP
 
 
+## Gives back every spent point (used when /level lowers your level below what you've spent).
+func reset_points() -> void:
+	for k in spent:
+		spent[k] = 0
+	SaveGame.put("attributes", spent.duplicate())
+	_refresh()
+
+
 func spend(stat: String) -> bool:
 	if not can_spend(stat):
 		return false
