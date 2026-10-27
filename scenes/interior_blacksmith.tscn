@@ -1,18 +1,20 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/interior.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://art/interior_blacksmith.png" id="2_tex"]
 [ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="3_npc"]
 [ext_resource type="Resource" path="res://shops/blacksmith_shop.tres" id="4_shop"]
-[ext_resource type="Texture2D" path="res://art/fishing_keeper.png" id="5_keeper"]
+[ext_resource type="Texture2D" path="res://art/blacksmith_keeper.png" id="5_keeper"]
 [ext_resource type="Script" path="res://scripts/anvil.gd" id="6_anvil"]
+[ext_resource type="Texture2D" path="res://art/interior_blacksmith_counter.png" id="7_counter"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
 size = Vector2(24, 6)
 
 [node name="Blacksmith" type="Node2D"]
 script = ExtResource("1_script")
-solids = Array[Rect2]([Rect2(0, 0, 224, 32), Rect2(0, 0, 8, 176), Rect2(216, 0, 8, 176), Rect2(0, 168, 100, 8), Rect2(124, 168, 100, 8), Rect2(100, 176, 24, 8), Rect2(80, 32, 64, 12), Rect2(54, 62, 18, 16), Rect2(44, 98, 144, 14), Rect2(12, 124, 34, 16), Rect2(12, 142, 36, 20), Rect2(170, 134, 38, 22), Rect2(190, 66, 18, 20)])
+room_size = Vector2(128, 128)
+solids = Array[Rect2]([Rect2(0, 0, 128, 36), Rect2(0, 0, 14, 128), Rect2(114, 0, 14, 128), Rect2(0, 109, 56, 19), Rect2(72, 109, 56, 19), Rect2(56, 129, 16, 8), Rect2(14, 36, 37, 23), Rect2(51, 36, 27, 29), Rect2(77, 44, 13, 21), Rect2(90, 40, 24, 34), Rect2(25, 77, 19, 13), Rect2(58, 76, 56, 14), Rect2(96, 95, 18, 14)])
 
 [node name="Room" type="Sprite2D" parent="."]
 texture = ExtResource("2_tex")
@@ -20,21 +22,28 @@ centered = false
 scale = Vector2(0.5, 0.5)
 
 [node name="Entry" type="Marker2D" parent="."]
-position = Vector2(112, 152)
+position = Vector2(64, 102)
 
 [node name="Exit" type="Area2D" parent="."]
-position = Vector2(112, 171)
+position = Vector2(64, 124)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
 shape = SubResource("RectangleShape2D_exit")
 
 [node name="Smith" parent="." instance=ExtResource("3_npc")]
-position = Vector2(160, 94)
+position = Vector2(88, 74)
 display_name = "Smith"
 shop = ExtResource("4_shop")
 sprite_texture = ExtResource("5_keeper")
-idle_split_row = 30
+idle_split_row = 27
+
+[node name="CounterFront" type="Sprite2D" parent="." groups=["y_sorted"]]
+position = Vector2(57, 92)
+texture = ExtResource("7_counter")
+centered = false
+offset = Vector2(0, -46)
+scale = Vector2(0.5, 0.5)
 
 [node name="Anvil" type="Node2D" parent="."]
-position = Vector2(63, 78)
+position = Vector2(34, 90)
 script = ExtResource("6_anvil")

@@ -32,4 +32,4 @@ func interact(player: Node2D) -> void:
 func _draw() -> void:
 	if _near:
 		var t := "F  ENHANCE"
-		HiFont.draw(self, Vector2(-floorf(HiFont.text_width(t, PX) / 2.0), -24.0), t, Color("f0d040"), PX)
+		HiFont.draw(self, Vector2(-floorf(HiFont.text_width(t, PX) / 2.0), -30.0), t, Color("f0d040"), PX)

@@ -91,7 +91,10 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   DOES isn't decided: Rex wants staffs reworked to MMO-style damage ranges first. An enhanced item
   is its own copy (`Item.enhanced_copy`, `Item.enhance`, `Item.title()` = "+5 Name"), saved as
   "<path>#+<level>" by `SaveGame.item_to_path` / `item_from_path`. Flux (`items/flux.tres`, 1000
-  coins) is sold by the blacksmith "Smith" (fisherman sprite until Rex's new NPC art); the Magical
+  coins) is sold by the blacksmith "Smith" (`art/blacksmith_keeper.png`, behind the counter; the room is
+  Rex's 128x128 generated one, its floor came back see-through and was repainted by
+  `tools/fill_room_floor.py` from `art/interior_src/`; the counter is redrawn on top as
+  `art/interior_blacksmith_counter.png` so Smith stands behind it); the Magical
   Elixir (`items/magical_elixir.tres`) drops from every monster at 5% (`Loot.ELIXIR_CHANCE`, added
   in `Loot.roll`). Item pictures from Rex go in `art/item_src/` -> `tools/add_item_icons.py name:frame`.
 - Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
