@@ -31,9 +31,9 @@ extends CharacterBody2D
 ## Seconds in the air, and how high the jump goes (world px).
 @export var jump_time := 0.45
 @export var jump_height := 12.0
-## Each jump made while going faster than walking keeps only this much of that speed (0.8 = loses
-## 20% per jump), so jumping can't carry you across the map; never drops below walking speed.
-@export var jump_speed_keep := 0.8
+## Each jump made while going faster than walking keeps only this much of that speed (0.95 = loses
+## 5% per jump), so jumping can't carry you across the map; never drops below walking speed.
+@export var jump_speed_keep := 0.95
 ## Space pressed this long (seconds) before you land still jumps the moment you touch down.
 @export var jump_buffer := 0.1
 

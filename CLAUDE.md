@@ -78,8 +78,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   `friction_max` over `friction_ramp` s), so jumping right as you land keeps nearly all of it and
   late jumps eat speed (Rex's design). Each jump in a row shortens that grace (`ramp_shrink`, floor
   `friction_ramp_min`); it resets whenever you're back at walking speed or less, for any reason,
-  and when a yank gives fresh speed (Rex asked for that reset to be bulletproof). Each jump on carried speed also keeps only `jump_speed_keep` (0.8) of it, so
-  chains die out over ~6 jumps (Rex: long-distance hopping was too strong). A jump keeps the part of your speed pointing where you jump
+  and when a yank gives fresh speed (Rex asked for that reset to be bulletproof). Each jump on carried speed also keeps only `jump_speed_keep` of it (Rex: 0.95,
+  5% per jump; was 0.8, long-distance hopping had been too strong). A jump keeps the part of your speed pointing where you jump
   (at least walking speed if moving); no steering in the air; walls soak up what hits them.
   Momentum skills push the player through `Player.yank_to` (and later more like it). Planned: a
   wind gust cast on the ground that you walk into.
