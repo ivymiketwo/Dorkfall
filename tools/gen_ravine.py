@@ -15,8 +15,8 @@ How it works (plain version):
   - It is drawn like a 3/4 view: higher ground is shifted up the screen, so the south-facing
     sides of each step show as cliff faces (layered rock) and the tops as rocky plateaus.
   - Whatever ends up looking like flat floor is walkable; everything else becomes a wall tile.
-  - Land the camera can never see (well away from the ravine) is left unpainted, and those
-    ground squares aren't stored at all.
+  - Land the camera can never see (well away from the ravine) is painted too (PAINT_ALL), so the
+    map shows mountain there rather than black.
 Run it again after changing the settings: it always starts from the desert as it was before the
 ravine (kept in art/ground_src/east_before_ravine.png), so re-running is safe.
 """
@@ -63,6 +63,10 @@ OUTCROPS = [(5138, 231, 145, 166), (5408, 285, 75, 58), (5932, 148, 208, 145), (
 OUTCROP_MAX_LEVEL = 2        # outcrops stay low (one or two ledges), not full mountains
 BEFORE = "art/ground_src/east_before_ravine.png"   # the desert as it was (each run starts from it)
 BEFORE_WEST = "art/ground_src/north_before_cliff.png"   # the meadow under the north-west cliff, as it was
+## True: the whole mountain is painted, even the parts the camera never sees, so the world map and
+## minimap show rock there instead of black (Rex, Oct 2026). False: those parts are left unpainted
+## and their ground squares aren't stored (smaller download).
+PAINT_ALL = True
 STEP = 64                    # (old fixed step; heights are now LEVEL_Z)
 # how high each terrace is drawn, in art px: one tall cliff first, then smaller steps behind it
 LEVEL_Z = np.array([0, 120, 196, 256, 316, 372, 428, 484, 540, 596, 652], np.int32)
@@ -499,6 +503,8 @@ def main():
         a = a | shifted(a, 1, 0, False) | shifted(a, -1, 0, False)
     seen = np.repeat(np.repeat(a, 2 * G, axis=0), 2 * G, axis=1)[:H, :W]
     unseen = (~seen) & ((X0 + np.arange(W) / 2.0)[None, :] >= OLD_EDGE)
+    if PAINT_ALL:
+        unseen[:] = False          # Rex: paint the whole mountain (no black areas on the map)
     del seen
     out[unseen] = VOID
 

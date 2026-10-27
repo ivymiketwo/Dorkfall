@@ -45,7 +45,8 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   Valley walls: `VALLEY_TOP` / `VALLEY_BOTTOM`; outcrops: `OUTCROPS`; the north-west cliff from the
   mountains up to the top of the map: `NW_CLIFF` (its strip starts from `art/ground_src/north_before_cliff.png`). It paints in strips (~3 GB of
   memory, ~3.5 minutes). Re-run it to change them (it starts from `art/ground_src/east_before_ravine.png`).
-  Unreachable land there is left unpainted and its ground squares don't exist (GroundStream skips them).
+  The whole mountain is painted, unreachable parts too (`PAINT_ALL` in gen_ravine.py, Rex: no black
+  areas on the map); GroundStream still skips any square that has no file.
 - Enchanted forest (east of the troll valley, world x 6512..9456, about 80% of the green biome; the
   map grew to 696 x 168 tiles, ground squares to 22 columns): the valley narrows into a pass at
   x ~6400-6512 (VALLEY_TOP / VALLEY_BOTTOM end points in `tools/gen_ravine.py`) that opens into a
