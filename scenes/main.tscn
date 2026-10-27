@@ -4009,12 +4009,12 @@ script = ExtResource("51_amb")
 script = ExtResource("sleepreg")
 
 [node name="EnchForestNorth" parent="Entities" instance=ExtResource("210_forest")]
-polygon = PackedVector2Array(6470, -1000, 9470, -1000, 9470, -380, 9000, -430, 8700, -570, 8300, -630, 7900, -610, 7500, -530, 7250, -390, 7150, -190, 7110, 60, 7020, 118, 6820, 128, 6640, 132, 6470, 128)
+polygon = PackedVector2Array(6470, -1000, 9470, -1000, 9470, -380, 9000, -430, 8700, -570, 8300, -630, 7900, -610, 7500, -530, 7250, -390, 7150, -190, 7142, 93, 7091, 169, 6833, 145, 6640, 132, 6470, 128)
 kinds = PackedStringArray("ench_round_blue", "ench_round_blue", "ench_violet_oak", "ench_violet_oak", "ench_twisted", "ench_ancient", "ench_wide_blue", "ench_wide_blue", "ench_willow", "ench_young", "ench_lilac")
 spacing = 40.0
 
 [node name="EnchForestSouth" parent="Entities" instance=ExtResource("210_forest")]
-polygon = PackedVector2Array(6470, 338, 6650, 342, 6850, 350, 7040, 368, 7170, 430, 7260, 570, 7360, 760, 7560, 920, 7860, 1010, 8250, 1030, 8650, 985, 8950, 870, 9150, 710, 9470, 660, 9470, 1710, 6470, 1710)
+polygon = PackedVector2Array(6552, 398, 6688, 350, 6858, 378, 7040, 368, 7170, 430, 7260, 570, 7360, 760, 7560, 920, 7860, 1010, 8250, 1030, 8650, 985, 8950, 870, 9150, 710, 9470, 660, 9470, 1710, 6470, 1710)
 kinds = PackedStringArray("ench_round_blue", "ench_round_blue", "ench_violet_oak", "ench_violet_oak", "ench_twisted", "ench_ancient", "ench_wide_blue", "ench_wide_blue", "ench_willow", "ench_young", "ench_lilac")
 spacing = 40.0
 
