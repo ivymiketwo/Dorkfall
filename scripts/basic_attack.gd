@@ -9,6 +9,8 @@ var _ready_at := 0.0
 ## The staff's Q / E / R spells (Item.spells): GameClock time each is ready again, by ability.
 var _spell_ready := {}
 const SPELL_KEYS := ["staff_spell_1", "staff_spell_2", "staff_spell_3"]
+## Held spells running right now: spell index -> {"node", "ab", "weapon"}.
+var _held := {}
 
 @onready var caster: Node2D = get_parent()
 @onready var stats: Stats = get_parent().get_node("Stats")
@@ -21,6 +23,7 @@ var weapon: Item:
 
 
 func _process(_delta: float) -> void:
+	_check_held()
 	# Holding left click keeps firing a staff's beam.
 	if GameClock.passed(_ready_at) and caster.get("input_fire_held"):
 		var w := weapon
@@ -90,14 +93,35 @@ func cast_staff_spell(i: int) -> void:
 	var hb := caster.get_node_or_null("Hotbar") as Hotbar
 	if hb != null and hb.is_busy():
 		return
+	if ab.held and _held.has(i):
+		return                              # already running
 	if not stats.spend_mana(ab.mana_cost):
 		stats.warn_out_of_mana()
 		return
-	_spell_ready[ab] = GameClock.now + ab.cooldown
 	var s := ab.spell_scene.instantiate()
 	s.caster = caster
 	s.damage = ab.hit_damage(weapon)
+	if ab.held:
+		s.set("mana_per_second", ab.mana_per_second)
+		_held[i] = {"node": s, "ab": ab, "weapon": w}
+	else:
+		_spell_ready[ab] = GameClock.now + ab.cooldown
 	caster.get_parent().add_child(s)
+
+
+## Held spells stop when their key comes up, the staff changes, or they stop themselves (out of
+## mana); then their cooldown starts.
+func _check_held() -> void:
+	for i in _held.keys():
+		var h: Dictionary = _held[i]
+		var node = h["node"]
+		var running: bool = is_instance_valid(node) and node.is_running()
+		if running and (not Input.is_action_pressed(SPELL_KEYS[i]) or weapon != h["weapon"]):
+			node.stop()
+			running = false
+		if not running:
+			_spell_ready[h["ab"]] = GameClock.now + (h["ab"] as Ability).cooldown
+			_held.erase(i)
 
 
 ## Seconds until the staff's spell `i` is ready (0 = ready, or no such spell).

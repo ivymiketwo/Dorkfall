@@ -46,6 +46,11 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT, SWARM, SPELL }
 ## (scenes/spells/sun_halo.tscn). Its root script gets `caster` and `damage` (the one above) set
 ## before it is added to the world. Its own timings are in that scene's Inspector.
 @export var spell_scene: PackedScene
+## Held spells (Q held down, e.g. the Twilight Staff's missiles): the spell keeps running while its
+## key is held; `mana_cost` is paid at the start, then `mana_per_second` while it runs, and the
+## cooldown starts when you let go (or run out of mana).
+@export var held := false
+@export var mana_per_second := 0.0
 
 @export_group("Swarm")
 ## Crimson Swarm: this many beams land on non-overlapping circles around the mouse.

@@ -2,6 +2,7 @@
     slot 8  Sun Halo         (a golden ring of light with rays)
     slot 9  Void Hole        (a black hole with a violet swirl)
     slot 10 Clockwork Spider (a brass gear with spider legs)
+    slot 11 Twilight Missiles (three violet missiles curving in, with pink-to-blue trails)
 The sheet grows if needed. Re-run to redraw them.
 
     python3 tools/add_spell_icons.py
@@ -90,8 +91,33 @@ def clockwork_spider():
     return im
 
 
+def twilight_missiles():
+    im = blank()
+    px = im.load()
+    head, tail, core = (240, 115, 215, 255), (80, 90, 230, 255), (255, 235, 255, 255)
+    # (start, end, bend): three missiles from the bottom-left curving up to the top-right
+    for (ox, oy), (ex, ey), bend in [((1, 14), (12, 2), 2.5), ((5, 15), (14, 8), -2.0), ((0, 9), (7, 2), -1.5)]:
+        pts = []
+        for i in range(30):                          # a curved trail ending in a bright head
+            u = i / 29
+            nx, ny = -(ey - oy), (ex - ox)
+            nl = math.hypot(nx, ny)
+            x = ox + (ex - ox) * u + bend * math.sin(u * math.pi) * nx / nl
+            y = oy + (ey - oy) * u + bend * math.sin(u * math.pi) * ny / nl
+            pts.append((int(round(x)), int(round(y)), u))
+        for x, y, u in pts:
+            if 0 <= x < 16 and 0 <= y < 16:
+                c = tuple(int(tail[j] + (head[j] - tail[j]) * u) for j in range(3)) + (255,)
+                px[x, y] = c
+        x, y, _ = pts[-1]
+        for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            if 0 <= x + dx < 16 and 0 <= y + dy < 16:
+                px[x + dx, y + dy] = core if (dx, dy) == (0, 0) else head
+    return im
+
+
 def main():
-    icons = {8: sun_halo(), 9: void_hole(), 10: clockwork_spider()}
+    icons = {8: sun_halo(), 9: void_hole(), 10: clockwork_spider(), 11: twilight_missiles()}
     im = Image.open(OUT).convert("RGBA")
     need = (max(icons) + 1) * 16
     if im.width < need:

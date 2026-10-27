@@ -1,14 +1,16 @@
-[gd_resource type="Resource" script_class="Item" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="Item" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
 [ext_resource type="Texture2D" path="res://art/worn_twilight_staff.png" id="2_worn"]
 [ext_resource type="Resource" path="res://abilities/arcane_beam.tres" id="3_beam"]
+[ext_resource type="Resource" path="res://abilities/twilight_missiles.tres" id="4_missiles"]
+[ext_resource type="Script" path="res://scripts/ability.gd" id="5_ab"]
 
 [resource]
 script = ExtResource("1_item")
 id = &"twilight_staff"
 display_name = "Twilight Staff"
-description = "A dark staff crowned with a swirling violet orb. Shoots an arcane beam. Two-handed."
+description = "A dark staff crowned with a swirling violet orb. Shoots an arcane beam. Hold Q: a stream of magic missiles that curve in on your cursor. Drains mana while held. Two-handed."
 icon_frame = 37
 value = 1800
 level_req = 20
@@ -23,3 +25,4 @@ weapon_kind = "staff"
 damage_min = 70
 damage_max = 88
 basic_attack = ExtResource("3_beam")
+spells = Array[ExtResource("5_ab")]([ExtResource("4_missiles")])

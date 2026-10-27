@@ -170,8 +170,14 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Left click is always a simple coloured beam (Rex, Oct 2026): every staff's `basic_attack` is a BEAM
   ability (sun_beam / void_beam / clockwork_beam for the three below); the special attacks are each
   staff's Q spell (`Item.spells[0]`), with longer cooldowns now that they come on top of the beam
-  (Sun Halo 6 s, Void Hole 7 s, Clockwork Spider 6 s). Q icons: `art/icons.png` slots 8-10
+  (Sun Halo 6 s, Void Hole 7 s, Clockwork Spider 6 s). Q icons: `art/icons.png` slots 8-11
   (`tools/add_spell_icons.py`).
+- Held Q spells (`Ability.held`, `mana_per_second`): BasicAttack keeps the spell node running while the
+  key is held (`_check_held`), the node offers `is_running()` / `stop()`, cooldown starts on release.
+  First one: the Twilight Staff's Twilight Missiles (`scripts/twilight_missiles.gd`,
+  `scenes/spells/twilight_missiles.tscn`, `abilities/twilight_missiles.tres`): 4 missiles a second
+  (Rex) that curve in on the cursor (following it), fly on `overshoot` past it, hit the first monster
+  they touch; 50% of a weapon roll each, 5 mana to start + 40 mana a second.
 - Unique staff attacks: an ability of kind SPELL points at a scene in `scenes/spells/` whose root
   script runs the whole attack (rules on the game tick via AttackTimeline, the rest is drawing)
   and gets `caster` and `damage` from BasicAttack. First one: the Sun Staff's halo beam

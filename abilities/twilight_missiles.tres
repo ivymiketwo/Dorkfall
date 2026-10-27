@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="Ability" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ability.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/spells/twilight_missiles.tscn" id="2_spell"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Twilight Missiles"
+kind = 6
+icon_index = 11
+mana_cost = 5.0
+cooldown = 0.5
+damage = 30.0
+weapon_percent = 0.5
+beam_color = Color(0.78, 0.5, 1, 1)
+spell_scene = ExtResource("2_spell")
+held = true
+mana_per_second = 40.0
