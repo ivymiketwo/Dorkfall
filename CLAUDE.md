@@ -78,6 +78,11 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   (Interiors at 2400, 3000; keeper "Briar" uses Mirelle's art for now and the same potion stock).
   Rex's originals in `art/ench_potion_src/`; the room's see-through floor and counter top were filled
   by `tools/fill_room_planks.py` (draws its own planks, for rooms with no seams left).
+  Second: the enchanted wizard shop (`scenes/ench_wizard_shop.tscn`, same 0.5 scale, at 6800, 184)
+  -> `scenes/interior_ench_wizard_shop.tscn` (Interiors at 2800, 3000; keeper "Mossbeard", Rex's
+  pixellab wizard `art/ench_wizard_keeper.png`, sells the wizard shop's stock). Originals in
+  `art/ench_wizard_src/`. Both rooms have a counter overlay (`art/interior_ench_*_counter.png`,
+  only the counter and what stands on it) so the keeper stands behind the counter.
 - Ducks (`scripts/ducks.gd`, drawing only): Rex's poses in `art/duck_src/`, packed into `art/ducks.png`
   by `tools/pack_ducks.py` (lines up the waterlines, makes the blink frame).
 - Barn + cow paddock (south-west of the crossroads): `scenes/barn.tscn`; `scenes/paddock.tscn`

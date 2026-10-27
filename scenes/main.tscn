@@ -40,6 +40,8 @@
 [ext_resource type="PackedScene" path="res://scenes/goblin.tscn" id="320_goblin"]
 [ext_resource type="PackedScene" path="res://scenes/ench_potion_shop.tscn" id="321_ench_potion"]
 [ext_resource type="PackedScene" path="res://scenes/interior_ench_potion_shop.tscn" id="322_int_ench_potion"]
+[ext_resource type="PackedScene" path="res://scenes/ench_wizard_shop.tscn" id="323_ench_wizard"]
+[ext_resource type="PackedScene" path="res://scenes/interior_ench_wizard_shop.tscn" id="324_int_ench_wizard"]
 [ext_resource type="Texture2D" uid="uid://rjpx57fcdqje" path="res://art/dock.png" id="dock_tex"]
 [ext_resource type="Script" uid="uid://ckycjdmrplnoq" path="res://scripts/ground_stream.gd" id="gstream"]
 [ext_resource type="Script" uid="uid://ckkbn1spnkv0n" path="res://scripts/sleep_regions.gd" id="sleepreg"]
@@ -155,6 +157,9 @@ position = Vector2(3700, 2600)
 
 [node name="EnchPotionShop" parent="Interiors" instance=ExtResource("322_int_ench_potion")]
 position = Vector2(2400, 3000)
+
+[node name="EnchWizardShop" parent="Interiors" instance=ExtResource("324_int_ench_wizard")]
+position = Vector2(2800, 3000)
 
 [node name="Entities" type="Node2D" parent="." unique_id=1136022897]
 y_sort_enabled = true
@@ -4028,6 +4033,9 @@ spacing = 40.0
 polygon = PackedVector2Array(9000, -430, 9470, -380, 9470, 660, 9150, 710, 9020, 540, 8975, 260, 9030, -40)
 kinds = PackedStringArray("ench_round_blue", "ench_round_blue", "ench_violet_oak", "ench_violet_oak", "ench_twisted", "ench_ancient", "ench_wide_blue", "ench_wide_blue", "ench_willow", "ench_young", "ench_lilac")
 spacing = 40.0
+
+[node name="EnchWizardShop" parent="Entities" instance=ExtResource("323_ench_wizard")]
+position = Vector2(6800, 184)
 
 [node name="EnchPotionShop" parent="Entities" instance=ExtResource("321_ench_potion")]
 position = Vector2(6960, 188)
