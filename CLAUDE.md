@@ -49,7 +49,10 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   areas on the map); GroundStream still skips any square that has no file.
 - Enchanted forest (east of the troll valley, world x 6512..9456, about 80% of the green biome; the
   map grew to 696 x 168 tiles, ground squares to 22 columns): the valley narrows into a pass at
-  x ~6400-6512 (VALLEY_TOP / VALLEY_BOTTOM end points in `tools/gen_ravine.py`) that opens into a
+  x ~6400-6512 (VALLEY_TOP / VALLEY_BOTTOM end points in `tools/gen_ravine.py`); past it the
+  mountain's cliffs carry on along Rex's red lines (EAST_TOP / EAST_BOTTOM; gen_ravine now paints to
+  XM 7264, keeping everything west of x 6512 exactly as it was, and writes
+  `art/ground_src/ravine_east_walk.png` so gen_enchanted keeps that rock: run gen_ravine first). It opens into a
   corridor between two dense forests, then a big open clearing kept empty for Rex's next village
   (path ends at ~8050, 330). Ground + minimap: `tools/gen_enchanted.py` (moss, forest floor under the
   EnchForest* polygons in main.tscn, the PATH, a grey-to-moss seam at the pass; re-run after moving

@@ -8,8 +8,9 @@ of the minimap.
     scenes/main.tscn, so move / reshape those in the editor and re-run this to match.
   - A lilac-grey dirt path (PATH) from the troll pass to the middle of the clearing.
   - The minimap gets the forests (dark), the path and the single trees (EnchTree* nodes) as dots.
-  - The first few hundred px past the pass are the valley's grey ground (mirrored from the valley's
-    last strip, so the seam can't show) fading into the moss.
+  - The mountain's cliffs carry on past the pass along Rex's lines (painted by tools/gen_ravine.py,
+    run that first): that rock is kept as it is, and the valley's grey ground fades into the moss
+    over the first few hundred px past the pass.
 Only the ground squares east of x 6512 (columns 16..21) and that part of art/world_map.png are
 written; everything west of the pass is left alone. Same picture every run (fixed SEED).
 """
@@ -33,6 +34,7 @@ H = SIZE_ART[1]
 PATH = [(6440, 192), (6512, 192), (6700, 196), (6900, 212), (7100, 236), (7300, 262), (7550, 288),
         (7800, 310), (8050, 330)]
 PATH_W = 30
+EAST_WALK = "art/ground_src/ravine_east_walk.png"   # written by tools/gen_ravine.py
 SEAM = 220                          # world px over which the valley's grey ground fades into moss
 
 MOSS = np.array([(41, 61, 83), (47, 70, 92), (54, 80, 100), (63, 92, 110)], np.float32)
@@ -91,8 +93,28 @@ def to_art(x, y):
     return ((x - X0) * ART_SCALE, (y - Y0) * ART_SCALE)
 
 
+def rock_mask():
+    """True where tools/gen_ravine.py painted the mountain's rock (its cliffs reach past the pass
+    along Rex's lines): those pixels are kept as they are. Also returns what was painted there."""
+    rock = np.zeros((H, W), bool)
+    prev = np.zeros((H, W, 3), np.uint8)
+    if not os.path.exists(EAST_WALK):
+        return rock, prev
+    walk = np.asarray(Image.open(EAST_WALK)) > 127
+    w = min(walk.shape[1], W)
+    rock[:walk.shape[0], :w] = ~walk[:, :w]
+    for c in range(-(-w // TILE_ART)):
+        for r in range(-(-H // TILE_ART)):
+            p = tile_path(COL0 + c, r)
+            if os.path.exists(p):
+                t = np.asarray(Image.open(p).convert("RGB"))
+                prev[r * TILE_ART:r * TILE_ART + t.shape[0], c * TILE_ART:c * TILE_ART + t.shape[1]] = t
+    return rock, prev
+
+
 def main():
     rng = np.random.default_rng(SEED)
+    rock, prev = rock_mask()
     # ---- moss: soft patches in four tones (dithered edges), darker under the forests
     big = noise(W, H, 360, rng)
     mid = noise(W, H, 90, rng)
@@ -130,7 +152,7 @@ def main():
 
     img = img.astype(np.uint8)
     # ---- tufts and flowers on the open moss
-    open_moss = ~forest & ~path
+    open_moss = ~forest & ~path & ~rock
     ys, xs = np.nonzero(open_moss & (rng.random((H, W)) < 0.0018))
     for y, x in zip(ys, xs):
         if 2 <= x < W - 3 and 2 <= y < H - 2:
@@ -143,21 +165,19 @@ def main():
         for y, x in zip(ys, xs):
             img[y:y + 2, x:x + 2] = col
 
-    # ---- the seam: the valley's grey ground (mirrored) fading into the moss
-    strip = np.zeros((H, SEAM * ART_SCALE, 3), np.uint8)
-    for r in range(-(-H // TILE_ART)):
-        p = tile_path(COL0 - 1, r)
-        if os.path.exists(p):
-            t = np.asarray(Image.open(p).convert("RGB"))
-            y0 = r * TILE_ART
-            strip[y0:y0 + t.shape[0]] = t[:H - y0, -SEAM * ART_SCALE:][:, ::-1]
+    # ---- the seam: the valley's grey ground (painted on past the pass by gen_ravine.py) fading
+    # into the moss; and the mountain's rock kept just as gen_ravine.py painted it
+    strip = prev[:, :SEAM * ART_SCALE]
     xs_ = np.arange(SEAM * ART_SCALE)[None, :] / (SEAM * ART_SCALE)
     keep = (noise(SEAM * ART_SCALE, H, 70, rng, 2) * 0.8 + 0.1) > xs_ ** 0.8
     ya = (np.arange(H)[:, None] / ART_SCALE + Y0)
     keep &= (ya > 40) & (ya < 340)                  # only along the way out of the pass
+    from scipy.ndimage import binary_fill_holes
+    keep = binary_fill_holes(keep)                  # no little moss puddles inside the grey
     keep &= ~forest[:, :SEAM * ART_SCALE]
     seam = img[:, :SEAM * ART_SCALE]
     seam[keep] = strip[keep]
+    img[rock] = prev[rock]
 
     # ---- write the squares
     cols = -(-W // TILE_ART)
@@ -188,6 +208,10 @@ def main():
             col[ty, tx] = (26, 30, 62)
     out[:, tx0:tx0 + tw, :3] = np.clip(col * 1.15, 0, 255).astype(np.uint8)
     out[:, tx0:tx0 + tw, 3] = 255
+    # the mountain's tiles past the pass keep the colours gen_ravine.py gave them
+    rsmall = rock[:th * T, :tw * T].reshape(th, T, tw, T).mean(axis=(1, 3)) > 0.5
+    if a.shape[1] >= tx0 + tw:
+        out[:, tx0:tx0 + tw][rsmall] = a[:, tx0:tx0 + tw][rsmall]
     Image.fromarray(out).save("art/world_map.png")
     print("minimap", out.shape[1], "x", th)
 

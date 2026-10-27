@@ -34,7 +34,14 @@ from ground_tiles import assemble, split, ORIGIN, VOID   # noqa: E402
 SEED = 21
 X0_ORIG = 2400               # where the mountain work started before the north-west cliff
 X0, X1 = 1600, 6512          # world x: the mountains start at X0; X1 is the map's east edge
-XM = X1                      # world x where the mountain work ends (the map's east edge)
+XM = 7264                    # world x where the mountain work ends: past X1, where the mountain's
+                             # cliffs carry on into the enchanted forest along Rex's lines (EAST_*)
+# Rex's red lines (Oct 2026): where the mountain's cliffs end in the enchanted forest east of the
+# pass, (world x, world y) from the pass up to the top / down to the bottom of the map. Everything
+# east of them is forest floor (repainted by tools/gen_enchanted.py, which keeps the rock).
+EAST_TOP = [(6528, 64), (6648, -32), (6767, -152), (6863, -312), (6966, -552), (7062, -792), (7142, -992)]
+EAST_BOTTOM = [(6528, 328), (6624, 408), (6656, 568), (6640, 848), (6608, 1248), (6592, 1696)]
+EAST_WALK = "art/ground_src/ravine_east_walk.png"   # what's walkable east of X1 (for gen_enchanted)
 Y0, Y1 = -992, 1696          # world y (the whole height of the map)
 OLD_EDGE = 3120              # the old east edge of the map
 ROAD_Y = 256                 # middle of the east-west road
@@ -98,6 +105,8 @@ rng = np.random.default_rng(SEED)
 W, H = (XM - X0) * 2, (Y1 - Y0) * 2          # art size of the mountain part
 WEST = (X0_ORIG - X0) * 2                     # art px added on the west for the north-west cliff
 W_ORIG = W - WEST
+W_OLD_MAIN = (X1 - X0_ORIG) * 2   # art width up to the old east edge: its random shapes are kept exactly
+_rng_east = np.random.default_rng(SEED + 57)    # the part past X1 (the forest's cliffs) has its own
 AX0 = (X0 - ORIGIN[0]) * 2                    # its art x in the whole painting
 
 
@@ -112,7 +121,15 @@ def smooth_noise(w, h, cell, octaves=3):
     north-west cliff (WEST) gets its own random numbers, so everything from X0_ORIG on keeps
     exactly the shapes it always had (see _smooth_noise_orig)."""
     w_west = round(w * WEST / W) if SPLIT else 0
-    main = _smooth_noise_orig(w - w_west, h, cell, octaves)
+    wm = w - w_west
+    w_keep = round(wm * W_OLD_MAIN / W_ORIG)          # up to X1: exactly the shapes it always had
+    main = _smooth_noise_orig(w_keep, h, cell, octaves)
+    if w_keep < wm:                                    # past X1: its own random numbers, faded in
+        extra = _smooth_noise(wm - w_keep, h, cell, octaves, _rng_east)
+        ov = max((wm - w_keep) // 8, 4)
+        t = np.clip(np.arange(wm - w_keep) / ov, 0.0, 1.0).astype(np.float32)[None, :]
+        extra = main[:, -1:] * (1 - t) + extra * t
+        main = np.concatenate([main, extra], axis=1)
     if w_west == 0:
         return main
     west = _smooth_noise(w_west, h, cell, octaves, _rng_west)
@@ -126,7 +143,7 @@ def _smooth_noise_orig(w, h, cell, octaves=3):
     """The part of the picture that existed before the map grew east (OLD_W) gets exactly the
     random numbers it always had, so the west funnel and the ravine keep their shapes; the new
     east part gets its own, faded in over a short overlap."""
-    w_old = round(w * OLD_W / W_ORIG)
+    w_old = round(w * OLD_W / W_OLD_MAIN)
     if not SPLIT or w_old >= w:
         return _smooth_noise(w, h, cell, octaves, rng)
     a = _smooth_noise(w_old, h, cell, octaves, rng)
@@ -140,11 +157,14 @@ def _smooth_noise_orig(w, h, cell, octaves=3):
 def split_random(h, w):
     """rng.random((h, w)) with the same west / old-part / new-part split as smooth_noise."""
     w_west = round(w * WEST / W)
-    wm = w - w_west
+    wm_all = w - w_west
+    wm = min(round(wm_all * W_OLD_MAIN / W_ORIG), wm_all)
     w_old = min(OLD_W, wm)
     a = rng.random((h, w_old)).astype(np.float32)
     if w_old < wm:
         a = np.concatenate([a, _rng_ext.random((h, wm - w_old), dtype=np.float32)], axis=1)
+    if wm < wm_all:
+        a = np.concatenate([a, _rng_east.random((h, wm_all - wm), dtype=np.float32)], axis=1)
     if w_west:
         a = np.concatenate([_rng_west.random((h, w_west), dtype=np.float32), a], axis=1)
     return a
@@ -189,6 +209,15 @@ def walls_y(wx):
     nw = np.interp(wx, [p[0] for p in NW_CLIFF], [p[1] for p in NW_CLIFF], left=-1e5, right=-1e5)
     top = np.maximum(top, nw)
     return top, bottom
+
+
+def east_edge(wy):
+    """World x past which it's forest floor (east of Rex's cliff lines); the pass rows in between
+    are the valley's own floor."""
+    up = np.interp(wy, [p[1] for p in EAST_TOP[::-1]], [p[0] for p in EAST_TOP[::-1]])
+    down = np.interp(wy, [p[1] for p in EAST_BOTTOM], [p[0] for p in EAST_BOTTOM])
+    mid = np.full_like(wy, EAST_TOP[0][0], dtype=np.float64)
+    return np.where(wy <= EAST_TOP[0][1], up, np.where(wy >= EAST_BOTTOM[0][1], down, mid))
 
 
 def _valley(points, wx):
@@ -422,13 +451,16 @@ def main():
     wy_ = gy[:, None] + (smooth_noise(gw_, gh_, 70, 3) - 0.5) * 2 * amp
     top, bottom = walls_y(wx_)
     floor = (wy_ > top) & (wy_ < bottom)
+    floor |= wx_ > east_edge(wy_)                       # the enchanted forest past Rex's cliff lines
     del wx_
     # outcrops: islands of rock in the valley. Footprint = the drawn size minus the part the 3/4
     # view lifts up the screen; edges made lumpy with noise so they aren't plain ovals. (Own
     # random numbers, so everything else comes out as it always did.)
     gw_west = WEST // (2 * G)                              # (the west strip has no outcrops)
+    gw_keep = round((gw_ - gw_west) * W_OLD_MAIN / W_ORIG)  # (no outcrops past X1 either)
     lump = np.concatenate([np.zeros((gh_, gw_west), np.float32),
-                           _smooth_noise(gw_ - gw_west, gh_, 14, 2, np.random.default_rng(SEED + 11))], axis=1)
+                           _smooth_noise(gw_keep, gh_, 14, 2, np.random.default_rng(SEED + 11)),
+                           np.zeros((gh_, gw_ - gw_west - gw_keep), np.float32)], axis=1)
     crop = np.zeros_like(floor)
     crop_cap = np.zeros(floor.shape, np.uint8)            # how many ledges each outcrop may have
     for cx, cy, vw, vh in OUTCROPS:
@@ -512,6 +544,8 @@ def main():
     split(whole)
     del whole
     walls(walk)
+    # what's walkable past the old east edge, for tools/gen_enchanted.py (it keeps the rock there)
+    Image.fromarray((walk[:, (X1 - X0) * 2:] * 255).astype(np.uint8)).save(EAST_WALK, optimize=True)
     minimap(out, lv_all, walk, unseen)
     clear_props(walk)
     add_props(walk)
