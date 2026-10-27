@@ -438,6 +438,10 @@ func _interact() -> void:
 	if dui and dui.visible:
 		dui.close()
 		return
+	var eui := get_tree().get_first_node_in_group("enhance_ui")
+	if eui and eui.visible:
+		eui.close()
+		return
 	var best: Node = null
 	var best_d := INF
 	for n: Node2D in get_tree().get_nodes_in_group("interactables"):

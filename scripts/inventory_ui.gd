@@ -39,6 +39,7 @@ var _mouse := Vector2.ZERO
 
 
 func _ready() -> void:
+	add_to_group("inventory_ui")
 	CloseButton.attach(self)
 	size = Vector2(COLS * SLOT + (COLS - 1) * GAP + PAD * 2, ROWS * SLOT + (ROWS - 1) * GAP + PAD + TOP)
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
@@ -98,25 +99,34 @@ func _gui_input(event: InputEvent) -> void:
 			if inventory.items[slot].is_equippable():
 				var eq := inventory.get_parent().get_node_or_null("Equipment") as Equipment
 				if eq:
-					opts.append({"label": "Equip " + inventory.items[slot].display_name,
+					opts.append({"label": "Equip " + inventory.items[slot].title(),
 							"callback": eq.equip_from.bind(inventory, slot)})
+			var anvil_ui := get_tree().get_first_node_in_group("enhance_ui") as EnhanceUI
+			if anvil_ui and anvil_ui.is_open():
+				opts.append({"label": "Place on anvil", "callback": anvil_ui.place.bind(inventory.items[slot])})
 			var shop_ui := get_tree().get_first_node_in_group("shop_ui") as ShopUI
 			if shop_ui and shop_ui.is_open():
 				var it_s := inventory.items[slot]
 				var each := Trade.sell_price(shop_ui.shop, it_s)
 				if each > 0:
-					opts.append({"label": "Sell %s (%d)" % [it_s.display_name, each],
+					opts.append({"label": "Sell %s (%d)" % [it_s.title(), each],
 							"callback": shop_ui.sell_item.bind(it_s, false)})
 					if inventory.counts[slot] > 1:
 						opts.append({"label": "Sell all (%d)" % [each * mini(inventory.count_of(it_s), Trade.MAX_SELL)],
 								"callback": shop_ui.sell_item.bind(it_s, true)})
-			opts.append({"label": "Drop " + inventory.items[slot].display_name,
+			opts.append({"label": "Drop " + inventory.items[slot].title(),
 					"callback": inventory.drop_slot.bind(slot)})
 			menu.open_at_screen(get_viewport().get_mouse_position(), opts)
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		_mouse = event.position
 		var i := _slot_at(_mouse)
 		if event.pressed and i != -1 and inventory.items[i] != null:
+			var anvil := get_tree().get_first_node_in_group("enhance_ui") as EnhanceUI
+			if anvil and anvil.is_open() and not event.double_click:
+				_drag_from = -1
+				anvil.place(inventory.items[i])   # at the anvil: a click puts it on the anvil
+				queue_redraw()
+				return
 			var shop_ui := get_tree().get_first_node_in_group("shop_ui") as ShopUI
 			if shop_ui and shop_ui.is_open():
 				_drag_from = -1
@@ -145,6 +155,13 @@ func _gui_input(event: InputEvent) -> void:
 			elif _dragging and _drag_from != -1 and i == -1:
 				# let go outside the bag: maybe onto a hotbar slot
 				var it2 := inventory.items[_drag_from]
+				var anv := get_tree().get_first_node_in_group("enhance_ui") as EnhanceUI
+				if it2 != null and anv and anv.is_open() and anv.get_rect().has_point(position + event.position):
+					anv.place(it2)                  # dropped onto the anvil window
+					_drag_from = -1
+					_dragging = false
+					queue_redraw()
+					return
 				var hb := get_tree().get_first_node_in_group("hotbar_ui")
 				if it2 != null and (it2.is_consumable() or it2.is_hand_gear()) and hb != null:
 					hb.drop_item_at(position + event.position, it2)
@@ -182,7 +199,7 @@ func _draw() -> void:
 	# tooltip
 	elif _hover != -1 and inventory.items[_hover] != null:
 		var item := inventory.items[_hover]
-		var label := item.display_name
+		var label := item.title()
 		if item.stackable:
 			label += " " + str(inventory.counts[_hover])
 		var px := _px()
@@ -201,6 +218,9 @@ func _draw() -> void:
 
 
 func _draw_count(p: Vector2, item: Item, count: int) -> void:
+	if item.enhance > 0:                      # enhanced gear: its +level in the corner
+		HiFont.draw(self, p + Vector2(0.5, 0.5), "+%d" % item.enhance, UiStyle.GOLD, _px(), true)
+		return
 	if item.stackable and count > 1:
 		var text := HiFont.short_count(count)
 		var color := Color("f0d040")            # yellow: exact number

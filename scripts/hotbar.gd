@@ -299,12 +299,15 @@ func _equip_slot(i: int) -> void:
 		return
 	var it := item_slots[i]
 	if inventory != null and equipment != null:
-		for k in Inventory.SLOT_COUNT:
-			var have := inventory.items[k]
-			if have != null and have.id == it.id:
-				equipment.equip_from(inventory, k)
-				changed.emit()
-				return
+		# the very same item first (e.g. your +5 staff, not a +0 one of the same kind), else any of that kind
+		var key := SaveGame.item_to_path(it)
+		for exact in [true, false]:
+			for k in Inventory.SLOT_COUNT:
+				var have := inventory.items[k]
+				if have != null and (SaveGame.item_to_path(have) == key if exact else have.id == it.id):
+					equipment.equip_from(inventory, k)
+					changed.emit()
+					return
 	_fail(i)              # not in the bag any more
 
 

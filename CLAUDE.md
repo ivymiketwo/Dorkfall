@@ -84,6 +84,16 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   rocket): Q = Yank Line (`scripts/line_yank.gd` / `scenes/spells/line_yank.tscn`), a grapple
   that must NOT look like a grapple: the line is flung, lies loose and wiggly, snaps tight and
   yanks you to its tip. Space during the yank hops out at full speed.
+- Gear enhancing (staffs only for now, +0 to +15): the anvil in the blacksmith (`scripts/anvil.gd`,
+  F opens `scripts/enhance_ui.gd`: item square, elixir + flux squares, progress bar, Enhance button;
+  click / drag bag items onto it). Rules with no UI in `scripts/enhance.gd` (success chance per
+  level in CHANCE, 1 Magical Elixir + 1 Flux per attempt, failure keeps the level). What a level
+  DOES isn't decided: Rex wants staffs reworked to MMO-style damage ranges first. An enhanced item
+  is its own copy (`Item.enhanced_copy`, `Item.enhance`, `Item.title()` = "+5 Name"), saved as
+  "<path>#+<level>" by `SaveGame.item_to_path` / `item_from_path`. Flux (`items/flux.tres`, 1000
+  coins) is sold by the blacksmith "Smith" (fisherman sprite until Rex's new NPC art); the Magical
+  Elixir (`items/magical_elixir.tres`) drops from every monster at 5% (`Loot.ELIXIR_CHANCE`, added
+  in `Loot.roll`). Item pictures from Rex go in `art/item_src/` -> `tools/add_item_icons.py name:frame`.
 - Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
 - New staffs are a single upright picture: `tools/add_staff.py <id> <png> <icon_frame>` keeps the
   original in `art/staff_src/`, trims it to `art/worn_<id>.png` and makes the tilted inventory

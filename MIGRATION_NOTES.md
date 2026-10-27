@@ -96,3 +96,9 @@ changes in one place, and visuals are separate from logic.
 - `tools/gen_desert.py` docstring says only grass is repainted; it also repaints flower speckles.
 - (Done: the launchers now let the update through when Godot only rewrote a file, or when the
   local file already matches GitHub; main.tscn's stale UIDs were fixed by an editor save.)
+
+## Gear enhancing (Oct 2026)
+- `Enhance.attempt` is the server rule: it re-checks the item is in the bag, rolls the chance itself
+  and swaps materials + item in one `Inventory.transact`. The client window only shows the result.
+- Enhanced items are copies keyed "<path>#+<level>" in saves; a server should store the level as
+  item data, not trust it from the client.

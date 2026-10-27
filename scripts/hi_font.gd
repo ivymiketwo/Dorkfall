@@ -9,6 +9,7 @@ const ADVANCE := 6   # glyph width + 1 gap
 
 ## Smaller 4x6 set (digits, k, M, .) used for stack counts.
 const SMALL_GLYPHS := {
+	"+": "000001001110010000000000",
 	"0": "011010011001100110010110",
 	"1": "001001100010001000100111",
 	"2": "011010010001011010001111",

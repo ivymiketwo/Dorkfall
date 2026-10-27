@@ -1,7 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/interior.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://art/interior_blacksmith.png" id="2_tex"]
+[ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="3_npc"]
+[ext_resource type="Resource" path="res://shops/blacksmith_shop.tres" id="4_shop"]
+[ext_resource type="Texture2D" path="res://art/fishing_keeper.png" id="5_keeper"]
+[ext_resource type="Script" path="res://scripts/anvil.gd" id="6_anvil"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
 size = Vector2(24, 6)
@@ -23,3 +27,14 @@ position = Vector2(112, 171)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Exit"]
 shape = SubResource("RectangleShape2D_exit")
+
+[node name="Smith" parent="." instance=ExtResource("3_npc")]
+position = Vector2(160, 94)
+display_name = "Smith"
+shop = ExtResource("4_shop")
+sprite_texture = ExtResource("5_keeper")
+idle_split_row = 30
+
+[node name="Anvil" type="Node2D" parent="."]
+position = Vector2(63, 78)
+script = ExtResource("6_anvil")

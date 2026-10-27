@@ -73,7 +73,7 @@ func _gui_input(event: InputEvent) -> void:
 		if it and menu:
 			_hover = ""
 			queue_redraw()
-			var opts := [{"label": "Unequip " + it.display_name, "callback": equipment.unequip.bind(slot)}]
+			var opts := [{"label": "Unequip " + it.title(), "callback": equipment.unequip.bind(slot)}]
 			var hb := equipment.get_parent().get_node_or_null("Hotbar") as Hotbar
 			if it.is_hand_gear() and hb:
 				opts.append({"label": "Put on hotbar", "callback": hb.add_item_to_free_slot.bind(it)})
@@ -136,8 +136,8 @@ func _draw() -> void:
 	# tooltip
 	if _hover != "":
 		var hit := equipment.get_item(_hover)
-		var label: String = hit.display_name if hit else Equipment.SLOT_NAMES[_hover]
-		var lines: PackedStringArray = hit.stat_lines() if hit and label == hit.display_name else PackedStringArray()
+		var label: String = hit.title() if hit else Equipment.SLOT_NAMES[_hover]
+		var lines: PackedStringArray = hit.stat_lines() if hit and label == hit.title() else PackedStringArray()
 		var w := HiFont.text_width(label, px)
 		for l in lines:
 			w = maxf(w, HiFont.text_width(l, px))

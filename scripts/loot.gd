@@ -9,6 +9,10 @@ extends RefCounted
 ##   x: [lo, hi] and y: sideways/down offset from the monster (defaults to a small scatter).
 
 const PICKUP := preload("res://scenes/pickup.tscn")
+const ELIXIR_PATH := "res://items/magical_elixir.tres"
+## Drops every monster in the game can give on top of its own (roll() adds them): the Magical
+## Elixir for gear enhancing, 5% a kill.
+const ELIXIR_CHANCE := 0.05
 
 
 static func entry(item: Item, count_min := 1, count_max := 1, chance := 1.0, x := Vector2(-4, 4), y := 4.0) -> Dictionary:
@@ -18,7 +22,9 @@ static func entry(item: Item, count_min := 1, count_max := 1, chance := 1.0, x :
 ## Returns [{item, count, offset}] for the entries that dropped.
 static func roll(entries: Array) -> Array:
 	var out: Array = []
-	for e: Dictionary in entries:
+	var all := entries.duplicate()
+	all.append(entry(load(ELIXIR_PATH), 1, 1, ELIXIR_CHANCE, Vector2(-8, 8), 6.0))
+	for e: Dictionary in all:
 		if e.get("item") == null:
 			continue
 		if float(e.get("chance", 1.0)) < 1.0 and not Rng.chance(float(e["chance"])):

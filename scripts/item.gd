@@ -92,6 +92,36 @@ extends Resource
 @export var ground_scale := 0.5
 
 
+## Enhancement level (+0 to +15, see Enhance). Only ever set on a copy made by enhanced_copy(),
+## never on the shared .tres, so each enhanced item is its own thing.
+var enhance := 0
+var _base_path := ""
+const MAX_ENHANCE := 15
+
+
+## The .tres this item comes from (also for enhanced copies, which aren't files themselves).
+func base_path() -> String:
+	return _base_path if _base_path != "" else resource_path
+
+
+## A separate copy of this item at enhancement `level`.
+func enhanced_copy(level: int) -> Item:
+	var c := duplicate() as Item
+	c._base_path = base_path()
+	c.enhance = level
+	return c
+
+
+## The name with its enhancement in front ("+5 Astral Staff").
+func title() -> String:
+	return ("+%d " % enhance if enhance > 0 else "") + display_name
+
+
+## Only staffs can be enhanced for now.
+func can_enhance() -> bool:
+	return weapon_kind == "staff" and equip_slot == "weapon"
+
+
 func frame_for(count: int) -> int:
 	var f := icon_frame
 	for i in stack_thresholds.size():

@@ -121,7 +121,7 @@ func show_value(item: Item) -> void:
 	if p <= 0:
 		_say(Trade.unsellable_reason(item), Color("e0a040"))
 	else:
-		_say("%s sells for %d coins" % [item.display_name, p], Color("f0d040"))
+		_say("%s sells for %d coins" % [item.title(), p], Color("f0d040"))
 
 
 func _say(text: String, color: Color) -> void:

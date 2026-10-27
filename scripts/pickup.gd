@@ -59,7 +59,7 @@ func _try_pick_up(player: Node2D, from: Vector2) -> void:
 	var r := LootClaim.claim(self, player, from)
 	var at := player.position + Vector2(0, -26)
 	if r["taken"] > 0:
-		FloatingText.spawn(get_parent(), at, "+%d %s" % [r["taken"], item.display_name.to_upper()], Color("f0d040"))
+		FloatingText.spawn(get_parent(), at, "+%d %s" % [r["taken"], item.title().to_upper()], Color("f0d040"))
 	if count <= 0:
 		queue_free()
 		return

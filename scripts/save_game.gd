@@ -86,12 +86,27 @@ static func _write() -> void:
 			direct.store_string(JSON.stringify(_data, "\t"))
 
 
-## Items are Resources (.tres files); the save file just stores their paths.
+## Items are Resources (.tres files); the save file just stores their paths. An enhanced item
+## (see Enhance) is its own copy of the item and is stored as "<path>#+<level>", e.g.
+## "res://items/astral_staff.tres#+5".
 static func item_to_path(item: Item) -> String:
-	return item.resource_path if item != null else ""
+	if item == null:
+		return ""
+	var base := item.base_path()
+	if base != "" and item.enhance > 0:
+		return "%s#+%d" % [base, item.enhance]
+	return base
 
 
 static func item_from_path(path: String) -> Item:
+	var level := 0
+	var cut := path.find("#+")
+	if cut != -1:
+		level = clampi(int(path.substr(cut + 2)), 0, Item.MAX_ENHANCE)
+		path = path.substr(0, cut)
 	if path == "" or not ResourceLoader.exists(path):
 		return null
-	return load(path) as Item
+	var it := load(path) as Item
+	if it != null and level > 0:
+		it = it.enhanced_copy(level)
+	return it
