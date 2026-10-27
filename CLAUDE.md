@@ -177,7 +177,7 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   First one: the Twilight Staff's Twilight Missiles (`scripts/twilight_missiles.gd`,
   `scenes/spells/twilight_missiles.tscn`, `abilities/twilight_missiles.tres`): 4 missiles a second
   (Rex) that curve in on the cursor (following it), fly on `overshoot` past it, hit the first monster
-  they touch; 50% of a weapon roll each, 5 mana to start + 40 mana a second.
+  they touch; 25% of a weapon roll each, 2.5 mana to start + 20 mana a second (Rex halved both).
 - Unique staff attacks: an ability of kind SPELL points at a scene in `scenes/spells/` whose root
   script runs the whole attack (rules on the game tick via AttackTimeline, the rest is drawing)
   and gets `caster` and `damage` from BasicAttack. First one: the Sun Staff's halo beam
