@@ -167,6 +167,11 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   Fine-detail staffs (Rex's test, the Astral Staff): drawn ~100 px tall, `hold_scale` 0.385 (half-size pixels).
   Spells leave from the orb, 4 picture px below the top; if the orb sits lower (under a spike or in a
   cage) set the item's `orb_from_top` (the Amethyst Staff uses 9).
+- Left click is always a simple coloured beam (Rex, Oct 2026): every staff's `basic_attack` is a BEAM
+  ability (sun_beam / void_beam / clockwork_beam for the three below); the special attacks are each
+  staff's Q spell (`Item.spells[0]`), with longer cooldowns now that they come on top of the beam
+  (Sun Halo 6 s, Void Hole 7 s, Clockwork Spider 6 s). Q icons: `art/icons.png` slots 8-10
+  (`tools/add_spell_icons.py`).
 - Unique staff attacks: an ability of kind SPELL points at a scene in `scenes/spells/` whose root
   script runs the whole attack (rules on the game tick via AttackTimeline, the rest is drawing)
   and gets `caster` and `damage` from BasicAttack. First one: the Sun Staff's halo beam

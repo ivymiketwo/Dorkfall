@@ -7,9 +7,9 @@
 script = ExtResource("1_script")
 display_name = "Sun Halo"
 kind = 6
-icon_index = 1
+icon_index = 8
 mana_cost = 25.0
-cooldown = 1.8
+cooldown = 6.0
 damage = 120.0
 weapon_percent = 2.4
 beam_color = Color(1, 0.88, 0.4, 1)

@@ -1,14 +1,16 @@
-[gd_resource type="Resource" script_class="Item" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="Item" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
 [ext_resource type="Texture2D" path="res://art/worn_clockwork_staff.png" id="2_worn"]
 [ext_resource type="Resource" path="res://abilities/clockwork_spider.tres" id="3_beam"]
+[ext_resource type="Resource" path="res://abilities/clockwork_beam.tres" id="20_beam"]
+[ext_resource type="Script" path="res://scripts/ability.gd" id="21_ab"]
 
 [resource]
 script = ExtResource("1_item")
 id = &"clockwork_staff"
 display_name = "Clockwork Staff"
-description = "A brass-geared staff holding a glowing amber gem. Shoots a ray that summons a clockwork spider, which runs at the nearest monster and explodes. Two-handed."
+description = "A brass-geared staff holding a glowing amber gem. Fires a brass-orange beam. Q: a ray that summons a clockwork spider, which runs at the nearest monster and explodes. Two-handed."
 icon_frame = 36
 value = 900
 level_req = 12
@@ -22,4 +24,5 @@ orb_from_top = 12.0
 weapon_kind = "staff"
 damage_min = 43
 damage_max = 55
-basic_attack = ExtResource("3_beam")
+basic_attack = ExtResource("20_beam")
+spells = Array[ExtResource("21_ab")]([ExtResource("3_beam")])

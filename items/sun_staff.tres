@@ -1,14 +1,16 @@
-[gd_resource type="Resource" script_class="Item" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="Item" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/item.gd" id="1_item"]
 [ext_resource type="Texture2D" path="res://art/worn_sun_staff.png" id="2_worn"]
 [ext_resource type="Resource" path="res://abilities/sun_halo.tres" id="3_beam"]
+[ext_resource type="Resource" path="res://abilities/sun_beam.tres" id="20_beam"]
+[ext_resource type="Script" path="res://scripts/ability.gd" id="21_ab"]
 
 [resource]
 script = ExtResource("1_item")
 id = &"sun_staff"
 display_name = "Sun Staff"
-description = "A golden staff that holds a captured sunbeam. Charges a sun orb into a drifting halo that splits in three, then bursts into a huge sun beam. Two-handed."
+description = "A golden staff that holds a captured sunbeam. Fires a golden beam. Q: charges a sun orb into a drifting halo that splits in three, then bursts into a huge sun beam. Two-handed."
 icon_frame = 32
 value = 3000
 level_req = 25
@@ -21,4 +23,5 @@ hold_scale = 0.77
 weapon_kind = "staff"
 damage_min = 87
 damage_max = 108
-basic_attack = ExtResource("3_beam")
+basic_attack = ExtResource("20_beam")
+spells = Array[ExtResource("21_ab")]([ExtResource("3_beam")])
