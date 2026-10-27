@@ -83,6 +83,14 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   pixellab wizard `art/ench_wizard_keeper.png`, sells the wizard shop's stock). Originals in
   `art/ench_wizard_src/`. Both rooms have a counter overlay (`art/interior_ench_*_counter.png`,
   only the counter and what stands on it) so the keeper stands behind the counter.
+- Bindstones (Rex's crystal stalagmites, one per village; `scripts/bindstone.gd`, scenes
+  `bindstone_village.tscn` "Espenhal" at 410, 214 and `bindstone_enchanted.tscn` "Enchanted Village" at
+  6880, 292; art `art/bindstone_*.png` trimmed from `art/bindstone_src/`, drawn at 0.5). F opens the
+  DialogueUI: BIND HOME HERE (saved "home_bind"; respawn and home recall H go to `spawn_spot()`, loaded by
+  `Player._load_home_bind`) and TELEPORT to any other stone you've found ("bindstones_found": walking
+  within `find_range` finds it), via `world.teleport_to`. `stone_id` is the save key: never rename it.
+  New village: instance a bindstone scene with a new stone_id / display_name. DialogueUI buttons wrap
+  onto more rows when there are many.
 - Ducks (`scripts/ducks.gd`, drawing only): Rex's poses in `art/duck_src/`, packed into `art/ducks.png`
   by `tools/pack_ducks.py` (lines up the waterlines, makes the blink frame).
 - Barn + cow paddock (south-west of the crossroads): `scenes/barn.tscn`; `scenes/paddock.tscn`

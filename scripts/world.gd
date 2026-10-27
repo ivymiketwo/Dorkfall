@@ -218,6 +218,13 @@ func _on_exit_requested(_interior: Node2D) -> void:
 	_travel(_return_pos, _outside_limits, null)
 
 
+## Bindstone travel: fade out, appear at `to_pos` outside.
+func teleport_to(to_pos: Vector2) -> void:
+	if _busy:
+		return
+	_travel(to_pos, _outside_limits, null)
+
+
 ## Home teleport: back to the respawn point, wherever you are.
 func go_home() -> void:
 	if _busy:

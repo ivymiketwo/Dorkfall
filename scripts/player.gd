@@ -126,6 +126,7 @@ func _ready() -> void:
 	add_to_group("player")
 	_ensure_input_actions()
 	_spawn_point = position
+	_load_home_bind.call_deferred()
 	stats.died.connect(_on_died)
 	_idle_mat = ShaderMaterial.new()
 	_idle_mat.shader = load("res://shaders/idle_bob.gdshader")
@@ -451,6 +452,13 @@ func _interact() -> void:
 			best_d = d
 	if best:
 		best.interact(self)
+
+
+## Home bound at a bindstone (saved): respawn and home recall go there instead of the start.
+func _load_home_bind() -> void:
+	var spot = Bindstone.home_spot(get_tree())
+	if spot is Vector2:
+		_spawn_point = spot
 
 
 func _on_died() -> void:

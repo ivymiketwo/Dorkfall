@@ -42,6 +42,8 @@
 [ext_resource type="PackedScene" path="res://scenes/interior_ench_potion_shop.tscn" id="322_int_ench_potion"]
 [ext_resource type="PackedScene" path="res://scenes/ench_wizard_shop.tscn" id="323_ench_wizard"]
 [ext_resource type="PackedScene" path="res://scenes/interior_ench_wizard_shop.tscn" id="324_int_ench_wizard"]
+[ext_resource type="PackedScene" path="res://scenes/bindstone_village.tscn" id="325_bind_village"]
+[ext_resource type="PackedScene" path="res://scenes/bindstone_enchanted.tscn" id="326_bind_ench"]
 [ext_resource type="Texture2D" uid="uid://rjpx57fcdqje" path="res://art/dock.png" id="dock_tex"]
 [ext_resource type="Script" uid="uid://ckycjdmrplnoq" path="res://scripts/ground_stream.gd" id="gstream"]
 [ext_resource type="Script" uid="uid://ckkbn1spnkv0n" path="res://scripts/sleep_regions.gd" id="sleepreg"]
@@ -4033,6 +4035,12 @@ spacing = 40.0
 polygon = PackedVector2Array(9000, -430, 9470, -380, 9470, 660, 9150, 710, 9020, 540, 8975, 260, 9030, -40)
 kinds = PackedStringArray("ench_round_blue", "ench_round_blue", "ench_violet_oak", "ench_violet_oak", "ench_twisted", "ench_ancient", "ench_wide_blue", "ench_wide_blue", "ench_willow", "ench_young", "ench_lilac")
 spacing = 40.0
+
+[node name="BindstoneVillage" parent="Entities" instance=ExtResource("325_bind_village")]
+position = Vector2(410, 214)
+
+[node name="BindstoneEnchanted" parent="Entities" instance=ExtResource("326_bind_ench")]
+position = Vector2(6880, 292)
 
 [node name="EnchWizardShop" parent="Entities" instance=ExtResource("323_ench_wizard")]
 position = Vector2(6800, 184)
