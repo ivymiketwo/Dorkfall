@@ -169,7 +169,7 @@ func _process(delta: float) -> void:
 
 func _frame(c: Control, r: Rect2) -> void:
 	c.draw_rect(r.grow(2), Color("14121c"))
-	c.draw_rect(r.grow(1), Color("90734f"))
+	c.draw_rect(r.grow(1), UiStyle.STEEL_MID)
 	c.draw_rect(r, Color("14121c"))
 
 

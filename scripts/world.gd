@@ -62,7 +62,6 @@ func _ready() -> void:
 	$HUD/HotbarUI.hotbar = $Entities/Player/Hotbar
 	$HUD/InventoryUI.inventory = $Entities/Player/Inventory
 	$HUD/SpellbookUI.hotbar = $Entities/Player/Hotbar
-	$HUD/PaperdollUI.equipment = $Entities/Player/Equipment
 	RenderingServer.set_default_clear_color(Color("0d0b12"))
 	_make_fade_layer()
 	add_to_group("world")

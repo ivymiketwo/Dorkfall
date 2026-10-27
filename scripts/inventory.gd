@@ -1,14 +1,21 @@
 class_name Inventory
 extends Node
-## 28 slots, RuneScape style. Stackable items (coins) merge into one slot.
-## Lives as a child of the player.
+## 30 slots (5 x 6, the inventory window). Stackable items merge into one slot.
+## Coins don't take a slot: they go in the purse (`gold`), shown under the slots. Everything that
+## counts, adds or removes coins (shops, quests, loot) still just calls count_of / add / remove
+## with the coins item, and those use the purse. Lives as a child of the player.
 
 signal changed
 
-const SLOT_COUNT := 28
+const SLOT_COUNT := 30
+const COINS_PATH := "res://items/coins.tres"
+static var COINS: Item:
+	get: return load(COINS_PATH)
 
 var items: Array[Item] = []
 var counts: Array[int] = []
+## Coins carried (the purse).
+var gold := 0
 ## Per-item use cooldowns: Item -> GameClock time it can be used again.
 var item_cd := {}
 
@@ -33,7 +40,8 @@ func _save() -> void:
 	SaveGame.put("inventory", snapshot())
 
 
-## The whole bag as plain data (what gets saved, and what a server would store).
+## The whole bag as plain data (what gets saved, and what a server would store): one entry per
+## slot, then the purse as {"gold": n}.
 func snapshot() -> Array:
 	var out := []
 	for i in SLOT_COUNT:
@@ -41,6 +49,7 @@ func snapshot() -> Array:
 			out.append(null)
 		else:
 			out.append({"item": SaveGame.item_to_path(items[i]), "count": counts[i]})
+	out.append({"gold": gold})
 	return out
 
 
@@ -48,14 +57,26 @@ func load_snapshot(saved: Array) -> void:
 	for i in SLOT_COUNT:
 		items[i] = null
 		counts[i] = 0
-	for i in mini(saved.size(), SLOT_COUNT):
-		var e = saved[i]
+	gold = 0
+	var coins := COINS
+	var slot := 0
+	for e in saved:
 		if not e is Dictionary:
+			slot += 1
+			continue
+		if e.has("gold"):
+			gold += maxi(int(e["gold"]), 0)
 			continue
 		var it := SaveGame.item_from_path(str(e.get("item", "")))
-		if it:
-			items[i] = it
-			counts[i] = maxi(int(e.get("count", 1)), 1)
+		var n := maxi(int(e.get("count", 1)), 1)
+		if it == coins:
+			gold += n                       # old saves kept coins in a slot: into the purse
+		elif it and slot < SLOT_COUNT:
+			items[slot] = it
+			counts[slot] = n
+		elif it:
+			add(it, n)                      # (never happens: a save never holds more slots)
+		slot += 1
 	changed.emit()
 
 
@@ -69,6 +90,12 @@ func _load_saved() -> void:
 func add(item: Item, amount: int = 1) -> int:
 	if item.chase_item:
 		item.mark_account()
+	if item == COINS:
+		var put := mini(amount, item.max_stack - gold)
+		gold += put
+		if put > 0:
+			changed.emit()
+		return amount - put
 	var left := amount
 	if item.stackable:
 		var i := items.find(item)
@@ -103,6 +130,10 @@ func add(item: Item, amount: int = 1) -> int:
 func remove(item: Item, amount: int = 1) -> bool:
 	if count_of(item) < amount:
 		return false
+	if item == COINS:
+		gold -= amount
+		changed.emit()
+		return true
 	var left := amount
 	for i in range(SLOT_COUNT - 1, -1, -1):
 		if left == 0:
@@ -118,6 +149,8 @@ func remove(item: Item, amount: int = 1) -> bool:
 
 
 func count_of(item: Item) -> int:
+	if item == COINS:
+		return gold
 	var total := 0
 	for i in SLOT_COUNT:
 		if items[i] == item:
@@ -138,6 +171,8 @@ func swap(a: int, b: int) -> void:
 
 
 func has_room_for(item: Item) -> bool:
+	if item == COINS:
+		return gold < item.max_stack
 	return _first_free() != -1 or (item.stackable and items.has(item))
 
 
@@ -157,6 +192,8 @@ func transact(changes: Callable) -> bool:
 
 ## How many of `amount` would fit right now (nothing is changed).
 func room_for(item: Item, amount: int = 1) -> int:
+	if item == COINS:
+		return mini(item.max_stack - gold, amount)
 	var room := 0
 	if item.stackable:
 		var i := items.find(item)
@@ -183,6 +220,9 @@ func take_unbound() -> Array:
 			out.append({"item": items[i], "count": counts[i]})
 			items[i] = null
 			counts[i] = 0
+	if gold > 0:
+		out.append({"item": COINS, "count": gold})
+		gold = 0
 	changed.emit()
 	return out
 

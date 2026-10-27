@@ -29,6 +29,8 @@ changes in one place, and visuals are separate from logic.
 - `Stats` has no visuals: it emits `damaged` / `out_of_mana`, `StatsFx` draws them (`show_effects`).
 - `Rng`: drops, unique drops and monster spell picks use it (seedable, server-ownable).
 - `Inventory.transact`: all-or-nothing changes (used by `Trade.buy`).
+- Coins live in `Inventory.gold` (the purse), not a slot; `snapshot()` ends with {"gold": n}
+  and `transact` rolls it back with the slots.
 
 - **Chat commands** live in `ChatCommands` (rules, no UI). One switch, `ChatCommands.ENABLED` / `can_use(player)`, turns them all off for multiplayer; later `can_use` checks the account role (admin / GM). `ChatLog` only types and displays.
 

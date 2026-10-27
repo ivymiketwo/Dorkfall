@@ -1,5 +1,5 @@
 extends Control
-## Bottom-right navigation bar: Inventory (B), Spellbook (K), Equipment (P), Stats (C).
+## Bottom-right navigation bar: Inventory (B; P opens it too, the gear lives in it), Spellbook (K), Stats (C).
 ## Click a button (or press its key) to open or close that window.
 
 const SLOT := 14
@@ -7,10 +7,9 @@ const ICON := 12
 const GAP := 2
 const ICONS := preload("res://art/nav_icons.png")
 const BUTTONS := [
-	{"key": "B", "action": "inventory", "panel": "InventoryUI", "name": "Inventory"},
-	{"key": "K", "action": "spellbook", "panel": "SpellbookUI", "name": "Spellbook"},
-	{"key": "P", "action": "paperdoll", "panel": "PaperdollUI", "name": "Equipment"},
-	{"key": "C", "action": "stats", "panel": "StatsUI", "name": "Stats"},
+	{"key": "B", "action": "inventory", "panel": "InventoryUI", "name": "Inventory", "icon": 0},
+	{"key": "K", "action": "spellbook", "panel": "SpellbookUI", "name": "Spellbook", "icon": 1},
+	{"key": "C", "action": "stats", "panel": "StatsUI", "name": "Stats", "icon": 3},
 ]
 
 var _hover := -1
@@ -63,7 +62,7 @@ func _draw() -> void:
 		var open := _is_open(i)
 		UiStyle.slot(self, r, open or i == _hover)
 		draw_texture_rect_region(ICONS, Rect2(r.position + Vector2.ONE, Vector2(ICON, ICON)),
-				Rect2(i * 16, 0, 16, 16), Color(1, 1, 1, 1.0 if (open or i == _hover) else 0.85))
+				Rect2(int(BUTTONS[i]["icon"]) * 16, 0, 16, 16), Color(1, 1, 1, 1.0 if (open or i == _hover) else 0.85))
 		if open:
 			draw_rect(r, Color(0.9, 0.55, 0.08, 0.95), false, 1.0)
 		HiFont.draw(self, r.position + Vector2(SLOT - 4.5, SLOT - 5.5), BUTTONS[i]["key"], UiStyle.TEXT, 0.5)

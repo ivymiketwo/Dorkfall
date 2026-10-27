@@ -5,7 +5,7 @@ extends Control
 
 const W := 250
 const PAD := 6
-const HEADER := 14
+const HEADER := 16
 const ROW_H := 26
 const ROW_GAP := 3
 
@@ -92,17 +92,14 @@ func _notification(what: int) -> void:
 
 func _draw() -> void:
 	var px := _px()
-	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
-	HiFont.draw(self, Vector2(PAD, 4), "QUEST LOG", UiStyle.GOLD, px)
-	HiFont.draw(self, Vector2(size.x - PAD - HiFont.text_width("J TO CLOSE", px), 4), "J TO CLOSE", UiStyle.TEXT_DIM, px)
-	draw_rect(Rect2(PAD, HEADER - 3, size.x - PAD * 2, px), UiStyle.BRONZE_MID)
+	UiStyle.window(self, Rect2(Vector2.ZERO, size), "Quest Log", px)
 	if _rows.is_empty():
 		HiFont.draw(self, Vector2(PAD + 4, HEADER + 6), "No quests yet. Try the notice board!", UiStyle.TEXT_DIM, px)
 	var tracked := Quests.tracked_id()
 	for i in _rows.size():
 		var q: Dictionary = _rows[i]
 		var r := _row_rect(i)
-		UiStyle.slot(self, r, i == _hover)
+		UiStyle.slot(self, r, i == _hover, px)
 		var st := Quests.state_of(q["id"])
 		var n := Quests.progress_of(q["id"])
 		HiFont.draw(self, r.position + Vector2(5, 4), String(q["title"]).to_upper(), UiStyle.GOLD, px)

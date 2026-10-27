@@ -84,6 +84,6 @@ func _draw() -> void:
 	for i in _options.size():
 		var y := _pos.y + PAD / 2.0 + i * ROW_H
 		if i == _hover:
-			draw_rect(Rect2(_pos.x + px, y, _size.x - px * 2, ROW_H), Color("4a3d5a"))
+			draw_rect(Rect2(_pos.x + px, y, _size.x - px * 2, ROW_H), UiStyle.TAB_BOT)
 		var col := UiStyle.GOLD if i == _hover else UiStyle.TEXT
 		HiFont.draw(self, Vector2(_pos.x + PAD, y + (ROW_H - HiFont.H * px) / 2.0), _options[i].label, col, px)

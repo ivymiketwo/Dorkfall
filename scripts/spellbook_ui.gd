@@ -5,7 +5,9 @@ extends Control
 const ICONS := preload("res://art/icons.png")
 const ROW_H := 20
 const ROW_W := 78
-const PAD := 3
+const PAD := 4
+## Where the list starts: under the title bar.
+const TOP := 14.0
 const DRAG_START := 3.0
 
 var hotbar: Hotbar:
@@ -30,7 +32,7 @@ func _ready() -> void:
 
 
 func _resize() -> void:
-	size = Vector2(ROW_W + PAD * 2, maxi(_spells().size(), 1) * ROW_H + PAD * 2 + 9)
+	size = Vector2(ROW_W + PAD * 2, maxi(_spells().size(), 1) * ROW_H + TOP + PAD)
 	var inv := get_parent().get_node_or_null("InventoryUI") as Control
 	if inv:
 		position = Vector2(inv.position.x - size.x - 3, inv.position.y + inv.size.y - size.y)
@@ -49,7 +51,7 @@ func _spells() -> Array[Ability]:
 
 
 func _row_at(p: Vector2) -> int:
-	var q := p - Vector2(PAD, PAD + 9)
+	var q := p - Vector2(PAD, TOP)
 	if q.x < 0 or q.y < 0 or q.x >= ROW_W:
 		return -1
 	var r := floori(q.y / ROW_H)
@@ -86,13 +88,17 @@ func _draw() -> void:
 	if hotbar == null:
 		return
 	var px := _px()
-	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
-	HiFont.draw(self, Vector2(PAD, PAD), "SPELLBOOK", UiStyle.GOLD, px)
+	UiStyle.window(self, Rect2(Vector2.ZERO, size), "Spellbook", px)
 	var spells := _spells()
+	UiStyle.well(self, Rect2(Vector2(PAD, TOP) - Vector2(1, 1), Vector2(ROW_W + 2, spells.size() * ROW_H + 1)), px)
 	for i in spells.size():
 		var ab := spells[i]
-		var r := Rect2(Vector2(PAD, PAD + 9 + i * ROW_H), Vector2(ROW_W, ROW_H - 1))
-		UiStyle.slot(self, Rect2(r.position, Vector2(18, 18)), i == _hover)
+		var r := Rect2(Vector2(PAD, TOP + i * ROW_H), Vector2(ROW_W, ROW_H - 1))
+		if i == _hover:
+			draw_rect(r, Color(1, 1, 1, 0.05))
+		if i > 0:
+			draw_rect(Rect2(r.position + Vector2(20, -0.5 - px), Vector2(ROW_W - 21, px)), UiStyle.WELL_EDGE)
+		UiStyle.slot(self, Rect2(r.position, Vector2(18, 18)), i == _hover, px)
 		if not (_dragging and i == _press):
 			draw_texture_rect_region(ICONS, Rect2(r.position + Vector2.ONE, Vector2(16, 16)),
 					Rect2(ab.icon_index * 16, 0, 16, 16))

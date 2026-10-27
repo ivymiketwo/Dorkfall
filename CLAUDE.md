@@ -164,6 +164,20 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   `tools/pack_explosion.py` (Rex's 10 stages in `art/explosion_src/`, frame order in its ORDER list).
   A spell can root its caster (`player.rooted_until`) and fill the cast bar (`Hotbar.start_channel`).
 
+## Windows and menus (Rex's reference: a classic MMO inventory, Oct 2026)
+- Every window uses `scripts/ui_style.gd`: brushed-steel bevel frame, dark charcoal-blue inside,
+  `UiStyle.window(c, rect, title)` = frame + title bar with the title centred (the close button,
+  `CloseButton.attach`, sits in the title bar's right end); `well` (sunken area behind slot grids /
+  text fields), `slot`, `tab` (blue when open), `button` (steel), `divider`, `thousands` ("25,558,069").
+  New windows: use these, put content below `UiStyle.FRAME + UiStyle.TITLE_H` (11 units).
+- Inventory window (`inventory_ui.gd`, B or P): 5 x 6 bag (Inventory.SLOT_COUNT 30, Rex chose one
+  page), worn gear in a column on the right (weapon on top, then head, body, legs: drag in / out,
+  double-click, right-click), the purse under it ("1,450 Gold"). The old Equipment window
+  (paperdoll) is gone; its gear bonuses moved to the Stats window. Coins don't take a bag slot:
+  `Inventory.gold` (the purse); count_of / add / remove / room_for with the coins item use it, so
+  shops, quests and loot didn't change; it's saved as a last {"gold": n} entry of the bag snapshot,
+  old saves' coin stacks move into it on load, and it drops into the gravestone on death.
+
 ## Difficulty design (Rex's rules)
 - Stronger monsters must be *harder to play against*, not spongier: keep time-to-kill roughly flat
   and scale difficulty with shorter telegraphs, smaller punish windows, better aim, more/mixed

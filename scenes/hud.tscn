@@ -9,7 +9,6 @@
 [ext_resource type="Script" path="res://scripts/dialogue_ui.gd" id="402_dlg"]
 [ext_resource type="Script" path="res://scripts/quest_tracker.gd" id="401_quest_tr"]
 [ext_resource type="Script" path="res://scripts/context_menu.gd" id="5_menu"]
-[ext_resource type="Script" path="res://scripts/paperdoll_ui.gd" id="6_doll"]
 [ext_resource type="Script" path="res://scripts/nav_menu_ui.gd" id="7_home"]
 [ext_resource type="Script" path="res://scripts/spellbook_ui.gd" id="8_book"]
 [ext_resource type="Script" path="res://scripts/escape_menu_ui.gd" id="9_esc"]
@@ -45,11 +44,6 @@ script = ExtResource("3_inv_ui")
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("8_book")
-
-[node name="PaperdollUI" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-script = ExtResource("6_doll")
 
 [node name="StatsUI" type="Control" parent="."]
 layout_mode = 3

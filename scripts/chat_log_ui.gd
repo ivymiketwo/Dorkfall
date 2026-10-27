@@ -141,9 +141,7 @@ func _draw() -> void:
 		y -= 11.0
 		var shown := _text + ("_" if int(_blink * 2.0) % 2 == 0 else "")
 		var box := Rect2(3, screen.y - 33.0, 190, 10)
-		draw_rect(box, Color(0, 0, 0, 0.7))
-		draw_rect(Rect2(box.position, Vector2(box.size.x, 0.5)), UiStyle.BRONZE_MID)
-		draw_rect(Rect2(box.position + Vector2(0, box.size.y - 0.5), Vector2(box.size.x, 0.5)), UiStyle.BRONZE_MID)
+		UiStyle.well(self, box, px)
 		HiFont.draw(self, box.position + Vector2(2, 2.5), shown.right(46) if shown.length() > 46 else shown, Color("ffe066"), px)
 	for l in _lines:
 		var a := clampf((LIFETIME - l["age"]) / FADE, 0.0, 1.0)

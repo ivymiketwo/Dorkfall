@@ -6,8 +6,6 @@ extends Control
 ## `CloseButton.close_top(tree)` closes the front-most open menu (used by Esc).
 
 const SZ := 7.0
-## Thickness of the window frame (outline + bevel), so the button sits inside it, not over it.
-const BORDER := 1.0
 ## Menus join this group and offer `close_ui()`; optional `ui_is_open()` (default: `visible`).
 const GROUP := "closable_ui"
 
@@ -63,7 +61,8 @@ func _ready() -> void:
 
 
 func _place() -> void:
-	position = Vector2((_menu as Control).size.x - SZ - BORDER, BORDER)    # flush inside the window frame
+	# in the right end of the title bar (UiStyle.window), inside the frame
+	position = Vector2((_menu as Control).size.x - SZ - UiStyle.FRAME - 1.0, UiStyle.FRAME + (UiStyle.TITLE_H - SZ) / 2.0)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -74,10 +73,9 @@ func _gui_input(event: InputEvent) -> void:
 
 func _draw() -> void:
 	var p := 0.5
-	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
-	draw_rect(Rect2(Vector2(1, 1), size - Vector2(2, 2)), Color("7a2020") if not _hover else Color("c03030"))
-	var o := (size - Vector2(7, 7) * p) / 2.0
+	UiStyle.button(self, Rect2(Vector2.ZERO, size), "", 1 if _hover else 0, p)
+	var o := ((size - Vector2(7, 7) * p) / 2.0).snapped(Vector2(p, p))
 	for y in X_PIXELS.size():
 		for x in 7:
 			if X_PIXELS[y][x] == "X":
-				draw_rect(Rect2(o + Vector2(x, y) * p, Vector2(p, p)), Color("fff0d0"))
+				draw_rect(Rect2(o + Vector2(x, y) * p, Vector2(p, p)), Color("ff6a5a") if _hover else UiStyle.TEXT)

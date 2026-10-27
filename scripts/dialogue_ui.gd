@@ -42,7 +42,7 @@ func _show(d: Dictionary) -> void:
 		return
 	_dlg = d
 	var lines := _wrap(String(d["text"]))
-	size = Vector2(W, 14 + lines.size() * LINE_H + 8 + BTN_H + PAD)
+	size = Vector2(W, 16 + lines.size() * LINE_H + 8 + BTN_H + PAD)
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
 	position = Vector2(floorf((screen.x - W) / 2.0), floorf(screen.y - size.y - 34))
 	queue_redraw()
@@ -116,19 +116,16 @@ func _draw() -> void:
 	if _dlg.is_empty():
 		return
 	var px := _px()
-	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
-	var title := String(_npc.display_name).to_upper() if _npc != null else ""
-	HiFont.draw(self, Vector2(PAD, 4), title, UiStyle.GOLD, px)
-	draw_rect(Rect2(PAD, 11, size.x - PAD * 2, px), UiStyle.BRONZE_MID)
-	var y := 15.0
+	var title := String(_npc.display_name) if _npc != null else ""
+	UiStyle.window(self, Rect2(Vector2.ZERO, size), title, px)
+	var y := 16.0
 	for l in _wrap(String(_dlg["text"])):
 		HiFont.draw(self, Vector2(PAD, y), l, UiStyle.TEXT, px)
 		y += LINE_H
 	var rects := _btn_rects()
 	for i in rects.size():
-		UiStyle.slot(self, rects[i], i == _hover)
 		var label := String(_dlg["buttons"][i]["label"])
-		HiFont.draw(self, rects[i].position + Vector2(6, 4), label, Color("ffe066") if i == 0 else UiStyle.TEXT, px)
+		UiStyle.button(self, rects[i], label, 1 if i == _hover else 0, px, Color("ffe066") if i == 0 else Color(0, 0, 0, 0))
 
 
 func close_ui() -> void:

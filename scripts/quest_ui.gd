@@ -4,7 +4,7 @@ extends Control
 ## when it's done, or abandon it while it's running. F / Esc / walking away closes it.
 
 const PAD := 5
-const HEADER := 13
+const HEADER := 15
 const ROW_H := 22
 const ROW_GAP := 2
 const W := 172
@@ -106,13 +106,11 @@ func _say(text: String, color: Color) -> void:
 
 func _draw() -> void:
 	var px := _px()
-	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
-	HiFont.draw(self, Vector2(PAD, 4), "NOTICE BOARD", UiStyle.GOLD, px)
-	draw_rect(Rect2(PAD, HEADER - 3, size.x - PAD * 2, px), UiStyle.BRONZE_MID)
+	UiStyle.window(self, Rect2(Vector2.ZERO, size), "Notice Board", px)
 	for i in Quests.board_list().size():
 		var q: Dictionary = Quests.board_list()[i]
 		var r := _row_rect(i)
-		UiStyle.slot(self, r, i == _hover)
+		UiStyle.slot(self, r, i == _hover, px)
 		var st := Quests.state_of(q["id"])
 		HiFont.draw(self, r.position + Vector2(5, 3), String(q["title"]).to_upper(), UiStyle.GOLD, px)
 		HiFont.draw(self, r.position + Vector2(5, 11), "Slay %d %s" % [q["count"], q["name"]], UiStyle.TEXT, px)

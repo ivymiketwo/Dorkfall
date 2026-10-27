@@ -8,7 +8,7 @@ static func entries() -> Array:
 	var out: Array = [
 		["inventory", "Inventory", "Windows"],
 		["spellbook", "Spellbook", "Windows"],
-		["paperdoll", "Equipment", "Windows"],
+		["paperdoll", "Equipment (bag)", "Windows"],
 		["stats", "Stats", "Windows"],
 		["home_teleport", "Home teleport", "Actions"],
 		["interact", "Talk / interact", "Actions"],

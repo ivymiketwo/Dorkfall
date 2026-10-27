@@ -1,7 +1,8 @@
 class_name StatsUI
 extends Control
 ## Character stats window (press C): Intelligence and Vitality, with a
-## [+] button per stat to spend level-up points. Shows what each stat is doing.
+## [+] button per stat to spend level-up points. Shows what each stat is doing, and under that
+## what your worn gear adds (this used to be in the old Equipment window).
 
 const ROW_H := 24
 const TOP := 27
@@ -11,14 +12,17 @@ const INFO := {
 	"vit": ["Health"],
 }
 const COLORS := {"int": Color("6fb4ff"), "vit": Color("e8695a")}
+## The gear bonuses section under the stats.
+const GEAR_H := 40
 
 var attrs: Attributes
+var equipment: Equipment
 var _hover := ""
 
 
 func _ready() -> void:
 	CloseButton.attach(self)
-	size = Vector2(122, TOP + Attributes.NAMES.size() * ROW_H + 6)
+	size = Vector2(122, TOP + Attributes.NAMES.size() * ROW_H + 6 + GEAR_H)
 	position = Vector2(94, 40)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
@@ -32,6 +36,9 @@ func _bind() -> void:
 	attrs = p.get_node_or_null("Attributes") if p else null
 	if attrs:
 		attrs.changed.connect(queue_redraw)
+	equipment = p.get_node_or_null("Equipment") if p else null
+	if equipment:
+		equipment.changed.connect(queue_redraw)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -78,16 +85,15 @@ func _notification(what: int) -> void:
 
 func _draw() -> void:
 	var px := _px()
-	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
-	HiFont.draw(self, Vector2(6, 5), "Stats", UiStyle.GOLD, px)
+	UiStyle.window(self, Rect2(Vector2.ZERO, size), "Stats", px)
 	if attrs == null:
 		return
 	var un := attrs.unspent()
 	var pts := "Points  %d" % un
-	HiFont.draw(self, Vector2(size.x - 6 - HiFont.text_width(pts, px), 5), pts,
+	HiFont.draw(self, Vector2(size.x - 6 - HiFont.text_width(pts, px), 14), pts,
 			Color("ffe066") if un > 0 else UiStyle.TEXT_DIM, px)
-	draw_line(Vector2(6, 15), Vector2(size.x - 6, 15), Color(0.55, 0.42, 0.22, 0.6), 1.0)
-	HiFont.draw(self, Vector2(6, 18), "Level %d" % attrs.xp.level, UiStyle.TEXT_DIM, px)
+	HiFont.draw(self, Vector2(6, 14), "Level %d" % attrs.xp.level, UiStyle.TEXT_DIM, px)
+	UiStyle.divider(self, Vector2(5, 23), size.x - 10, px)
 	for i in Attributes.NAMES.size():
 		var n: String = Attributes.NAMES[i]
 		var y := TOP + i * ROW_H
@@ -105,11 +111,29 @@ func _draw() -> void:
 			HiFont.draw(self, Vector2(38, y + 17), dmg, UiStyle.TEXT_DIM, px)
 		var r := _btn_rect(i)
 		var can := attrs.can_spend(n)
-		UiStyle.slot(self, r, can and n == _hover)
-		var c := Color("ffe066") if can else Color(0.35, 0.3, 0.25)
+		UiStyle.button(self, r, "", (1 if n == _hover else 0) if can else 2, px)
+		var c := Color("ffe066") if can else UiStyle.STEEL_DARK
 		var m := r.get_center()
 		draw_rect(Rect2(m.x - 3, m.y - 0.5, 6, 1), c)
 		draw_rect(Rect2(m.x - 0.5, m.y - 3, 1, 6), c)
+	# what the worn gear adds
+	if equipment:
+		var ty := TOP + Attributes.NAMES.size() * ROW_H + 2.0
+		UiStyle.divider(self, Vector2(5, ty), size.x - 10, px)
+		HiFont.draw(self, Vector2(6, ty + 4), "Gear bonuses", UiStyle.GOLD, px)
+		var rows := [
+			["Defense", "%s%%" % _fmt(equipment.total("defense"))],
+			["Mana regen", "+%s/s" % _fmt(equipment.total("mana_regen_bonus"))],
+			["Magic dmg", "+%s%%" % _fmt(equipment.total("magic_damage_bonus"))],
+		]
+		for k in rows.size():
+			var y := ty + 13 + k * 8
+			HiFont.draw(self, Vector2(6, y), rows[k][0], UiStyle.TEXT_DIM, px)
+			HiFont.draw(self, Vector2(size.x - 6 - HiFont.text_width(rows[k][1], px), y), rows[k][1], Color("8fd0ff"), px)
+
+
+func _fmt(v: float) -> String:
+	return str(snappedf(v, 0.1)).trim_suffix(".0")
 
 
 func close_ui() -> void:

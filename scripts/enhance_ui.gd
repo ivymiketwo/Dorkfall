@@ -10,9 +10,9 @@ extends Control
 
 const ICONS := preload("res://art/items.png")   # 32px icons
 const W := 96.0
-const H := 133.0
+const H := 143.0
 const PAD := 6.0
-const HEADER := 14.0
+const HEADER := 16.0
 const ITEM_SLOT := 24.0
 const MAT_SLOT := 20.0
 ## Seconds the progress bar takes to fill before the result.
@@ -284,12 +284,13 @@ func _draw() -> void:
 	if _inv == null:
 		return
 	var px := _px()
-	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
-	HiFont.draw(self, Vector2(PAD, 4), "ENHANCE", UiStyle.GOLD, px)
-	draw_rect(Rect2(PAD, HEADER - 3, size.x - PAD * 2, px), UiStyle.BRONZE_MID)
+	UiStyle.window(self, Rect2(Vector2.ZERO, size), "Enhance", px)
+	UiStyle.well(self, Rect2(PAD - 2, HEADER, W - PAD * 2 + 4, 44.0), px)
+	UiStyle.well(self, Rect2(PAD - 2, HEADER + 46.0, W - PAD * 2 + 4, 32.0), px)
 	# the item on top
 	var ir := _item_rect()
-	UiStyle.slot(self, ir, _hover == "item")
+	UiStyle.slot(self, ir, _hover == "item", px)
+	draw_rect(ir.grow(px), UiStyle.STEEL_MID, false, px)
 	if _flash > 0.0:
 		draw_rect(ir.grow(1.0), Color(_flash_color, _flash), false, 1.0)
 	var name_line := "Staff"
@@ -314,27 +315,41 @@ func _draw() -> void:
 			dmg += "  to %d-%d" % [nx.x, nx.y]
 		HiFont.draw(self, Vector2(floorf((W - HiFont.text_width(dmg, px)) / 2.0), ir.end.y + 11.0), dmg, Color("8fd0ff"), px)
 	# the elixir and the flux below it
-	_material(_elixir_rect(), Enhance.ELIXIR, _elixir, "elixir", "ELIXIR")
-	_material(_flux_rect(), Enhance.FLUX, _flux, "flux", "FLUX")
+	_material(_elixir_rect(), Enhance.ELIXIR, _elixir, "elixir", "Elixir")
+	_material(_flux_rect(), Enhance.FLUX, _flux, "flux", "Flux")
 	# progress bar and button
 	var frac := clampf(_work / WORK_TIME, 0.0, 1.0) if _work >= 0.0 else 0.0
 	UiStyle.bar(self, _bar_rect(), frac, BAR)
 	var br := _button_rect()
 	var can := _work < 0.0 and _ready_to_go() == ""
-	UiStyle.slot(self, br, _hover == "button" and can)
-	if can:
-		draw_rect(Rect2(br.position + Vector2.ONE * px, Vector2(br.size.x - px * 2, px)), UiStyle.BRONZE_LIGHT)
-	var label := "ENHANCE"
-	HiFont.draw(self, br.position + Vector2(floorf((br.size.x - HiFont.text_width(label, px)) / 2.0), 3.5), label,
-			UiStyle.GOLD if can else UiStyle.TEXT_DIM, px)
+	UiStyle.button(self, br, "Enhance", (1 if _hover == "button" else 0) if can else 2, px,
+			UiStyle.GOLD if can else UiStyle.TEXT_DIM)
 	# message line
 	var my := br.end.y + 4.0
-	HiFont.draw(self, Vector2(floorf((W - HiFont.text_width(_message, px)) / 2.0), my), _message, _message_color, px)
+	for line in _wrap(_message, W - PAD * 2.0, px):
+		HiFont.draw(self, Vector2(floorf((W - HiFont.text_width(line, px)) / 2.0), my), line, _message_color, px)
+		my += 8.0
+
+
+## Splits `text` into lines no wider than `width`.
+func _wrap(text: String, width: float, px: float) -> PackedStringArray:
+	var out := PackedStringArray()
+	var line := ""
+	for word in text.split(" ", false):
+		var tryl := word if line == "" else line + " " + word
+		if line != "" and HiFont.text_width(tryl, px) > width:
+			out.append(line)
+			line = word
+		else:
+			line = tryl
+	if line != "":
+		out.append(line)
+	return out
 
 
 func _material(r: Rect2, item: Item, placed: bool, key: String, label: String) -> void:
 	var px := _px()
-	UiStyle.slot(self, r, _hover == key)
+	UiStyle.slot(self, r, _hover == key, px)
 	var have := _inv.count_of(item)
 	if placed:
 		draw_texture_rect_region(ICONS, Rect2(r.position + Vector2(2, 1), Vector2(16, 16)),

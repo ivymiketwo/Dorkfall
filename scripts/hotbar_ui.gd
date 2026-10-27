@@ -232,7 +232,7 @@ func _draw() -> void:
 	var ar := _arrows()
 	for k in 2:
 		var rr: Rect2 = ar[k]
-		UiStyle.slot(self, rr, false)
+		UiStyle.button(self, rr, "", 0, 0.5)
 		var cx := rr.position.x + rr.size.x / 2.0
 		var cy := rr.position.y + rr.size.y / 2.0
 		var d := -1.0 if k == 0 else 1.0

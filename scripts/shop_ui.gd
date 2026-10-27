@@ -8,8 +8,8 @@ const ROWS := 3
 const SLOT := 20
 const GAP := 2
 const PAD := 6
-const HEADER := 14
-const FOOTER := 22
+const HEADER := 16    ## title bar + room above the slots
+const FOOTER := 23
 const ICONS := preload("res://art/items.png")   # 32px icons, drawn 1:1 on screen
 const COINS := preload("res://items/coins.tres")
 
@@ -134,9 +134,9 @@ func _draw() -> void:
 	if shop == null:
 		return
 	var px := _px()
-	UiStyle.panel(self, Rect2(Vector2.ZERO, size))
-	HiFont.draw(self, Vector2(PAD, 4), shop.title, UiStyle.GOLD, px)
-	draw_rect(Rect2(PAD, HEADER - 3, size.x - PAD * 2, px), UiStyle.BRONZE_MID)
+	UiStyle.window(self, Rect2(Vector2.ZERO, size), shop.title.capitalize(), px)
+	UiStyle.well(self, Rect2(Vector2(PAD, HEADER) - Vector2(1.5, 1.5),
+			Vector2(COLS * SLOT + (COLS - 1) * GAP, ROWS * SLOT + (ROWS - 1) * GAP) + Vector2(3, 3)), px)
 	for i in COLS * ROWS:
 		var p := _slot_pos(i)
 		UiStyle.slot(self, Rect2(p, Vector2(SLOT, SLOT)), i == _hover)
@@ -146,7 +146,8 @@ func _draw() -> void:
 					Rect2(item.frame_for(1) * 32, 0, 32, 32))
 			var price := str(item.value)
 			HiFont.draw(self, p + Vector2(SLOT - 2 - HiFont.text_width(price, px), SLOT - 5), price, Color("f0d040"), px)
-	var fy := HEADER + ROWS * SLOT + (ROWS - 1) * GAP + 4
+	var fy := HEADER + ROWS * SLOT + (ROWS - 1) * GAP + 5
+	UiStyle.well(self, Rect2(PAD - 1.5, fy - 2, size.x - PAD * 2 + 3, 17), px)
 	var hovered := _item_at(_hover)
 	var line := _message
 	var col := _message_color
@@ -157,7 +158,11 @@ func _draw() -> void:
 	if hovered and not hovered.stat_lines().is_empty():
 		HiFont.draw(self, Vector2(PAD, fy + 9), "  ".join(hovered.stat_lines()), Color("8fd0ff"), px)
 	elif _inv:
-		HiFont.draw(self, Vector2(PAD, fy + 9), "Your coins  %d" % _inv.count_of(COINS), Color("f0d040"), px)
+		var num := UiStyle.thousands(_inv.count_of(COINS))
+		HiFont.draw(self, Vector2(PAD, fy + 9), "Your gold", UiStyle.TEXT_DIM, px)
+		var gx := size.x - PAD - HiFont.text_width(num + " Gold", px)
+		HiFont.draw(self, Vector2(gx, fy + 9), num, UiStyle.MONEY, px)
+		HiFont.draw(self, Vector2(gx + HiFont.text_width(num + " ", px), fy + 9), "Gold", UiStyle.TEXT, px)
 
 
 func close_ui() -> void:
