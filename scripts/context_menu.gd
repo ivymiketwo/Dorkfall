@@ -15,6 +15,7 @@ var _open := false
 
 
 func _ready() -> void:
+	z_index = 90     # over every window (they move to the front when clicked)
 	add_to_group("context_menu")
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_FULL_RECT)

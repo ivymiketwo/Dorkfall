@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://scripts/hotbar_ui.gd" id="2_hotbar_ui"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://scripts/chat_log_ui.gd" id="10_chat"]
 [ext_resource type="Script" path="res://scripts/stats_ui.gd" id="11_stats"]
 [ext_resource type="Script" path="res://scripts/enhance_ui.gd" id="12_enhance"]
+[ext_resource type="Script" path="res://scripts/tooltip_ui.gd" id="13_tip"]
 
 [node name="HUD" type="CanvasLayer" groups=["ui_layer"]]
 layer = 2
@@ -98,3 +99,9 @@ script = ExtResource("10_chat")
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("9_esc")
+
+[node name="TooltipUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("13_tip")

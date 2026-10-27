@@ -170,6 +170,13 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   `CloseButton.attach`, sits in the title bar's right end); `well` (sunken area behind slot grids /
   text fields), `slot`, `tab` (blue when open), `button` (steel), `divider`, `thousands` ("25,558,069").
   New windows: use these, put content below `UiStyle.FRAME + UiStyle.TITLE_H` (11 units).
+- Windows are movable (Rex): `CloseButton.attach` also adds `WindowDrag` (`scripts/window_drag.gd`), an
+  invisible handle over the title bar; positions are saved per window name ("window_pos") and put
+  back each time a window opens (after its own open() placed it); opening / clicking a window brings
+  it to the front. Item tooltips and the dragged item are drawn by `TooltipUI` (`scripts/tooltip_ui.gd`,
+  last in hud.tscn, z_index 100) so they're always in front: windows call `TooltipUI.show_tip(self, at,
+  title, lines)` / `hide_tip(self)` (and `show_icon` / `hide_icon` for a dragged item) instead of
+  drawing their own. Context menu z 90, Esc menu z 80, so windows moved to the front stay under them.
 - Inventory window (`inventory_ui.gd`, B or P): 5 x 6 bag (Inventory.SLOT_COUNT 30, Rex chose one
   page), worn gear in a column on the right (weapon on top, then head, body, legs: drag in / out,
   double-click, right-click), the purse under it ("1,450 Gold"). The old Equipment window

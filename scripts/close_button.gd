@@ -1,7 +1,7 @@
 class_name CloseButton
 extends Control
 ## The little X in the top-right corner of every menu and dialogue box.
-## Every window must have one: call `CloseButton.attach(self)` in the menu's _ready() and give it a
+## Every window must have one (it also makes the window movable, see WindowDrag): call `CloseButton.attach(self)` in the menu's _ready() and give it a
 ## `close_ui()` method (then Esc closes it too). It sits flush inside the top-right corner.
 ## `CloseButton.close_top(tree)` closes the front-most open menu (used by Esc).
 
@@ -19,6 +19,7 @@ const X_PIXELS := ["X.....X", ".X...X.", "..X.X..", "...X...", "..X.X..", ".X...
 
 static func attach(menu: Control) -> void:
 	menu.add_to_group(GROUP)
+	WindowDrag.attach(menu)          # every window with a close button can be dragged by its title bar
 	var b := CloseButton.new()
 	b.name = "CloseButton"
 	b._menu = menu

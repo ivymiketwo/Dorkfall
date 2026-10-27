@@ -67,10 +67,6 @@ func _draw() -> void:
 			draw_rect(r, Color(0.9, 0.55, 0.08, 0.95), false, 1.0)
 		HiFont.draw(self, r.position + Vector2(SLOT - 4.5, SLOT - 5.5), BUTTONS[i]["key"], UiStyle.TEXT, 0.5)
 	if _hover != -1:
-		var label: String = BUTTONS[_hover]["name"].to_upper()
-		var px := 0.5
-		var w := HiFont.text_width(label, px) + 6 * px
-		var h := HiFont.H * px + 6 * px
-		var tp := Vector2(size.x - w, -h - 2).snapped(Vector2(px, px))
-		UiStyle.panel(self, Rect2(tp, Vector2(w, h)))
-		HiFont.draw(self, tp + Vector2(3, 3) * px, label, UiStyle.GOLD, px)
+		TooltipUI.show_tip(self, Vector2(_hover * (SLOT + GAP) + SLOT / 2.0, -7.0), BUTTONS[_hover]["name"])
+	else:
+		TooltipUI.hide_tip(self)

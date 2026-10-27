@@ -306,23 +306,37 @@ func _draw() -> void:
 	for i in Inventory.SLOT_COUNT:
 		if inventory.items[i] != null and not (_dragging and i == _drag_from):
 			_draw_count(_slot_pos(i), inventory.items[i], inventory.counts[i])
-	# item being dragged follows the mouse, otherwise the tooltip
+	# item being dragged follows the mouse, otherwise the tooltip: both drawn by TooltipUI, in
+	# front of every other window
+	var drag_item: Item = null
+	var drag_count := 1
 	if _dragging and _drag_from != -1 and inventory.items[_drag_from]:
-		_draw_icon(inventory.items[_drag_from], inventory.counts[_drag_from], Rect2(_mouse - Vector2(ICON, ICON) / 2.0, Vector2(ICON, ICON)))
-	elif _dragging and _drag_gear != "" and equipment and equipment.get_item(_drag_gear):
-		_draw_icon(equipment.get_item(_drag_gear), 1, Rect2(_mouse - Vector2(ICON, ICON) / 2.0, Vector2(ICON, ICON)))
-	elif _hover != -1 and inventory.items[_hover] != null:
+		drag_item = inventory.items[_drag_from]
+		drag_count = inventory.counts[_drag_from]
+	elif _dragging and _drag_gear != "" and equipment:
+		drag_item = equipment.get_item(_drag_gear)
+	if drag_item:
+		TooltipUI.hide_tip(self)
+		var f := drag_item.frame_for(drag_count)
+		TooltipUI.show_icon(self, ITEM_SPRITES if DETAILED_ICONS else ITEM_ICONS,
+				Rect2(f * 32, 0, 32, 32) if DETAILED_ICONS else Rect2(f * 8, 0, 8, 8),
+				Rect2(_mouse - Vector2(ICON, ICON) / 2.0, Vector2(ICON, ICON)))
+		return
+	TooltipUI.hide_icon(self)
+	if _hover != -1 and inventory.items[_hover] != null:
 		var item := inventory.items[_hover]
 		var label := item.title()
 		if item.stackable:
 			label += " " + str(inventory.counts[_hover])
-		_tooltip(label, item.stat_lines(), px)
+		TooltipUI.show_tip(self, _mouse, label, item.stat_lines())
 	elif _hover_gear != "":
 		var it := equipment.get_item(_hover_gear) if equipment else null
 		if it:
-			_tooltip(it.title(), it.stat_lines(), px)
+			TooltipUI.show_tip(self, _mouse, it.title(), it.stat_lines())
 		else:
-			_tooltip(Equipment.SLOT_NAMES[_hover_gear], PackedStringArray(), px)
+			TooltipUI.show_tip(self, _mouse, Equipment.SLOT_NAMES[_hover_gear])
+	else:
+		TooltipUI.hide_tip(self)
 
 
 func _icon_rect(slot_pos: Vector2) -> Rect2:
@@ -352,20 +366,6 @@ func _draw_gold(px: float) -> void:
 	HiFont.draw(self, Vector2(x, y).snapped(Vector2(px, px)), word, UiStyle.TEXT, px)
 	x -= HiFont.text_width(num, px) + px
 	HiFont.draw(self, Vector2(x, y).snapped(Vector2(px, px)), num, UiStyle.MONEY, px)
-
-
-func _tooltip(label: String, lines: PackedStringArray, px: float) -> void:
-	var w := HiFont.text_width(label, px)
-	for l in lines:
-		w = maxf(w, HiFont.text_width(l, px))
-	w += 14 * px
-	var lh := (HiFont.H + 3) * px
-	var h := HiFont.H * px + 14 * px + lines.size() * lh
-	var tp := Vector2(_mouse.x - w - 4, _mouse.y - h / 2.0).snapped(Vector2(px, px))
-	UiStyle.panel(self, Rect2(tp, Vector2(w, h)), px)
-	HiFont.draw(self, tp + Vector2(7, 7) * px, label, UiStyle.GOLD, px)
-	for k in lines.size():
-		HiFont.draw(self, tp + Vector2(7 * px, 7 * px + (k + 1) * lh), lines[k], STAT_TEXT, px)
 
 
 ## Stack size (or +level) in the slot's top-left corner, small white text like the reference.

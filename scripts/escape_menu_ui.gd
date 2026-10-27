@@ -18,6 +18,7 @@ var _mouse := Vector2.ZERO
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	z_index = 80     # over every window (they move to the front when clicked)
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var screen := get_viewport_rect().size / get_canvas_transform().get_scale()
