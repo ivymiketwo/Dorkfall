@@ -5,8 +5,8 @@ extends RefCounted
 ##
 ## One attempt takes the item to the next level (+0 -> +1 ... up to +15). Every attempt uses up
 ## ELIXIRS Magical Elixirs and FLUX Flux whether it works or not; a failed attempt changes nothing
-## else (no downgrades yet). Only staffs can be enhanced for now (Item.can_enhance). What a level
-## actually does to a staff isn't decided yet: Rex will tune it once staffs get damage ranges.
+## else (no downgrades yet). Only staffs can be enhanced for now (Item.can_enhance). Each level raises
+## the staff's damage range (Item.ENHANCE_BONUS, Item.damage_range).
 
 const MAX_LEVEL := Item.MAX_ENHANCE
 const ELIXIR_PATH := "res://items/magical_elixir.tres"

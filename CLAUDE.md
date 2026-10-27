@@ -87,8 +87,9 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Gear enhancing (staffs only for now, +0 to +15): the anvil in the blacksmith (`scripts/anvil.gd`,
   F opens `scripts/enhance_ui.gd`: item square, elixir + flux squares, progress bar, Enhance button;
   click / drag bag items onto it). Rules with no UI in `scripts/enhance.gd` (success chance per
-  level in CHANCE, 1 Magical Elixir + 1 Flux per attempt, failure keeps the level). What a level
-  DOES isn't decided: Rex wants staffs reworked to MMO-style damage ranges first. An enhanced item
+  level in CHANCE, 1 Magical Elixir + 1 Flux per attempt, failure keeps the level). Each level
+  raises the staff's damage range by `Item.ENHANCE_BONUS` percent of its base (small steps to +7,
+  big from +8, double at +15). An enhanced item
   is its own copy (`Item.enhanced_copy`, `Item.enhance`, `Item.title()` = "+5 Name"), saved as
   "<path>#+<level>" by `SaveGame.item_to_path` / `item_from_path`. Flux (`items/flux.tres`, 1000
   coins) is sold by the blacksmith "Smith" (`art/blacksmith_keeper.png`, behind the counter; the room is
@@ -97,6 +98,12 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   `art/interior_blacksmith_counter.png` so Smith stands behind it); the Magical
   Elixir (`items/magical_elixir.tres`) drops from every monster at 5% (`Loot.ELIXIR_CHANCE`, added
   in `Loot.roll`). Item pictures from Rex go in `art/item_src/` -> `tools/add_item_icons.py name:frame`.
+- Damage (Rex chose MMO-style, Oct 2026): each staff has a damage range (`Item.damage_min/max`,
+  tooltip "MAGIC DAMAGE 34-46"); a staff spell does `Ability.weapon_percent` of one roll of it per
+  hit (`Ability.hit_damage`; basic beams 100%, Sun Halo 240%, Clockwork Spider 184%, Void Hole 62.5%
+  a tick; multi-hit spells roll once per cast), then Intelligence (`Stats.magic_mult`) and the
+  target's `Stats.armour` (armour / (armour + 100) less; monsters are all 0 for now). Spells with
+  weapon_percent 0 (the hotbar spells) still use their fixed `damage`.
 - Keep the gear-fitting pipeline (below) for future wizard-style armour that isn't a robe.
 - New staffs are a single upright picture: `tools/add_staff.py <id> <png> <icon_frame>` keeps the
   original in `art/staff_src/`, trims it to `art/worn_<id>.png` and makes the tilted inventory

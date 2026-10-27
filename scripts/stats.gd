@@ -20,6 +20,9 @@ signal out_of_mana
 
 ## Set by Equipment from worn gear.
 var defense_percent := 0.0
+## Armour: takes armour / (armour + 100) off every hit (50 = a third less, 100 = half). Smooth at any
+## size, so strong monsters can be tougher without becoming sponges.
+@export var armour := 0.0
 var mana_regen_bonus := 0.0
 var magic_damage_percent := 0.0
 ## How much the player's Ward stopped of the hit being reported by `damaged` (0 = none).
@@ -95,6 +98,8 @@ func take_damage(amount: float, source: Node = null, ignore_defense := false, or
 		var xp := source.get_node_or_null("Experience")
 		if xp != null and "level" in xp:
 			amount *= AttackRules.level_gap_mult(int(xp.level), int(get_parent().level))
+	if not ignore_defense and armour > 0.0:
+		amount *= 100.0 / (100.0 + armour)
 	if not ignore_defense and defense_percent > 0.0:
 		amount *= 1.0 - minf(defense_percent, 90.0) / 100.0
 	if source != null:

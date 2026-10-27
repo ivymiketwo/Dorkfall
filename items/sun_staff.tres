@@ -18,4 +18,6 @@ two_handed = true
 worn_texture = ExtResource("2_worn")
 hold_scale = 0.77
 weapon_kind = "staff"
+damage_min = 44
+damage_max = 56
 basic_attack = ExtResource("3_beam")

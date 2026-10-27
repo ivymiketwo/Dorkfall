@@ -10,4 +10,5 @@ icon_index = 1
 mana_cost = 10.0
 cooldown = 1.0
 damage = 15.0
+weapon_percent = 1.0
 beam_length = 150.0

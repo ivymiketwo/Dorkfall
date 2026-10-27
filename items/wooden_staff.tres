@@ -18,4 +18,6 @@ equip_slot = "weapon"
 two_handed = true
 worn_texture = ExtResource("2_worn")
 weapon_kind = "staff"
+damage_min = 13
+damage_max = 17
 basic_attack = ExtResource("3_beam")

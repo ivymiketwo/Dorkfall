@@ -26,6 +26,9 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT, SWARM, SPELL }
 ## Pixels per second. 215 is roughly 30 mph if one tile is one meter.
 @export var projectile_speed := 215.0
 @export var damage := 40.0
+## Cast from a staff: each hit does this share of the staff's damage range instead of `damage`
+## (1 = 100%, 2.4 = 240%). 0 = always the fixed `damage` above.
+@export var weapon_percent := 0.0
 
 @export_group("Beam")
 ## Instant thin beam toward the mouse. Uses `damage` above. Hits everything in
@@ -74,3 +77,11 @@ enum Kind { PROJECTILE, TRANSFER, BEAM, HOP, HOME_TELEPORT, SWARM, SPELL }
 
 ## Plays from the moment the cast starts (a projectile takes it over once it launches).
 @export var cast_start_sound: AudioStream
+
+
+## One hit's damage before Intelligence: a roll of the staff's range times `weapon_percent`, or the
+## fixed `damage` when this spell doesn't use the staff (or there's no staff).
+func hit_damage(weapon: Item) -> float:
+	if weapon_percent > 0.0 and weapon != null and weapon.has_damage():
+		return weapon.roll_damage() * weapon_percent
+	return damage

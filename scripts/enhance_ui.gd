@@ -10,7 +10,7 @@ extends Control
 
 const ICONS := preload("res://art/items.png")   # 32px icons
 const W := 96.0
-const H := 124.0
+const H := 133.0
 const PAD := 6.0
 const HEADER := 14.0
 const ITEM_SLOT := 24.0
@@ -153,19 +153,19 @@ func _item_rect() -> Rect2:
 
 
 func _elixir_rect() -> Rect2:
-	return Rect2(Vector2(floorf(W / 2.0) - MAT_SLOT - 4.0, HEADER + 40.0), Vector2(MAT_SLOT, MAT_SLOT))
+	return Rect2(Vector2(floorf(W / 2.0) - MAT_SLOT - 4.0, HEADER + 49.0), Vector2(MAT_SLOT, MAT_SLOT))
 
 
 func _flux_rect() -> Rect2:
-	return Rect2(Vector2(floorf(W / 2.0) + 4.0, HEADER + 40.0), Vector2(MAT_SLOT, MAT_SLOT))
+	return Rect2(Vector2(floorf(W / 2.0) + 4.0, HEADER + 49.0), Vector2(MAT_SLOT, MAT_SLOT))
 
 
 func _bar_rect() -> Rect2:
-	return Rect2(Vector2(PAD, HEADER + 73.0), Vector2(W - PAD * 2.0, 6.0))
+	return Rect2(Vector2(PAD, HEADER + 82.0), Vector2(W - PAD * 2.0, 6.0))
 
 
 func _button_rect() -> Rect2:
-	return Rect2(Vector2(floorf(W / 2.0) - 22.0, HEADER + 83.0), Vector2(44.0, 12.0))
+	return Rect2(Vector2(floorf(W / 2.0) - 22.0, HEADER + 92.0), Vector2(44.0, 12.0))
 
 
 func _part_at(p: Vector2) -> String:
@@ -305,6 +305,14 @@ func _draw() -> void:
 		if _staff.enhance < Enhance.MAX_LEVEL:
 			name_line += "  to +%d" % (_staff.enhance + 1)
 	HiFont.draw(self, Vector2(floorf((W - HiFont.text_width(name_line, px)) / 2.0), ir.end.y + 3.0), name_line, name_col, px)
+	if _staff and _staff.has_damage():
+		# what this level does: the damage range now, and after a success
+		var now := _staff.damage_range()
+		var dmg := "DAMAGE %d-%d" % [now.x, now.y]
+		if _staff.enhance < Enhance.MAX_LEVEL:
+			var nx := _staff.damage_range(_staff.enhance + 1)
+			dmg += "  to %d-%d" % [nx.x, nx.y]
+		HiFont.draw(self, Vector2(floorf((W - HiFont.text_width(dmg, px)) / 2.0), ir.end.y + 11.0), dmg, Color("8fd0ff"), px)
 	# the elixir and the flux below it
 	_material(_elixir_rect(), Enhance.ELIXIR, _elixir, "elixir", "ELIXIR")
 	_material(_flux_rect(), Enhance.FLUX, _flux, "flux", "FLUX")

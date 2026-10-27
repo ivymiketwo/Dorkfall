@@ -77,6 +77,11 @@ extends Resource
 @export var fishing_rod := false
 ## 1-3: bigger = a wider catch zone, a calmer fish and better fish.
 @export_range(1, 3) var fishing_power := 1
+@export_group("Staff damage")
+## A staff's magic damage range: every hit of its spells picks a number in it (then the spell's own
+## Weapon Percent, Intelligence and the target's armour apply). 0 / 0 = no range (not a staff).
+@export var damage_min := 0
+@export var damage_max := 0
 @export_group("Basic attack")
 ## Staffs: the spell fired on left-click (an Ability, e.g. a beam).
 @export var basic_attack: Ability
@@ -97,6 +102,27 @@ extends Resource
 var enhance := 0
 var _base_path := ""
 const MAX_ENHANCE := 15
+## How much each enhancement level raises a staff's damage range, in percent of its base range
+## (index = level): small steps up to +7, big ones from +8, double at +15.
+const ENHANCE_BONUS := [0, 3, 6, 9, 12, 15, 18, 21, 28, 36, 45, 55, 66, 78, 90, 100]
+
+
+## True if this item has a damage range (a staff).
+func has_damage() -> bool:
+	return damage_max > 0
+
+
+## The damage range at a given enhancement level (default: this item's own): Vector2i(min, max).
+func damage_range(level := -1) -> Vector2i:
+	var lv := enhance if level < 0 else level
+	var k := 1.0 + float(ENHANCE_BONUS[clampi(lv, 0, MAX_ENHANCE)]) / 100.0
+	return Vector2i(roundi(damage_min * k), roundi(maxf(damage_max, damage_min) * k))
+
+
+## One random hit from the range (before the spell's percentage and Intelligence).
+func roll_damage() -> float:
+	var r := damage_range()
+	return float(Rng.randi_range(r.x, r.y))
 
 
 ## The .tres this item comes from (also for enhanced copies, which aren't files themselves).
@@ -133,6 +159,9 @@ func frame_for(count: int) -> int:
 ## Lines describing this item's gear stats (empty if it has none).
 func stat_lines() -> PackedStringArray:
 	var out := PackedStringArray()
+	if has_damage():
+		var r := damage_range()
+		out.append("MAGIC DAMAGE %d-%d" % [r.x, r.y])
 	if defense != 0.0:
 		out.append("DEFENSE +%s%%" % _num(defense))
 	if mana_regen_bonus != 0.0:

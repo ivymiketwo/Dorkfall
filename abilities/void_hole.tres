@@ -11,5 +11,6 @@ icon_index = 1
 mana_cost = 20.0
 cooldown = 2.2
 damage = 30.0
+weapon_percent = 0.625
 beam_color = Color(0.17, 0.2, 0.3, 1)
 spell_scene = ExtResource("2_spell")

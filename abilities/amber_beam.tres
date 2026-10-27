@@ -10,5 +10,6 @@ icon_index = 1
 mana_cost = 10.0
 cooldown = 1.0
 damage = 35.0
+weapon_percent = 1.0
 beam_length = 155.0
 beam_color = Color(1, 0.6, 0.25, 1)

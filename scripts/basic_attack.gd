@@ -96,7 +96,7 @@ func cast_staff_spell(i: int) -> void:
 	_spell_ready[ab] = GameClock.now + ab.cooldown
 	var s := ab.spell_scene.instantiate()
 	s.caster = caster
-	s.damage = ab.damage
+	s.damage = ab.hit_damage(weapon)
 	caster.get_parent().add_child(s)
 
 
@@ -118,7 +118,7 @@ func _cast_spell(ab: Ability) -> void:
 	_ready_at = GameClock.now + ab.cooldown
 	var s := ab.spell_scene.instantiate()
 	s.caster = caster
-	s.damage = ab.damage
+	s.damage = ab.hit_damage(weapon)
 	caster.get_parent().add_child(s)
 
 
@@ -139,7 +139,7 @@ func _basic_beam(ab: Ability) -> void:
 	for body in BeamCone.bodies(caster, cone_dir, ab.beam_length):
 		var t := body.get_node_or_null("Stats") as Stats
 		if t:
-			t.take_damage(ab.damage * stats.magic_mult(), caster)
+			t.take_damage(ab.hit_damage(weapon) * stats.magic_mult(), caster)
 			if ab.poison_dps > 0.0:
 				t.apply_poison(ab.poison_dps, ab.poison_time, caster)
 	var fx := BeamFx.new()

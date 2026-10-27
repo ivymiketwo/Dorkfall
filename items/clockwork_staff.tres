@@ -19,4 +19,6 @@ worn_texture = ExtResource("2_worn")
 hold_scale = 0.385
 orb_from_top = 12.0
 weapon_kind = "staff"
+damage_min = 33
+damage_max = 43
 basic_attack = ExtResource("3_beam")
