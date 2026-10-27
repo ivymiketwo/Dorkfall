@@ -53,8 +53,7 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   mountain's cliffs carry on along Rex's red lines (EAST_TOP / EAST_BOTTOM; gen_ravine now paints to
   XM 7264, keeping everything west of x 6512 exactly as it was, and writes
   `art/ground_src/ravine_east_walk.png` so gen_enchanted keeps that rock: run gen_ravine first). It opens into a
-  corridor between two dense forests, then a big open clearing kept empty for Rex's next village
-  (path ends at ~8050, 330). Ground + minimap: `tools/gen_enchanted.py` (moss, forest floor under the
+  village (see below), then a big open clearing full of goblins (path ends at ~8050, 330). Ground + minimap: `tools/gen_enchanted.py` (moss, forest floor under the
   EnchForest* polygons in main.tscn, the PATH, a grey-to-moss seam at the pass; re-run after moving
   the forests). Dense forests: EnchForestNorth / South / East (Rex will reshape them) with Rex's big
   enchanted trees (`ench_*` in tree_art.gd); single trees EnchTree* use kinds "ench" / "ench_pine"
@@ -62,14 +61,23 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
   Trolls (grey valley) reuse the skeleton wizard brain (`scripts/troll.gd` extends it) and throw
   rocks (Rex had a club version added, then asked for it removed: rock throwers only).
-- Goblins (enchanted forest clearing, ~200 in packs of 3-6): Rex's "tower defense" monster, NOT a
+- Goblins (enchanted forest's big clearing, ~200 in packs of 3-6): Rex's "tower defense" monster, NOT a
   dodging fight: no telegraph, low health (80, no level scaling), runs at you faster than you walk
   (chase 92 vs walk 70) with the run animation and just punches (`scripts/goblin.gd` brain,
   `scripts/goblin_look.gd`, `scenes/goblin.tscn`). Each punch picks the left or right hand at random
   (mirrored rows of the sheet). One that spots you or gets hit calls the goblins within `call_range`.
   Their nameplates only show once hurt (`Nameplate.only_when_hurt`). Sheet `art/goblin.png` from
   `tools/pack_goblin.py` (Rex's pixellab frames in `art/goblin_src/`). Placed by keeping out of the
-  forests, rock, the pass mouth and a 250 px circle around the clearing's middle (Rex's next village).
+  forests, rock and everything west of x 7600 (the village). The punch is quick (lands 0.12 s in) and
+  the goblin keeps running at you while it swings, so walking away doesn't dodge it (Rex: they
+  couldn't hit a moving player before).
+- Enchanted village (Rex picked the spot): between the troll pass and the big clearing, about
+  x 6600..7300, y -350..690; the forests were cut back to open it (EnchForestNorth / South). First
+  building: the enchanted potion shop (`scenes/ench_potion_shop.tscn`, Rex's 256 px stump drawn at
+  0.5 scale, door at its origin, at 6960, 188) -> interior `scenes/interior_ench_potion_shop.tscn`
+  (Interiors at 2400, 3000; keeper "Briar" uses Mirelle's art for now and the same potion stock).
+  Rex's originals in `art/ench_potion_src/`; the room's see-through floor and counter top were filled
+  by `tools/fill_room_planks.py` (draws its own planks, for rooms with no seams left).
 - Ducks (`scripts/ducks.gd`, drawing only): Rex's poses in `art/duck_src/`, packed into `art/ducks.png`
   by `tools/pack_ducks.py` (lines up the waterlines, makes the blink frame).
 - Barn + cow paddock (south-west of the crossroads): `scenes/barn.tscn`; `scenes/paddock.tscn`

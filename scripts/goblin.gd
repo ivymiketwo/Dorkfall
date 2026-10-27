@@ -28,14 +28,18 @@ enum State { WANDER, CHASE, RETURN, DEAD }
 
 @export_group("Punch")
 ## Starts a punch when you're this close (from its feet to yours).
-@export var punch_range := 15.0
+@export var punch_range := 22.0
 ## The punch hits if you're still this close, roughly in front of it, when the fist lands.
-@export var punch_reach := 20.0
-@export var punch_arc_deg := 140.0
+@export var punch_reach := 24.0
+@export var punch_arc_deg := 160.0
 @export var punch_damage := 30.0
 ## The whole punch, and when in it the fist lands (seconds). No warning beyond the swing itself.
-@export var punch_time := 0.45
-@export var punch_hit_at := 0.31
+## It keeps running at you while it swings, so walking away doesn't dodge it: you have to kill it
+## (or out-run it with momentum).
+@export var punch_time := 0.28
+@export var punch_hit_at := 0.12
+## Stops closing in when this near (so a crowd doesn't climb into you).
+@export var crowd_distance := 9.0
 ## Seconds between punches (random in this range, so a crowd doesn't punch in step).
 @export var punch_cooldown_min := 0.55
 @export var punch_cooldown_max := 0.95
@@ -105,8 +109,7 @@ func _physics_process(delta: float) -> void:
 	var from_home := position.distance_to(_home)
 
 	if punch_t >= 0.0:
-		_punch_step(delta)
-		velocity = Vector2.ZERO
+		_punch_step(delta, player, to_player, dist)
 		return
 
 	match state:
@@ -133,14 +136,14 @@ func _physics_process(delta: float) -> void:
 				move = position.direction_to(_wander_target)
 		State.CHASE:
 			speed = chase_speed
-			if dist <= punch_range:
-				if _punch_timer <= 0.0:
-					_start_punch(to_player / maxf(dist, 0.01))
-					velocity = Vector2.ZERO
-					return
-				facing = to_player
-			else:
+			if dist <= punch_range and _punch_timer <= 0.0:
+				_start_punch(to_player / maxf(dist, 0.01))
+				_punch_step(0.0, player, to_player, dist)
+				return
+			if dist > crowd_distance:
 				move = to_player / dist
+			else:
+				facing = to_player
 		State.RETURN:
 			speed = chase_speed
 			move = position.direction_to(_home)
@@ -173,8 +176,17 @@ func _start_punch(dir: Vector2) -> void:
 	punched.emit(punch_side)
 
 
-func _punch_step(delta: float) -> void:
+## The swing: keeps running at the target (and turning to it) until the fist lands, so a player
+## who just walks away still gets hit.
+func _punch_step(delta: float, target: Node2D, to_target: Vector2, dist: float) -> void:
 	punch_t += delta
+	velocity = Vector2.ZERO
+	if target != null and dist > crowd_distance:
+		velocity = to_target / dist * chase_speed
+		if not _hit_done:
+			punch_dir = to_target / dist
+			facing = punch_dir
+	move_and_slide()
 	if not _hit_done and punch_t >= punch_hit_at:
 		_hit_done = true
 		for p in Players.alive(get_tree()):
