@@ -3924,10 +3924,10 @@ position = Vector2(6080, 206)
 position = Vector2(6416, 206)
 
 [node name="Troll10" parent="Entities" unique_id=1985722731 instance=ExtResource("311_troll")]
-position = Vector2(6456, -122)
+position = Vector2(6180, -60)
 
 [node name="Troll11" parent="Entities" unique_id=948779196 instance=ExtResource("311_troll")]
-position = Vector2(6456, 534)
+position = Vector2(6180, 560)
 
 [node name="Troll12" parent="Entities" unique_id=1182807153 instance=ExtResource("311_troll")]
 position = Vector2(5770, 168)
@@ -3984,178 +3984,6 @@ polygon = PackedVector2Array(-1255, 417, -1215, 467, -1130, 492, -1006, 504, -86
 kinds = PackedStringArray("oak_dark", "oak_dark", "oak_round", "fir", "fir", "willow_mossy", "willow_teal", "willow_twisted", "pine_small", "twisted", "jungle")
 spacing = 32.0
 
-[node name="Ravine1" parent="Entities" unique_id=1349132545 instance=ExtResource("50_decor")]
-position = Vector2(2985, 214)
-kind = "warn_sign_skull"
-
-[node name="Ravine2" parent="Entities" unique_id=2085968597 instance=ExtResource("50_decor")]
-position = Vector2(3626, 163)
-kind = "cave_bones"
-
-[node name="Ravine3" parent="Entities" unique_id=1200990865 instance=ExtResource("50_decor")]
-position = Vector2(3265, 309)
-kind = "cave_bones"
-
-[node name="Ravine4" parent="Entities" unique_id=1670334481 instance=ExtResource("50_decor")]
-position = Vector2(3770, 205)
-kind = "cave_bones"
-
-[node name="Ravine5" parent="Entities" unique_id=1037176366 instance=ExtResource("50_decor")]
-position = Vector2(3431, 355)
-kind = "cave_bones"
-
-[node name="Ravine6" parent="Entities" unique_id=617619093 instance=ExtResource("50_decor")]
-position = Vector2(4186, 280)
-kind = "cave_bones"
-
-[node name="Ravine7" parent="Entities" unique_id=1187152671 instance=ExtResource("50_decor")]
-position = Vector2(3918, 231)
-kind = "cave_bones"
-
-[node name="Ravine8" parent="Entities" unique_id=1237610264 instance=ExtResource("50_decor")]
-position = Vector2(4375, 328)
-kind = "cave_bones"
-
-[node name="Ravine9" parent="Entities" unique_id=1462360810 instance=ExtResource("50_decor")]
-position = Vector2(3691, 294)
-kind = "cave_bones"
-
-[node name="Ravine10" parent="Entities" unique_id=1385191967 instance=ExtResource("4_tree")]
-position = Vector2(3393, 198)
-kind = "dead3"
-
-[node name="Ravine11" parent="Entities" unique_id=618173841 instance=ExtResource("4_tree")]
-position = Vector2(3567, 313)
-kind = "dead2"
-
-[node name="Ravine12" parent="Entities" unique_id=1238930790 instance=ExtResource("4_tree")]
-position = Vector2(4076, 208)
-kind = "dead"
-
-[node name="Ravine13" parent="Entities" unique_id=250237146 instance=ExtResource("4_tree")]
-position = Vector2(4399, 180)
-kind = "dead3"
-
-[node name="Ravine14" parent="Entities" unique_id=1710980565 instance=ExtResource("4_tree")]
-position = Vector2(3178, 207)
-kind = "dead2"
-
-[node name="Ravine15" parent="Entities" unique_id=1137388953 instance=ExtResource("4_tree")]
-position = Vector2(4245, 174)
-kind = "dead"
-
-[node name="Ravine16" parent="Entities" unique_id=125393670 instance=ExtResource("4_tree")]
-position = Vector2(3510, 187)
-kind = "dead3"
-
-[node name="Ravine17" parent="Entities" unique_id=662225088 instance=ExtResource("4_tree")]
-position = Vector2(3154, 318)
-kind = "dead2"
-
-[node name="Ravine18" parent="Entities" unique_id=2098099897 instance=ExtResource("4_tree")]
-position = Vector2(4004, 320)
-kind = "dead"
-
-[node name="Valley1" parent="Entities" unique_id=1061812533 instance=ExtResource("50_decor")]
-position = Vector2(5446, 417)
-kind = "cave_bones"
-
-[node name="Valley2" parent="Entities" unique_id=1921274216 instance=ExtResource("50_decor")]
-position = Vector2(4849, 423)
-kind = "cave_bones"
-
-[node name="Valley3" parent="Entities" unique_id=955488289 instance=ExtResource("50_decor")]
-position = Vector2(5997, -148)
-kind = "cave_bones"
-
-[node name="Valley4" parent="Entities" unique_id=1267303990 instance=ExtResource("50_decor")]
-position = Vector2(6408, 291)
-kind = "cave_bones"
-
-[node name="Valley5" parent="Entities" unique_id=1810510487 instance=ExtResource("50_decor")]
-position = Vector2(5284, 162)
-kind = "cave_bones"
-
-[node name="Valley6" parent="Entities" unique_id=478734395 instance=ExtResource("50_decor")]
-position = Vector2(5609, 300)
-kind = "cave_bones"
-
-[node name="Valley7" parent="Entities" unique_id=284808115 instance=ExtResource("50_decor")]
-position = Vector2(6013, 461)
-kind = "cave_rock2"
-
-[node name="Valley8" parent="Entities" unique_id=631004955 instance=ExtResource("50_decor")]
-position = Vector2(5393, -5)
-kind = "cave_rock1"
-
-[node name="Valley9" parent="Entities" unique_id=1599270433 instance=ExtResource("50_decor")]
-position = Vector2(6042, -24)
-kind = "cave_rock2"
-
-[node name="Valley10" parent="Entities" unique_id=1730546639 instance=ExtResource("50_decor")]
-position = Vector2(5401, 535)
-kind = "cave_rock1"
-
-[node name="Valley11" parent="Entities" unique_id=393993587 instance=ExtResource("50_decor")]
-position = Vector2(5851, -74)
-kind = "cave_rock2"
-
-[node name="Valley12" parent="Entities" unique_id=1066618754 instance=ExtResource("50_decor")]
-position = Vector2(5167, 77)
-kind = "cave_rock1"
-
-[node name="Valley13" parent="Entities" unique_id=1423956045 instance=ExtResource("50_decor")]
-position = Vector2(5636, 466)
-kind = "cave_rock2"
-
-[node name="Valley14" parent="Entities" unique_id=2100828078 instance=ExtResource("50_decor")]
-position = Vector2(5509, 200)
-kind = "cave_rock1"
-
-[node name="Valley15" parent="Entities" unique_id=2066572572 instance=ExtResource("50_decor")]
-position = Vector2(5920, 320)
-kind = "cave_rock2"
-
-[node name="Valley16" parent="Entities" unique_id=854210794 instance=ExtResource("50_decor")]
-position = Vector2(6241, 520)
-kind = "cave_rock1"
-
-[node name="Valley17" parent="Entities" unique_id=817924477 instance=ExtResource("4_tree")]
-position = Vector2(5842, 645)
-kind = "dead3"
-
-[node name="Valley18" parent="Entities" unique_id=288878685 instance=ExtResource("4_tree")]
-position = Vector2(4935, 204)
-kind = "dead2"
-
-[node name="Valley19" parent="Entities" unique_id=304824954 instance=ExtResource("4_tree")]
-position = Vector2(5151, 385)
-kind = "dead"
-
-[node name="Valley20" parent="Entities" unique_id=1986206013 instance=ExtResource("4_tree")]
-position = Vector2(5288, 615)
-kind = "dead3"
-
-[node name="Valley21" parent="Entities" unique_id=955277776 instance=ExtResource("4_tree")]
-position = Vector2(4948, 16)
-kind = "dead2"
-
-[node name="Valley22" parent="Entities" unique_id=740007606 instance=ExtResource("4_tree")]
-position = Vector2(5122, 553)
-kind = "dead"
-
-[node name="Valley23" parent="Entities" unique_id=1632255779 instance=ExtResource("4_tree")]
-position = Vector2(6296, 63)
-kind = "dead3"
-
-[node name="Valley24" parent="Entities" unique_id=332212591 instance=ExtResource("4_tree")]
-position = Vector2(5337, 341)
-kind = "dead2"
-
-[node name="Valley25" parent="Entities" unique_id=281501634 instance=ExtResource("4_tree")]
-position = Vector2(6458, 488)
-kind = "dead"
-
 [node name="HUD" parent="." unique_id=1493711357 instance=ExtResource("5_hud")]
 transform = Transform2D(2, 0, 0, 2, 0, 0)
 
@@ -4179,3 +4007,374 @@ script = ExtResource("51_amb")
 
 [node name="SleepRegions" type="Node" parent="." unique_id=1149223602]
 script = ExtResource("sleepreg")
+
+[node name="Ravine1" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(2985, 214)
+kind = "warn_sign_skull"
+
+[node name="Ravine2" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(3626, 163)
+kind = "cave_bones"
+
+[node name="Ravine3" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(3265, 309)
+kind = "cave_bones"
+
+[node name="Ravine4" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(3770, 205)
+kind = "cave_bones"
+
+[node name="Ravine5" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(3431, 355)
+kind = "cave_bones"
+
+[node name="Ravine6" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(4186, 280)
+kind = "cave_bones"
+
+[node name="Ravine7" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(3918, 231)
+kind = "cave_bones"
+
+[node name="Ravine8" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(4375, 328)
+kind = "cave_bones"
+
+[node name="Ravine9" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(3691, 294)
+kind = "cave_bones"
+
+[node name="Ravine10" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(3393, 198)
+kind = "dead3"
+
+[node name="Ravine11" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(3567, 313)
+kind = "dead2"
+
+[node name="Ravine12" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(4076, 208)
+kind = "dead"
+
+[node name="Ravine13" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(4399, 180)
+kind = "dead3"
+
+[node name="Ravine14" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(3178, 207)
+kind = "dead2"
+
+[node name="Ravine15" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(4245, 174)
+kind = "dead"
+
+[node name="Ravine16" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(3510, 187)
+kind = "dead3"
+
+[node name="Ravine17" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(3154, 318)
+kind = "dead2"
+
+[node name="Ravine18" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(4004, 320)
+kind = "dead"
+
+[node name="Valley1" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5446, 417)
+kind = "cave_bones"
+
+[node name="Valley2" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(4849, 423)
+kind = "cave_bones"
+
+[node name="Valley3" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5997, -148)
+kind = "cave_bones"
+
+[node name="Valley4" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6408, 291)
+kind = "cave_bones"
+
+[node name="Valley5" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5284, 162)
+kind = "cave_bones"
+
+[node name="Valley6" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5609, 300)
+kind = "cave_bones"
+
+[node name="Valley7" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6013, 461)
+kind = "cave_rock2"
+
+[node name="Valley8" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5393, -5)
+kind = "cave_rock1"
+
+[node name="Valley9" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6042, -24)
+kind = "cave_rock2"
+
+[node name="Valley10" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5401, 535)
+kind = "cave_rock1"
+
+[node name="Valley11" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5851, -74)
+kind = "cave_rock2"
+
+[node name="Valley12" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5167, 77)
+kind = "cave_rock1"
+
+[node name="Valley13" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5636, 466)
+kind = "cave_rock2"
+
+[node name="Valley14" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5509, 200)
+kind = "cave_rock1"
+
+[node name="Valley15" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(5920, 320)
+kind = "cave_rock2"
+
+[node name="Valley16" parent="Entities" instance=ExtResource("50_decor")]
+position = Vector2(6241, 520)
+kind = "cave_rock1"
+
+[node name="Valley17" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(5842, 645)
+kind = "dead3"
+
+[node name="Valley18" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(4935, 204)
+kind = "dead2"
+
+[node name="Valley19" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(5151, 385)
+kind = "dead"
+
+[node name="Valley20" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(5288, 615)
+kind = "dead3"
+
+[node name="Valley21" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(4948, 16)
+kind = "dead2"
+
+[node name="Valley22" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(5122, 553)
+kind = "dead"
+
+[node name="Valley23" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(6296, 63)
+kind = "dead3"
+
+[node name="Valley24" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(5337, 341)
+kind = "dead2"
+
+[node name="Valley25" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(5718, 171)
+kind = "dead"
+
+[node name="EnchForestNorth" parent="Entities" instance=ExtResource("210_forest")]
+polygon = PackedVector2Array(6470, -1000, 9470, -1000, 9470, -380, 9000, -430, 8700, -570, 8300, -630, 7900, -610, 7500, -530, 7250, -390, 7150, -190, 7110, 60, 7020, 118, 6820, 128, 6640, 132, 6470, 128)
+kinds = PackedStringArray("ench_round_blue", "ench_round_blue", "ench_violet_oak", "ench_violet_oak", "ench_twisted", "ench_ancient", "ench_wide_blue", "ench_wide_blue", "ench_willow", "ench_young", "ench_lilac")
+spacing = 40.0
+
+[node name="EnchForestSouth" parent="Entities" instance=ExtResource("210_forest")]
+polygon = PackedVector2Array(6470, 338, 6650, 342, 6850, 350, 7040, 368, 7170, 430, 7260, 570, 7360, 760, 7560, 920, 7860, 1010, 8250, 1030, 8650, 985, 8950, 870, 9150, 710, 9470, 660, 9470, 1710, 6470, 1710)
+kinds = PackedStringArray("ench_round_blue", "ench_round_blue", "ench_violet_oak", "ench_violet_oak", "ench_twisted", "ench_ancient", "ench_wide_blue", "ench_wide_blue", "ench_willow", "ench_young", "ench_lilac")
+spacing = 40.0
+
+[node name="EnchForestEast" parent="Entities" instance=ExtResource("210_forest")]
+polygon = PackedVector2Array(9000, -430, 9470, -380, 9470, 660, 9150, 710, 9020, 540, 8975, 260, 9030, -40)
+kinds = PackedStringArray("ench_round_blue", "ench_round_blue", "ench_violet_oak", "ench_violet_oak", "ench_twisted", "ench_ancient", "ench_wide_blue", "ench_wide_blue", "ench_willow", "ench_young", "ench_lilac")
+spacing = 40.0
+
+[node name="EnchTree1" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8701, 910)
+kind = "ench"
+
+[node name="EnchTree2" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8058, 912)
+kind = "ench"
+
+[node name="EnchTree3" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8907, -383)
+kind = "ench"
+
+[node name="EnchTree4" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8269, -540)
+kind = "ench_pine"
+
+[node name="EnchTree5" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7695, 869)
+kind = "ench"
+
+[node name="EnchTree6" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7461, 684)
+kind = "ench_pine"
+
+[node name="EnchTree7" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8354, -362)
+kind = "ench_pine"
+
+[node name="EnchTree8" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8849, -233)
+kind = "ench_pine"
+
+[node name="EnchTree9" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8497, 948)
+kind = "ench"
+
+[node name="EnchTree10" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7474, -333)
+kind = "ench_pine"
+
+[node name="EnchTree11" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7809, -76)
+kind = "ench"
+
+[node name="EnchTree12" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8686, 11)
+kind = "ench"
+
+[node name="EnchTree13" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7533, 619)
+kind = "ench"
+
+[node name="EnchTree14" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8987, -23)
+kind = "ench"
+
+[node name="EnchTree15" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7361, 608)
+kind = "ench"
+
+[node name="EnchTree16" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8952, 290)
+kind = "ench"
+
+[node name="EnchTree17" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7768, -283)
+kind = "ench_pine"
+
+[node name="EnchTree18" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7440, 515)
+kind = "ench"
+
+[node name="EnchTree19" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7465, -484)
+kind = "ench"
+
+[node name="EnchTree20" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8761, 151)
+kind = "ench"
+
+[node name="EnchTree21" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8785, -356)
+kind = "ench"
+
+[node name="EnchTree22" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8687, -394)
+kind = "ench"
+
+[node name="EnchTree23" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7441, 758)
+kind = "ench"
+
+[node name="EnchTree24" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7436, 28)
+kind = "ench"
+
+[node name="EnchTree25" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7324, -135)
+kind = "ench"
+
+[node name="EnchTree26" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8841, 4)
+kind = "ench"
+
+[node name="EnchTree27" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8661, 524)
+kind = "ench"
+
+[node name="EnchTree28" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8524, -122)
+kind = "ench"
+
+[node name="EnchTree29" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8413, 684)
+kind = "ench"
+
+[node name="EnchTree30" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8765, -14)
+kind = "ench"
+
+[node name="EnchTree31" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8846, 514)
+kind = "ench"
+
+[node name="EnchTree32" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8182, -301)
+kind = "ench"
+
+[node name="EnchTree33" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8574, -292)
+kind = "ench"
+
+[node name="EnchTree34" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8661, 434)
+kind = "ench"
+
+[node name="EnchTree35" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8380, -495)
+kind = "ench"
+
+[node name="EnchTree36" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7591, -476)
+kind = "ench_pine"
+
+[node name="EnchTree37" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7614, 849)
+kind = "ench_pine"
+
+[node name="EnchTree38" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7940, -125)
+kind = "ench"
+
+[node name="EnchTree39" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7879, -504)
+kind = "ench"
+
+[node name="EnchTree40" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(9019, 717)
+kind = "ench"
+
+[node name="EnchTree41" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7870, -338)
+kind = "ench"
+
+[node name="EnchTree42" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8250, 933)
+kind = "ench"
+
+[node name="EnchTree43" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8377, 830)
+kind = "ench"
+
+[node name="EnchTree44" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(7992, -207)
+kind = "ench"
+
+[node name="EnchTree45" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8312, -155)
+kind = "ench"
+
+[node name="EnchTree46" parent="Entities" instance=ExtResource("4_tree")]
+position = Vector2(8109, -113)
+kind = "ench"

@@ -46,6 +46,15 @@ server-readiness and dupe prevention in mind (see MIGRATION_NOTES.md before touc
   mountains up to the top of the map: `NW_CLIFF` (its strip starts from `art/ground_src/north_before_cliff.png`). It paints in strips (~3 GB of
   memory, ~3.5 minutes). Re-run it to change them (it starts from `art/ground_src/east_before_ravine.png`).
   Unreachable land there is left unpainted and its ground squares don't exist (GroundStream skips them).
+- Enchanted forest (east of the troll valley, world x 6512..9456, about 80% of the green biome; the
+  map grew to 696 x 168 tiles, ground squares to 22 columns): the valley narrows into a pass at
+  x ~6400-6512 (VALLEY_TOP / VALLEY_BOTTOM end points in `tools/gen_ravine.py`) that opens into a
+  corridor between two dense forests, then a big open clearing kept empty for Rex's next village
+  (path ends at ~8050, 330). Ground + minimap: `tools/gen_enchanted.py` (moss, forest floor under the
+  EnchForest* polygons in main.tscn, the PATH, a grey-to-moss seam at the pass; re-run after moving
+  the forests). Dense forests: EnchForestNorth / South / East (Rex will reshape them) with Rex's big
+  enchanted trees (`ench_*` in tree_art.gd); single trees EnchTree* use kinds "ench" / "ench_pine"
+  (his small blue trees, `std_ench_*`).
 - Monsters are split into a brain (no visuals) and a Look node; far-away ones sleep (`SleepRegions`).
   Trolls (grey valley) reuse the skeleton wizard brain (`scripts/troll.gd` extends it) and throw
   rocks (Rex had a club version added, then asked for it removed: rock throwers only).

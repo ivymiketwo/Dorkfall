@@ -18,12 +18,16 @@ const STANDARD := {
 	"oak2": ["std_round_light", "std_round_small", "std_round_wide"],
 	"cherry": ["std_gnarled"],
 	"pine": ["std_pine", "std_pine_dark"],
+	# the enchanted forest (east of the troll pass)
+	"ench": ["std_ench_round_a", "std_ench_round_b", "std_ench_round_c"],
+	"ench_pine": ["std_ench_pine"],
 }
 
 @export_enum("oak", "oak2", "cherry", "pine", "dead", "dead2", "dead3",
 		"oak_round", "oak_dark", "willow_twisted", "willow_teal", "willow_mossy", "birch_willow",
 		"fir", "autumn_round", "autumn_gnarled", "jungle", "pine_small", "apple", "blossom",
-		"twisted") var kind := "oak"
+		"twisted", "ench", "ench_pine", "ench_violet_oak", "ench_willow", "ench_round_blue",
+		"ench_twisted", "ench_young", "ench_ancient", "ench_wide_blue", "ench_lilac") var kind := "oak"
 
 
 func _ready() -> void:

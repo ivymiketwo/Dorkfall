@@ -44,8 +44,8 @@ RAVINE_X = 3060              # where the funnel has narrowed into the ravine
 RAVINE_END = 4470            # the ravine starts opening out again here (east funnel)
 # the east valley past the ravine: where its walls are drawn (world x, world y of the visible
 # edge), traced from Rex's sketch; the walls bend smoothly through these points
-VALLEY_TOP = [(4726, 65), (5100, -55), (5566, -163), (6024, -213), (6600, -171)]
-VALLEY_BOTTOM = [(4601, 468), (5026, 605), (5500, 668), (5982, 696), (6600, 522)]
+VALLEY_TOP = [(4726, 65), (5100, -55), (5566, -163), (6024, -213), (6250, -130), (6512, 130), (6600, 130)]
+VALLEY_BOTTOM = [(4601, 468), (5026, 605), (5500, 668), (5982, 696), (6250, 600), (6512, 290), (6600, 290)]
 VALLEY_FROM = 4470           # the ravine starts widening into the valley here
 # the north-west cliff (Rex's blue line, Oct 2026): the foot of a cliff that runs from the top of the
 # map down to the mountains, closing off the north-east corner of the meadow. World (x, y) points;
@@ -58,8 +58,8 @@ GREY_FROM = 4760             # world x where the red clay turns into grey cracke
 # rock outcrops in the valley ("mountains" for trolls): world centre and the size Rex drew them
 # (visible width, height, world px). Their cliff faces are drawn like the ravine's.
 OUTCROPS = [(5138, 231, 145, 166), (5408, 285, 75, 58), (5932, 148, 208, 145), (5845, 451, 160, 150),
-            (5616, -34, 100, 104), (6423, 7, 83, 120), (5290, 520, 120, 110), (6230, 330, 130, 120),
-            (6350, 600, 95, 90), (5000, 405, 70, 60)]
+            (5616, -34, 100, 104), (5290, 520, 120, 110), (6230, 330, 130, 120),
+            (5000, 405, 70, 60)]
 OUTCROP_MAX_LEVEL = 2        # outcrops stay low (one or two ledges), not full mountains
 BEFORE = "art/ground_src/east_before_ravine.png"   # the desert as it was (each run starts from it)
 BEFORE_WEST = "art/ground_src/north_before_cliff.png"   # the meadow under the north-west cliff, as it was
@@ -648,7 +648,7 @@ def walls(walk):
 def minimap(out, lv, walk, unseen):
     m = Image.open("art/world_map.png").convert("RGBA")
     old = np.asarray(m)
-    new_w = (X1 - ORIGIN[0]) // 16
+    new_w = max((X1 - ORIGIN[0]) // 16, old.shape[1])   # (the map now goes on east of X1)
     a = np.zeros((old.shape[0], new_w, 4), np.uint8)
     a[:, :old.shape[1]] = old
     T = 32
